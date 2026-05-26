@@ -1,0 +1,100 @@
+{
+  "nav": {
+    "waitlist": "Waitlist",
+    "events": "Events",
+    "blog": "Blog",
+    "ambassadors": "Ambassadors"
+  },
+  "hero": {
+    "h1": "Pick your running club, make it count!",
+    "subtitle": "The global hub for running clubs.",
+    "body": "Join the platform where running clubs compete, connect and grow. One runner, one club — every kilometer you run counts exclusively for yours.",
+    "cta_primary": "Join the Waitlist →",
+    "cta_secondary": "Managing a club? Register your club here →"
+  },
+  "whatis": {
+    "headline": "More than an app. A home for running clubs.",
+    "body1": "Running clubs are more than just groups of people who run together. They have identity, culture and a sense of belonging that goes beyond the finish line.",
+    "body2": "w3runn3rs is the global hub where running clubs compete, connect and grow — with real data, real rivalries and real community. Every runner belongs to one club only, making every kilometer meaningful and every leaderboard worth fighting for.",
+    "body3": "Whether you're chasing a personal record, traveling the world to race or building the next great running club — this is where it all comes together.",
+    "pillar1_title": "True Loyalty",
+    "pillar1_desc": "One runner, one club. Your effort belongs to your club, not split across many.",
+    "pillar2_title": "Data That Matters",
+    "pillar2_desc": "Sync your wearables. Every km, every run, tracked and counted — for your club.",
+    "pillar3_title": "Global Community",
+    "pillar3_desc": "Clubs from every corner of the world, competing on one platform."
+  },
+  "how": {
+    "headline": "Getting started is as easy as lacing up.",
+    "step1_title": "Sign Up",
+    "step1_desc": "Create your runner profile in minutes.",
+    "step2_title": "Pick Your Club",
+    "step2_desc": "Browse running clubs from around the world and commit to yours. One runner, one club — choose wisely.",
+    "step3_title": "Sync Your Wearable",
+    "step3_desc": "Connect Strava, Garmin, Suunto or any wearable. We'll sync your data automatically.",
+    "step4_title": "Make It Count",
+    "step4_desc": "Every run you complete adds to your club's leaderboard. Your effort, your club's glory."
+  },
+  "clubs": {
+    "headline": "Does your running club need a home?",
+    "body": "Registering your club on w3runn3rs is free and takes just a few minutes. Once you're in, your club joins the global leaderboard — competing weekly and monthly against running clubs from around the world.",
+    "cta": "Register Your Club — It's Free →",
+    "step1_title": "Create your club",
+    "step1_desc": "Fill in your club name, city, logo and a short description.",
+    "step2_title": "Set up your profile",
+    "step2_desc": "Your club gets its own dashboard — ready from day one.",
+    "step3_title": "Invite your runners",
+    "step3_desc": "Your runners join, sync their wearables and start logging km.",
+    "step4_title": "Start competing",
+    "step4_desc": "Weekly and monthly leaderboards, powered by real data from every run."
+  },
+  "movement": {
+    "headline": "Forget dating apps. Join a running club.",
+    "body1": "Something is shifting. People are waking up early instead of staying out late. They're booking flights to run marathons in Tokyo, signing up for HYROX in London or crossing a finish line in New York.",
+    "body2": "They're choosing running clubs over bars, race bibs over concert tickets. Running is no longer just a sport — it's an identity, a social circle and a reason to see the world.",
+    "body3": "w3runn3rs was built for this moment. A platform where running clubs are the center of it all — competing, connecting and showing up, both online and in the real world.",
+    "phrase1_title": "Runners travel the world",
+    "phrase1_body": "to race.",
+    "phrase2_title": "Running clubs",
+    "phrase2_body": "are the new social circles.",
+    "phrase3_title": "Every km counts.",
+    "phrase3_body": "Every run matters."
+  },
+  "events": {
+    "headline": "Discover IRL Events.",
+    "subtitle": "Find running events near you or create your own. Marathons, HYROX, fun runs, club meetups — all in one place.",
+    "find_title": "Find an Event",
+    "find_desc": "Discover races and meetups happening near you.",
+    "find_cta": "Find Events →",
+    "create_title": "Create an Event",
+    "create_desc": "Organize your own event and invite the running community.",
+    "create_cta": "Create Event →"
+  },
+  "community": {
+    "headline": "We're already running.",
+    "subtitle": "Join thousands of runners and clubs already moving with w3runn3rs. Follow us, connect with the community and never run alone.",
+    "cta": "Join the Waitlist →"
+  },
+  "faq": {
+    "headline": "Frequently Asked Questions",
+    "q1": "What is w3runn3rs?",
+    "a1": "w3runn3rs is the global hub for running clubs. A platform where runners join one club, sync their wearables and compete on leaderboards against clubs from around the world.",
+    "q2": "Why can I only belong to one club?",
+    "a2": "Because real loyalty matters. Unlike other platforms where your kilometers are spread across multiple clubs, w3runn3rs makes every run count exclusively for yours. One runner, one club — that's what makes the competition real.",
+    "q3": "What wearables can I connect?",
+    "a3": "You can connect Strava, Garmin, Suunto and other major platforms. Once connected, your activity syncs automatically.",
+    "q4": "Is it free to join?",
+    "a4": "Yes. Creating a runner account and joining a club is completely free.",
+    "q5": "Can I switch clubs?",
+    "a5": "Yes, but with restrictions. We want club loyalty to mean something — details on club switching will be available at launch.",
+    "q6": "How do I register my club?",
+    "a6": "Through a simple form — club name, city, logo, description and number of runners. It takes less than 5 minutes and it's free.",
+    "q7": "How do leaderboards work?",
+    "a7": "Leaderboards reset every week (Sunday to Saturday) and every month. Clubs are ranked by total kilometers logged by their members. Individual runners are also ranked within their club by kilometers and number of activities.",
+    "q8": "Will there be paid plans for clubs?",
+    "a8": "The base plan is free. Premium features for clubs are coming soon — stay tuned."
+  },
+  "asseenon": {
+    "label": "As seen on"
+  }
+}

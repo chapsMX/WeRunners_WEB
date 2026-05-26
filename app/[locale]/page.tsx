@@ -1,0 +1,31 @@
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import Hero from "@/components/sections/Hero";
+import WhatIs from "@/components/sections/WhatIs";
+import HowItWorks from "@/components/sections/HowItWorks";
+import ForClubs from "@/components/sections/ForClubs";
+import TheMovement from "@/components/sections/TheMovement";
+import IrlEvents from "@/components/sections/IrlEvents";
+import Community from "@/components/sections/Community";
+import Faq from "@/components/sections/Faq";
+import AsSeenOn from "@/components/sections/AsSeenOn";
+
+export default function HomePage() {
+  return (
+    <>
+      <Header />
+      <main>
+        <Hero />
+        <WhatIs />
+        <HowItWorks />
+        <ForClubs />
+        <TheMovement />
+        <IrlEvents />
+        <Community />
+        <Faq />
+        <AsSeenOn />
+      </main>
+      <Footer />
+    </>
+  );
+}
