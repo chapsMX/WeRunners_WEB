@@ -22,22 +22,40 @@ const spaceMono = Space_Mono({
   weight: ["400", "700"],
 });
 
+const BASE_URL = "https://www.w3runn3rs.com";
+const TITLE    = "W3Runn3rs — Pick your running club, make it count!";
+const DESC     = "The global hub for running clubs. One runner, one club — every kilometer counts exclusively for yours.";
+const OG_IMAGE = `${BASE_URL}/images/share.png`;
+
 export const metadata: Metadata = {
-  title: "W3Runn3rs — Pick your running club, make it count!",
-  description:
-    "The global hub for running clubs. Join the platform where running clubs compete, connect and grow. One runner, one club — every kilometer counts.",
-  metadataBase: new URL("https://www.w3runn3rs.com"),
+  metadataBase: new URL(BASE_URL),
+
+  title: TITLE,
+  description: DESC,
+
   openGraph: {
-    title: "W3Runn3rs — Pick your running club, make it count!",
-    description: "The global hub for running clubs.",
-    url: "https://www.w3runn3rs.com",
+    title: TITLE,
+    description: DESC,
+    url: BASE_URL,
     siteName: "W3Runn3rs",
     type: "website",
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: "W3Runn3rs — Pick your running club, make it count!",
+      },
+    ],
   },
+
   twitter: {
     card: "summary_large_image",
     site: "@w3runn3rs",
     creator: "@w3runn3rs",
+    title: TITLE,
+    description: DESC,
+    images: [OG_IMAGE],
   },
 };
 
