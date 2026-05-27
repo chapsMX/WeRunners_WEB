@@ -20,7 +20,7 @@ function FaqItem({ qKey, aKey }: { qKey: string; aKey: string }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border-b border-slate-800">
+    <div className="border-b border-line">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between py-5 text-left gap-4"
@@ -45,7 +45,7 @@ function FaqItem({ qKey, aKey }: { qKey: string; aKey: string }) {
         </svg>
       </button>
       {open && (
-        <div className="pb-5 text-slate-400 leading-relaxed">{t(aKey)}</div>
+        <div className="pb-5 text-muted leading-relaxed">{t(aKey)}</div>
       )}
     </div>
   );

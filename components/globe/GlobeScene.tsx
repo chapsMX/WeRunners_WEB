@@ -5,22 +5,23 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 
-// DEBUG: each city has a unique color for visual identification
 const CITIES = [
-  { name: "CDMX",      lat:  19.4, lon:  -99.1, color: "#ff0000" }, // 1 — ROJO
-  { name: "Denver",    lat:  39.7, lon: -104.9,  color: "#ff8800" }, // 2 — NARANJA
-  { name: "London",    lat:  52.5, lon:   -1.5,  color: "#ffff00" }, // 3 — AMARILLO
-  { name: "Lagos",     lat:   6.5, lon:    3.4,  color: "#00ff00" }, // 4 — VERDE
-  { name: "Nairobi",   lat:  -1.3, lon:   37.0,  color: "#00ffff" }, // 5 — CYAN
-  { name: "São Paulo", lat: -23.5, lon:  -47.5,  color: "#0088ff" }, // 6 — AZUL
-  { name: "Osaka",     lat:  34.7, lon:  135.5,  color: "#ff00ff" }, // 7 — MAGENTA
-  { name: "Bangkok",   lat:  13.7, lon:  100.5,  color: "#ff69b4" }, // 8 — ROSA
-  { name: "Perth",     lat: -29.0, lon:  116.0,  color: "#ffffff" }, // 9 — BLANCO
+  { name: "CDMX",      lat:  19.4, lon:  -99.1 },
+  { name: "Denver",    lat:  39.7, lon: -104.9  },
+  { name: "London",    lat:  52.5, lon:   -1.5  },
+  { name: "Lagos",     lat:   6.5, lon:    3.4  },
+  { name: "Nairobi",   lat:  -1.3, lon:   37.0  },
+  { name: "São Paulo", lat: -23.5, lon:  -47.5  },
+  { name: "Osaka",     lat:  34.7, lon:  135.5  },
+  { name: "Bangkok",   lat:  13.7, lon:  100.5  },
+  { name: "Perth",     lat: -29.0, lon:  116.0  },
 ];
 
 function latLonToVector3(lat: number, lon: number, radius: number): THREE.Vector3 {
   const phi = (90 - lat) * (Math.PI / 180);
-  const theta = (lon + 180) * (Math.PI / 180);
+  // +270 (not +180) because the GLB texture has lon=-180° (IDL/Pacific)
+  // facing the camera — offset of +90° vs the standard formula
+  const theta = (lon + 270) * (Math.PI / 180);
   return new THREE.Vector3(
     -radius * Math.sin(phi) * Math.cos(theta),
     radius * Math.cos(phi),
@@ -28,7 +29,7 @@ function latLonToVector3(lat: number, lon: number, radius: number): THREE.Vector
   );
 }
 
-function CityNode({ lat, lon, color }: { lat: number; lon: number; color: string }) {
+function CityNode({ lat, lon }: { lat: number; lon: number }) {
   const ref = useRef<THREE.Mesh>(null);
   const pos = latLonToVector3(lat, lon, 1.02);
 
@@ -42,11 +43,11 @@ function CityNode({ lat, lon, color }: { lat: number; lon: number; color: string
 
   return (
     <mesh ref={ref} position={pos}>
-      <sphereGeometry args={[0.03, 8, 8]} />
+      <sphereGeometry args={[0.025, 8, 8]} />
       <meshStandardMaterial
-        color={color}
-        emissive={color}
-        emissiveIntensity={1.2}
+        color="#7AC142"
+        emissive="#7AC142"
+        emissiveIntensity={0.8}
       />
     </mesh>
   );
@@ -70,7 +71,7 @@ function Globe() {
     <group ref={groupRef}>
       <mesh geometry={geometry} material={material} rotation={[-Math.PI / 2, 0, 0]} />
       {CITIES.map((city) => (
-        <CityNode key={city.name} lat={city.lat} lon={city.lon} color={city.color} />
+        <CityNode key={city.name} lat={city.lat} lon={city.lon} />
       ))}
     </group>
   );
@@ -90,7 +91,7 @@ export default function GlobeScene() {
       >
         <ambientLight intensity={1.2} />
         <directionalLight position={[4, 4, 4]} intensity={1.8} />
-        <pointLight position={[-4, -4, -4]} intensity={0.4} color="#ffffff" />
+        <pointLight position={[-4, -4, -4]} intensity={0.4} color="#7AC142" />
 
         <Suspense fallback={null}>
           <Globe />

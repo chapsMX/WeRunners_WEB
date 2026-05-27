@@ -43,7 +43,7 @@ const SOCIAL_LINKS = [
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-950 border-t border-slate-800">
+    <footer className="bg-surface-alt border-t border-line">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           {/* Left: Brand */}
@@ -56,7 +56,7 @@ export default function Footer() {
                 w3runn3rs
               </span>
             </div>
-            <p className="text-slate-400 text-sm max-w-xs">
+            <p className="text-muted text-sm max-w-xs">
               The global hub for running clubs.
               <br />
               Pick your running club, make it count!
@@ -71,7 +71,7 @@ export default function Footer() {
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-slate-400 hover:text-brand-lime transition-colors"
+                className="text-muted hover:text-brand-lime transition-colors"
                 aria-label={name}
               >
                 {icon}
@@ -81,28 +81,28 @@ export default function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="mt-10 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-slate-500 text-sm">
+        <div className="mt-10 pt-6 border-t border-line flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-muted/70 text-sm">
             © 2026 w3runn3rs. All rights reserved.
           </p>
           <div className="flex items-center gap-4 text-sm">
             <Link
               href="/en/privacy-policy"
-              className="text-slate-500 hover:text-slate-300 transition-colors"
+              className="text-muted/70 hover:text-foreground/80 transition-colors"
             >
               Privacy Policy
             </Link>
             <span className="text-slate-700">·</span>
             <Link
               href="/en/terms-of-service"
-              className="text-slate-500 hover:text-slate-300 transition-colors"
+              className="text-muted/70 hover:text-foreground/80 transition-colors"
             >
               Terms of Service
             </Link>
             <span className="text-slate-700">·</span>
             <a
               href="mailto:run@w3runn3rs.com"
-              className="text-slate-500 hover:text-slate-300 transition-colors"
+              className="text-muted/70 hover:text-foreground/80 transition-colors"
             >
               run@w3runn3rs.com
             </a>

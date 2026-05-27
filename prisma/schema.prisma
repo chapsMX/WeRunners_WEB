@@ -1,5 +1,6 @@
 // Prisma 7 schema — connection URL is passed via prisma.config.ts
-// See: https://pris.ly/d/prisma7-client-config
+// DATABASE_URL        → pooled connection (Neon / Vercel integration)
+// DATABASE_URL_UNPOOLED → direct connection used for migrations
 
 generator client {
   provider = "prisma-client-js"
@@ -10,12 +11,10 @@ datasource db {
 }
 
 model WaitlistEntry {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  name         String?
-  referralCode String   @unique
-  referredBy   String?
-  createdAt    DateTime @default(now())
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
 }
 
 model AmbassadorApplication {

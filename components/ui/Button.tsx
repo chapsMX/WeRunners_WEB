@@ -12,27 +12,24 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={cn(
-          // Base styles
-          "inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lime disabled:opacity-50 disabled:cursor-not-allowed",
-          // Size variants
+          "inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green disabled:opacity-50 disabled:cursor-not-allowed",
           {
             "text-sm px-3 py-1.5": size === "sm",
             "text-sm px-4 py-2.5": size === "md",
             "text-base px-6 py-3": size === "lg",
           },
-          // Color variants
           {
-            // Primary: lime background
-            "bg-brand-lime text-black hover:bg-lime-300 active:bg-lime-500":
+            // Primary: green background
+            "bg-brand-green text-black hover:bg-brand-green/80 active:bg-brand-green/70":
               variant === "primary",
-            // Secondary: dark border
-            "bg-transparent border border-slate-600 text-foreground hover:border-brand-lime hover:text-brand-lime":
+            // Secondary: border with theme-aware colors
+            "bg-transparent border border-line text-foreground hover:border-brand-green hover:text-brand-green":
               variant === "secondary",
-            // Ghost: no border
-            "bg-transparent text-slate-400 hover:text-foreground":
+            // Ghost
+            "bg-transparent text-muted hover:text-foreground":
               variant === "ghost",
-            // Outline: brand-lime border
-            "bg-transparent border border-brand-lime text-brand-lime hover:bg-brand-lime hover:text-black":
+            // Outline
+            "bg-transparent border border-brand-green text-brand-green hover:bg-brand-green hover:text-black":
               variant === "outline",
           },
           className
