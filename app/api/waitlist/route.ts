@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { sql } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,21 +14,19 @@ export async function POST(req: NextRequest) {
 
     const normalized = email.trim().toLowerCase();
 
-    const entry = await db.waitlistEntry.create({
-      data: {
-        email: normalized,
-        name: name?.trim() || null,
-      },
-    });
+    await sql`
+      INSERT INTO "WaitlistEntry" (id, email, name, "createdAt")
+      VALUES (gen_random_uuid()::text, ${normalized}, ${name?.trim() || null}, NOW())
+    `;
 
-    return NextResponse.json({ success: true, id: entry.id }, { status: 201 });
+    return NextResponse.json({ success: true }, { status: 201 });
   } catch (error: unknown) {
-    // Unique constraint → already registered
+    // PostgreSQL unique violation code
     if (
       typeof error === "object" &&
       error !== null &&
       "code" in error &&
-      (error as { code: string }).code === "P2002"
+      (error as { code: string }).code === "23505"
     ) {
       return NextResponse.json(
         { error: "This email is already on the waitlist." },
