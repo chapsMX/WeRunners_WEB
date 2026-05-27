@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { trackEvent } from "@/lib/analytics";
 
 /* ─── Icons ──────────────────────────────────────────────── */
 function UsersIcon({ className }: { className?: string }) {
@@ -112,7 +113,10 @@ export default function Community() {
           variant="primary"
           size="lg"
           className="text-white"
-          onClick={() => (window.location.href = `/${locale}/waitlist`)}
+          onClick={() => {
+              trackEvent.joinWaitlist("community");
+              window.location.href = `/${locale}/waitlist`;
+            }}
         >
           {t("community.cta")}
         </Button>

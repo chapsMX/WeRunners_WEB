@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { trackEvent } from "@/lib/analytics";
 
 /* ─── Icons ──────────────────────────────────────────────── */
 function ClubIcon({ className }: { className?: string }) {
@@ -71,7 +72,10 @@ export default function ForClubs() {
             variant="primary"
             size="lg"
             className="text-white"
-            onClick={() => (window.location.href = `/${locale}/for-clubs`)}
+            onClick={() => {
+              trackEvent.registerClub("for_clubs");
+              window.location.href = `/${locale}/for-clubs`;
+            }}
           >
             {t("clubs.cta")}
           </Button>

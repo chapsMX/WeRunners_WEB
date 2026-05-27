@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { trackEvent } from "@/lib/analytics";
 
 const NAV_LINKS = [
   { href: "/waitlist", labelKey: "nav.waitlist" },
@@ -82,6 +83,7 @@ export default function Header() {
             <Link
               href={`/${otherLocale}${localePath}`}
               className="text-sm font-medium text-muted hover:text-foreground transition-colors uppercase"
+              onClick={() => trackEvent.languageSwitch(otherLocale as "en" | "es")}
             >
               {otherLocale}
             </Link>
@@ -89,7 +91,11 @@ export default function Header() {
             {/* Theme toggle */}
             {mounted && (
               <button
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                onClick={() => {
+                  const next = theme === "dark" ? "light" : "dark";
+                  setTheme(next);
+                  trackEvent.themeToggle(next as "dark" | "light");
+                }}
                 className="text-muted hover:text-foreground transition-colors p-1"
                 aria-label="Toggle theme"
               >
@@ -190,7 +196,11 @@ export default function Header() {
               </Link>
               {mounted && (
                 <button
-                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  onClick={() => {
+                    const next = theme === "dark" ? "light" : "dark";
+                    setTheme(next);
+                    trackEvent.themeToggle(next as "dark" | "light");
+                  }}
                   className="text-muted hover:text-foreground text-sm"
                 >
                   {theme === "dark" ? "☀️ Light" : "🌙 Dark"}
