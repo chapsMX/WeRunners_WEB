@@ -87,7 +87,7 @@ export default function ForClubs() {
           {STEPS.map(({ Icon, titleKey, descKey }) => (
             <div
               key={titleKey}
-              className="group bg-surface-alt hover:bg-brand-navy transition-colors duration-300
+              className="group bg-surface-alt hover:bg-brand-blue transition-colors duration-300
                          flex flex-col items-center justify-center gap-6 p-10 cursor-default"
             >
               {/* Icon */}

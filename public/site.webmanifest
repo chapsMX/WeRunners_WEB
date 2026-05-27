@@ -1,0 +1,21 @@
+{
+  "name": "W3Runn3rs",
+  "short_name": "W3Runn3rs",
+  "description": "The global hub for running clubs.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#11326e",
+  "theme_color": "#11326e",
+  "icons": [
+    {
+      "src": "/images/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

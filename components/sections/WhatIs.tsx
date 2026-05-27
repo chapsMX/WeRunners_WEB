@@ -48,17 +48,19 @@ const PILLARS = [
     Icon: ShieldIcon,
     titleKey: "whatis.pillar1_title" as const,
     descKey:  "whatis.pillar1_desc"  as const,
-    bg:           "bg-brand-green",
+    bg:           "bg-brand-green",   // #63f807 — neon green
     iconColor:    "text-brand-green",
     highlightCls: "text-brand-navy",
+    lightBg:      false,
   },
   {
     Icon: ChartIcon,
     titleKey: "whatis.pillar2_title" as const,
     descKey:  "whatis.pillar2_desc"  as const,
-    bg:           "bg-brand-blue",
+    bg:           "bg-brand-blue",    // #1e4a9a — azul medio
     iconColor:    "text-brand-blue",
     highlightCls: "text-brand-green",
+    lightBg:      false,
   },
   {
     Icon: GlobeIcon,
@@ -67,6 +69,7 @@ const PILLARS = [
     bg:           "bg-brand-navy",
     iconColor:    "text-brand-navy",
     highlightCls: "text-brand-green",
+    lightBg:      false,
   },
 ];
 
@@ -75,7 +78,7 @@ export default function WhatIs() {
   const t = useTranslations();
 
   return (
-    <section id="what-is" className="bg-background">
+    <section id="what-is" className="bg-surface-alt">
 
       {/* ── Row 1: headline + body ── */}
       <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-20 lg:pt-24 pb-10">
@@ -91,7 +94,7 @@ export default function WhatIs() {
 
       {/* ── Row 2: full-bleed 3-column pillars ── */}
       <div className="grid grid-cols-1 md:grid-cols-3 w-full">
-        {PILLARS.map(({ Icon, titleKey, descKey, bg, iconColor, highlightCls }) => {
+        {PILLARS.map(({ Icon, titleKey, descKey, bg, iconColor, highlightCls, lightBg }) => {
           const fullTitle = t(titleKey);
           const words     = fullTitle.split(" ");
           const highlight = words.pop()!;
@@ -102,19 +105,21 @@ export default function WhatIs() {
               key={titleKey}
               className={`${bg} flex flex-col gap-10 px-10 lg:px-14 py-16`}
             >
-              {/* Icon in white circle */}
-              <div className={`w-16 h-16 rounded-full bg-white flex items-center justify-center flex-shrink-0 ${iconColor}`}>
+              {/* Icon circle — fondo blanco en fondos oscuros, navy en gris */}
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0
+                               ${lightBg ? "bg-brand-navy" : "bg-white"} ${iconColor}`}>
                 <Icon className="w-8 h-8" />
               </div>
 
-              {/* Title: prefix (white) + highlight word (accent) */}
-              <h3 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white uppercase tracking-wide leading-tight">
-                {prefix && <span>{prefix} </span>}
+              {/* Title */}
+              <h3 className={`text-2xl md:text-3xl lg:text-4xl font-extrabold uppercase tracking-wide leading-tight
+                              ${lightBg ? "text-brand-navy" : "text-white"}`}>
+                {prefix && <span>{prefix}<br /></span>}
                 <span className={highlightCls}>{highlight}</span>
               </h3>
 
               {/* Description */}
-              <p className="text-white/80 text-base leading-relaxed">
+              <p className={`text-base leading-relaxed ${lightBg ? "text-brand-navy/70" : "text-white/80"}`}>
                 {t(descKey)}
               </p>
             </div>

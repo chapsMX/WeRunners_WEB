@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
@@ -45,17 +46,23 @@ export default function Header() {
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link
             href={`/${locale}`}
-            className="flex items-center gap-2 group"
+            className="flex items-center gap-3 group"
+            aria-label="w3runn3rs — home"
           >
-            <div className="w-8 h-8 rounded-full bg-brand-lime flex items-center justify-center text-black font-extrabold text-sm group-hover:bg-lime-300 transition-colors">
-              W3
-            </div>
-            <span className="font-extrabold text-foreground text-lg tracking-tight group-hover:text-brand-lime transition-colors">
-              w3runn3rs
+            <Image
+              src="/images/logoAzul.png"
+              alt="w3runn3rs"
+              width={980}
+              height={656}
+              className="h-14 w-auto opacity-90 group-hover:opacity-100 transition-opacity"
+              priority
+            />
+            <span className="font-extrabold text-xl text-white/90 group-hover:text-white transition-colors tracking-tight">
+              We Runners
             </span>
           </Link>
 
@@ -66,10 +73,10 @@ export default function Header() {
                 key={href}
                 href={`/${locale}${href}`}
                 className={cn(
-                  "text-sm font-medium transition-colors",
+                  "text-base font-medium transition-colors",
                   pathname.includes(href)
                     ? "text-brand-lime"
-                    : "text-muted hover:text-foreground"
+                    : "text-white/90 hover:text-white"
                 )}
               >
                 {t(labelKey)}
@@ -82,7 +89,7 @@ export default function Header() {
             {/* Locale switcher */}
             <Link
               href={`/${otherLocale}${localePath}`}
-              className="text-sm font-medium text-muted hover:text-foreground transition-colors uppercase"
+              className="text-base font-medium text-white/90 hover:text-white transition-colors uppercase"
               onClick={() => trackEvent.languageSwitch(otherLocale as "en" | "es")}
             >
               {otherLocale}
@@ -96,7 +103,7 @@ export default function Header() {
                   setTheme(next);
                   trackEvent.themeToggle(next as "dark" | "light");
                 }}
-                className="text-muted hover:text-foreground transition-colors p-1"
+                className="text-white/90 hover:text-white transition-colors p-1"
                 aria-label="Toggle theme"
               >
                 {theme === "dark" ? (
@@ -137,7 +144,7 @@ export default function Header() {
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden text-muted hover:text-foreground"
+            className="md:hidden text-white/90 hover:text-white"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >

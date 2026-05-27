@@ -3,28 +3,29 @@
 @tailwind utilities;
 
 /* ─── Brand palette ───────────────────────────────────────────────────────────
-   #002A5C  navy dark    → dark-mode primary background
-   #7AC142  green        → accent / CTA
-   #B2B7BB  gray         → muted text / borders in light mode
-   #2D5980  blue-medium  → secondary accent / borders in dark mode
+   #63f807  neon green   → primary accent / CTA
+   #30bc18  green        → secondary / deeper green
+   #11326e  navy dark    → dark-mode background / light-mode foreground
+   #fdf9f9  off-white    → light-mode background
+   #c2c2c2  gray         → muted text / borders
    ─────────────────────────────────────────────────────────────────────────── */
 
 :root {
   /* Light mode */
-  --background:   #ffffff;
-  --foreground:   #002A5C;
-  --surface-alt:  #eef3fb;   /* alternate sections — light blue tint */
-  --muted:        #2D5980;   /* secondary text */
-  --line:         #B2B7BB;   /* borders */
+  --background:   #fdf9f9;   /* off-white */
+  --foreground:   #11326e;   /* navy */
+  --surface-alt:  #edf1fb;   /* light blue tint for alternate sections */
+  --muted:        #2a5090;   /* medium navy for secondary text */
+  --line:         #c2c2c2;   /* gray borders */
 }
 
 .dark {
   /* Dark mode */
-  --background:   #002A5C;   /* navy — main bg */
-  --foreground:   #f0f4f8;
-  --surface-alt:  #001233;   /* alternate sections — deeper navy */
-  --muted:        #B2B7BB;   /* secondary text */
-  --line:         #2D5980;   /* borders */
+  --background:   #11326e;   /* navy — main bg */
+  --foreground:   #fdf9f9;   /* off-white text */
+  --surface-alt:  #0a1e41;   /* deeper navy for alternate sections */
+  --muted:        #c2c2c2;   /* gray for secondary text */
+  --line:         #1e3d7a;   /* medium navy borders */
 }
 
 @layer base {
