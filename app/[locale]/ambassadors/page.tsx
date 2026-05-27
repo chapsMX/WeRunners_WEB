@@ -1,9 +1,17 @@
+"use client";
+
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { trackEvent } from "@/lib/analytics";
 
 export default function AmbassadorsPage() {
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    trackEvent.ambassadorApply();
+    // TODO: wire up to /api/ambassador when ready
+  }
   return (
     <>
       <Header />
@@ -113,7 +121,7 @@ export default function AmbassadorsPage() {
             <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
               Apply to become an Ambassador
             </h2>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">

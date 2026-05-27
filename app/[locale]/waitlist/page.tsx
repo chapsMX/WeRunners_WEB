@@ -5,6 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { trackEvent } from "@/lib/analytics";
 
 type Status = "idle" | "loading" | "success" | "duplicate" | "error";
 
@@ -26,7 +27,7 @@ export default function WaitlistPage() {
         body:    JSON.stringify({ email, name }),
       });
 
-      if (res.status === 201)  { setStatus("success");   return; }
+      if (res.status === 201)  { trackEvent.joinWaitlist("waitlist_page"); setStatus("success");   return; }
       if (res.status === 409)  { setStatus("duplicate"); return; }
       setStatus("error");
     } catch {

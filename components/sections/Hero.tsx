@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { trackEvent } from "@/lib/analytics";
 
 export default function Hero() {
   const t = useTranslations("hero");
@@ -48,7 +49,10 @@ export default function Hero() {
             variant="primary"
             size="lg"
             className="text-white"
-            onClick={() => (window.location.href = `/${locale}/waitlist`)}
+            onClick={() => {
+              trackEvent.joinWaitlist("hero");
+              window.location.href = `/${locale}/waitlist`;
+            }}
           >
             {t("cta_primary")}
           </Button>
@@ -56,7 +60,10 @@ export default function Hero() {
             variant="primary"
             size="lg"
             className="text-white"
-            onClick={() => (window.location.href = `/${locale}/for-clubs`)}
+            onClick={() => {
+              trackEvent.registerClub("hero");
+              window.location.href = `/${locale}/for-clubs`;
+            }}
           >
             {t("cta_secondary")}
           </Button>
