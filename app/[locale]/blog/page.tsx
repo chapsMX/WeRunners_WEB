@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/metadata";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
@@ -5,6 +7,13 @@ import Link from "next/link";
 // Placeholder blog index — will be powered by MDX + Contentlayer
 const posts: { slug: string; title: string; date: string; excerpt: string }[] =
   [];
+
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  return buildPageMetadata(locale, "/blog");
+}
 
 export default function BlogPage() {
   return (

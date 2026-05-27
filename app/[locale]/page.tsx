@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/metadata";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/sections/Hero";
@@ -10,6 +12,13 @@ import ParallaxBanner from "@/components/sections/ParallaxBanner";
 import Community from "@/components/sections/Community";
 import Faq from "@/components/sections/Faq";
 import AsSeenOn from "@/components/sections/AsSeenOn";
+
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  return buildPageMetadata(locale, "");
+}
 
 export default function HomePage() {
   return (

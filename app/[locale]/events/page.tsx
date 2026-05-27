@@ -1,6 +1,15 @@
+import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/metadata";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/Button";
+
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  return buildPageMetadata(locale, "/events");
+}
 
 export default function EventsPage() {
   return (

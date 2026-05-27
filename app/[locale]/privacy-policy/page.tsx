@@ -1,5 +1,14 @@
+import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/metadata";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  return buildPageMetadata(locale, "/privacy-policy");
+}
 
 export default function PrivacyPolicyPage() {
   return (
