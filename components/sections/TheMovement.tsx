@@ -22,7 +22,7 @@ export default function TheMovement() {
   const t = useTranslations();
 
   return (
-    <section id="movement" className="py-24 bg-slate-950 overflow-hidden">
+    <section id="movement" className="py-24 bg-surface-alt overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl md:text-5xl font-extrabold text-foreground mb-12 text-center">
           {t("movement.headline")}
@@ -41,14 +41,14 @@ export default function TheMovement() {
             {PHRASES.map(({ icon, titleKey, bodyKey }) => (
               <div
                 key={titleKey}
-                className="flex items-start gap-4 p-6 rounded-2xl border border-slate-800 bg-slate-900/30"
+                className="flex items-start gap-4 p-6 rounded-2xl border border-line bg-slate-900/30"
               >
                 <span className="text-4xl">{icon}</span>
                 <div>
                   <span className="font-extrabold text-foreground text-xl">
                     {t(titleKey)}
                   </span>{" "}
-                  <span className="text-slate-400 text-lg">{t(bodyKey)}</span>
+                  <span className="text-muted text-lg">{t(bodyKey)}</span>
                 </div>
               </div>
             ))}

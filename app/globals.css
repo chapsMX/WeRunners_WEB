@@ -2,14 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Brand palette ───────────────────────────────────────────────────────────
+   #002A5C  navy dark    → dark-mode primary background
+   #7AC142  green        → accent / CTA
+   #B2B7BB  gray         → muted text / borders in light mode
+   #2D5980  blue-medium  → secondary accent / borders in dark mode
+   ─────────────────────────────────────────────────────────────────────────── */
+
 :root {
-  --background: #ffffff;
-  --foreground: #0a0a0a;
+  /* Light mode */
+  --background:   #ffffff;
+  --foreground:   #002A5C;
+  --surface-alt:  #eef3fb;   /* alternate sections — light blue tint */
+  --muted:        #2D5980;   /* secondary text */
+  --line:         #B2B7BB;   /* borders */
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #f8fafc;
+  /* Dark mode */
+  --background:   #002A5C;   /* navy — main bg */
+  --foreground:   #f0f4f8;
+  --surface-alt:  #001233;   /* alternate sections — deeper navy */
+  --muted:        #B2B7BB;   /* secondary text */
+  --line:         #2D5980;   /* borders */
 }
 
 @layer base {

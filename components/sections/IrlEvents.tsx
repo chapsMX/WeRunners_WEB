@@ -16,7 +16,7 @@ export default function IrlEvents() {
         <h2 className="text-3xl md:text-5xl font-extrabold text-foreground mb-4">
           {t("events.headline")}
         </h2>
-        <p className="text-slate-400 text-lg max-w-2xl mx-auto mb-12">
+        <p className="text-muted text-lg max-w-2xl mx-auto mb-12">
           {t("events.subtitle")}
         </p>
 
@@ -26,7 +26,7 @@ export default function IrlEvents() {
             <h3 className="text-xl font-bold text-foreground mb-2">
               {t("events.find_title")}
             </h3>
-            <p className="text-slate-400 mb-6">{t("events.find_desc")}</p>
+            <p className="text-muted mb-6">{t("events.find_desc")}</p>
             <Button
               variant="outline"
               onClick={() =>
@@ -42,7 +42,7 @@ export default function IrlEvents() {
             <h3 className="text-xl font-bold text-foreground mb-2">
               {t("events.create_title")}
             </h3>
-            <p className="text-slate-400 mb-6">{t("events.create_desc")}</p>
+            <p className="text-muted mb-6">{t("events.create_desc")}</p>
             <Button
               variant="outline"
               onClick={() =>

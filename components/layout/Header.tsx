@@ -39,7 +39,7 @@ export default function Header() {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         scrolled
-          ? "bg-background/90 backdrop-blur-md border-b border-slate-800"
+          ? "bg-background/90 backdrop-blur-md border-b border-line"
           : "bg-transparent"
       )}
     >
@@ -68,7 +68,7 @@ export default function Header() {
                   "text-sm font-medium transition-colors",
                   pathname.includes(href)
                     ? "text-brand-lime"
-                    : "text-slate-400 hover:text-foreground"
+                    : "text-muted hover:text-foreground"
                 )}
               >
                 {t(labelKey)}
@@ -81,7 +81,7 @@ export default function Header() {
             {/* Locale switcher */}
             <Link
               href={`/${otherLocale}${localePath}`}
-              className="text-sm font-medium text-slate-400 hover:text-foreground transition-colors uppercase"
+              className="text-sm font-medium text-muted hover:text-foreground transition-colors uppercase"
             >
               {otherLocale}
             </Link>
@@ -90,7 +90,7 @@ export default function Header() {
             {mounted && (
               <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="text-slate-400 hover:text-foreground transition-colors p-1"
+                className="text-muted hover:text-foreground transition-colors p-1"
                 aria-label="Toggle theme"
               >
                 {theme === "dark" ? (
@@ -131,7 +131,7 @@ export default function Header() {
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden text-slate-400 hover:text-foreground"
+            className="md:hidden text-muted hover:text-foreground"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
@@ -169,29 +169,29 @@ export default function Header() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-background/95 backdrop-blur-md border-b border-slate-800">
+        <div className="md:hidden bg-background/95 backdrop-blur-md border-b border-line">
           <nav className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-4">
             {NAV_LINKS.map(({ href, labelKey }) => (
               <Link
                 key={href}
                 href={`/${locale}${href}`}
-                className="text-sm font-medium text-slate-300 hover:text-brand-lime transition-colors"
+                className="text-sm font-medium text-foreground/80 hover:text-brand-lime transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 {t(labelKey)}
               </Link>
             ))}
-            <div className="flex items-center gap-4 pt-2 border-t border-slate-800">
+            <div className="flex items-center gap-4 pt-2 border-t border-line">
               <Link
                 href={`/${otherLocale}${localePath}`}
-                className="text-sm font-medium text-slate-400 uppercase"
+                className="text-sm font-medium text-muted uppercase"
               >
                 {otherLocale}
               </Link>
               {mounted && (
                 <button
                   onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                  className="text-slate-400 hover:text-foreground text-sm"
+                  className="text-muted hover:text-foreground text-sm"
                 >
                   {theme === "dark" ? "☀️ Light" : "🌙 Dark"}
                 </button>

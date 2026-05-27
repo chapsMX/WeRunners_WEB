@@ -9,9 +9,9 @@ export default function AsSeenOn() {
   if (LOGOS.length === 0) return null;
 
   return (
-    <section id="as-seen-on" className="py-16 bg-slate-950 border-t border-slate-800">
+    <section id="as-seen-on" className="py-16 bg-surface-alt border-t border-line">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-center text-slate-500 text-sm uppercase tracking-widest font-medium mb-8">
+        <p className="text-center text-muted/70 text-sm uppercase tracking-widest font-medium mb-8">
           {t("asseenon.label")}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-8">
@@ -24,7 +24,7 @@ export default function AsSeenOn() {
               className="opacity-40 hover:opacity-70 transition-opacity"
             >
               {/* Logo images will go here */}
-              <span className="text-slate-400 font-semibold">{name}</span>
+              <span className="text-muted font-semibold">{name}</span>
             </a>
           ))}
         </div>

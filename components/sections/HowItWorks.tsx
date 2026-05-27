@@ -11,7 +11,7 @@ export default function HowItWorks() {
   const t = useTranslations();
 
   return (
-    <section id="how-it-works" className="py-24 bg-slate-950">
+    <section id="how-it-works" className="py-24 bg-surface-alt">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl md:text-5xl font-extrabold text-foreground mb-16 text-center">
           {t("how.headline")}
@@ -33,7 +33,7 @@ export default function HowItWorks() {
                 <h3 className="text-xl font-bold text-foreground mb-2">
                   {t(titleKey)}
                 </h3>
-                <p className="text-slate-400 text-sm leading-relaxed">
+                <p className="text-muted text-sm leading-relaxed">
                   {t(descKey)}
                 </p>
               </div>

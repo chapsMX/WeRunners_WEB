@@ -4,8 +4,9 @@ import Hero from "@/components/sections/Hero";
 import WhatIs from "@/components/sections/WhatIs";
 import HowItWorks from "@/components/sections/HowItWorks";
 import ForClubs from "@/components/sections/ForClubs";
-import TheMovement from "@/components/sections/TheMovement";
-import IrlEvents from "@/components/sections/IrlEvents";
+import ParallaxBanner from "@/components/sections/ParallaxBanner";
+// import TheMovement from "@/components/sections/TheMovement";
+// import IrlEvents from "@/components/sections/IrlEvents";
 import Community from "@/components/sections/Community";
 import Faq from "@/components/sections/Faq";
 import AsSeenOn from "@/components/sections/AsSeenOn";
@@ -18,9 +19,10 @@ export default function HomePage() {
         <Hero />
         <WhatIs />
         <HowItWorks />
+        <ParallaxBanner />
         <ForClubs />
-        <TheMovement />
-        <IrlEvents />
+        {/* <TheMovement /> */}
+        {/* <IrlEvents /> */}
         <Community />
         <Faq />
         <AsSeenOn />
