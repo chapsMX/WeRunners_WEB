@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/Button";
@@ -13,6 +13,13 @@ export default function WaitlistPage() {
   const [email, setEmail]   = useState("");
   const [name, setName]     = useState("");
   const [status, setStatus] = useState<Status>("idle");
+
+  // On mount: check if user already joined
+  useEffect(() => {
+    if (localStorage.getItem("w3_waitlist_joined") === "1") {
+      setStatus("success");
+    }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -27,8 +34,17 @@ export default function WaitlistPage() {
         body:    JSON.stringify({ email, name }),
       });
 
-      if (res.status === 201)  { trackEvent.joinWaitlist("waitlist_page"); setStatus("success");   return; }
-      if (res.status === 409)  { setStatus("duplicate"); return; }
+      if (res.status === 201)  {
+        localStorage.setItem("w3_waitlist_joined", "1");
+        trackEvent.joinWaitlist("waitlist_page");
+        setStatus("success");
+        return;
+      }
+      if (res.status === 409)  {
+        localStorage.setItem("w3_waitlist_joined", "1"); // ya estaba registrado, igual mostramos confirmación
+        setStatus("duplicate");
+        return;
+      }
       setStatus("error");
     } catch {
       setStatus("error");

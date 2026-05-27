@@ -17,6 +17,16 @@ model WaitlistEntry {
   createdAt DateTime @default(now())
 }
 
+model ClubRegistration {
+  id        String   @id @default(cuid())
+  clubName  String
+  city      String
+  email     String   @unique
+  runners   Int?
+  logoUrl   String?
+  createdAt DateTime @default(now())
+}
+
 model AmbassadorApplication {
   id         String   @id @default(cuid())
   fullName   String
