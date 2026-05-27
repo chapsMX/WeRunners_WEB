@@ -1,11 +1,8 @@
 # W3Runn3rs — We Runners
-
 > **Pick your running club, make it count!**
 > The global hub for running clubs.
 
 ![W3 Runn3rs](public/images/readme.png)
-
-![License](https://img.shields.io/badge/license-MIT-lime) ![Next.js](https://img.shields.io/badge/Next.js-14-black) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![Tailwind](https://img.shields.io/badge/Tailwind-3-38bdf8) ![Vercel](https://img.shields.io/badge/deployed-Vercel-black)
 
 ---
 
@@ -15,7 +12,7 @@ W3Runn3rs (**We Runners**) is the global hub for running clubs. Unlike other pla
 
 **One runner. One club. Every kilometer counts exclusively for yours.**
 
-This repository contains the landing page and marketing site for [www.w3runn3rs.com](https://www.w3runn3rs.com).
+![License](https://img.shields.io/badge/license-MIT-lime) ![Next.js](https://img.shields.io/badge/Next.js-14-black) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![Tailwind](https://img.shields.io/badge/Tailwind-3-38bdf8) ![Vercel](https://img.shields.io/badge/deployed-Vercel-black)
 
 ---
 
@@ -169,6 +166,7 @@ Translations live in the `messages/` directory:
 messages/
 ├── en.json   ← English (default)
 └── es.json   ← Spanish
+└── cn.json   ← Chinese coming soon.
 ```
 
 To add a new translation key, add it to both files.
@@ -210,19 +208,6 @@ w3runn3rs/
 
 ---
 
-## 🚢 Deployment
-
-The project is deployed on [Vercel](https://vercel.com). Every push to `main` triggers an automatic deployment.
-
-```bash
-# Deploy manually (if needed)
-vercel --prod
-```
-
-Make sure all environment variables are configured in your Vercel project settings.
-
----
-
 ## 🤝 Contributing
 
 This is a private project. For questions or contributions, contact us at [run@w3runn3rs.com](mailto:run@w3runn3rs.com).
@@ -239,11 +224,12 @@ This is a private project. For questions or contributions, contact us at [run@w3
 
 ## 📬 Contact
 
-- 🌐 [www.w3runn3rs.com](https://www.w3runn3rs.com)
-- 🐦 [Twitter/X](https://x.com/w3runn3rs)
-- 📸 Instagram: @w3runn3rs
-- 🟣 [Farcaster](https://farcaster.xyz/w3runn3rs)
-- 🟠 [Strava Club](https://www.strava.com/clubs/runn3rs)
+- [www.w3runn3rs.com](https://www.w3runn3rs.com)
+- [Twitter/X](https://x.com/w3runn3rs)
+- [Instagram](https://instagram.com/w3runn3rs)
+- [Farcaster](https://farcaster.xyz/w3runn3rs)
+- [Strava Club](https://www.strava.com/clubs/runn3rs)
+- [Email](mailto:run@w3runn3rs.com)
 
 ---
 
