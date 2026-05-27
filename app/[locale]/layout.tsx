@@ -5,6 +5,7 @@ import { getMessages } from "next-intl/server";
 import { ThemeProvider } from "next-themes";
 import { notFound } from "next/navigation";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 
@@ -75,6 +76,8 @@ export default async function LocaleLayout({ children, params }: Props) {
             {children}
           </NextIntlClientProvider>
         </ThemeProvider>
+
+        <Analytics />
 
         {/* Google Analytics 4 */}
         <Script
