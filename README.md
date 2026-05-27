@@ -3,6 +3,8 @@
 > **Pick your running club, make it count!**
 > The global hub for running clubs.
 
+![W3 Runn3rs](public/images/readme.png)
+
 ![License](https://img.shields.io/badge/license-MIT-lime) ![Next.js](https://img.shields.io/badge/Next.js-14-black) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![Tailwind](https://img.shields.io/badge/Tailwind-3-38bdf8) ![Vercel](https://img.shields.io/badge/deployed-Vercel-black)
 
 ---
