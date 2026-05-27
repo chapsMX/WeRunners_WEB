@@ -33,12 +33,26 @@ export const metadata: Metadata = {
   title: TITLE,
   description: DESC,
 
+  // ─── Canonical + hreflang ─────────────────────────────────────────────────
+  // Generado dinámicamente por página en generateMetadata().
+  // Aquí solo definimos el fallback para el layout raíz.
+  alternates: {
+    canonical: BASE_URL,
+    languages: {
+      "en": `${BASE_URL}/en`,
+      "es": `${BASE_URL}/es`,
+      "x-default": `${BASE_URL}/en`,
+    },
+  },
+
   openGraph: {
     title: TITLE,
     description: DESC,
     url: BASE_URL,
     siteName: "W3Runn3rs",
     type: "website",
+    locale: "en_US",
+    alternateLocale: ["es_MX", "es_ES"],
     images: [
       {
         url: OG_IMAGE,
