@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const SOCIAL_LINKS = [
   {
@@ -25,8 +26,10 @@ const SOCIAL_LINKS = [
     name: "Farcaster",
     href: "https://farcaster.xyz/w3runn3rs",
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M11.89 2C6.43 2 2 6.43 2 11.89s4.43 9.89 9.89 9.89 9.89-4.43 9.89-9.89S17.36 2 11.89 2zm4.4 14.02h-2.08v-4.96c0-.9-.72-1.62-1.62-1.62s-1.62.72-1.62 1.62v4.96H8.89V8.09h1.79v.91c.53-.67 1.35-1.1 2.27-1.1 1.62 0 2.93 1.32 2.93 2.93v5.19h.41z" />
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 1000 1000" fill="currentColor">
+        <path d="M257.778 155.556H742.222V844.445H671.111V528.889H670.414C662.554 441.677 589.258 373.333 500 373.333C410.742 373.333 337.446 441.677 329.586 528.889H328.889V844.445H257.778V155.556Z" />
+        <path d="M128.889 253.333L157.778 351.111H182.222V746.667C169.949 746.667 160 756.616 160 768.889V795.556H155.556C143.283 795.556 133.333 805.505 133.333 817.778V844.445H382.222V817.778C382.222 805.505 372.273 795.556 360 795.556H355.556V768.889C355.556 756.616 345.606 746.667 333.333 746.667H306.667V253.333H128.889Z" />
+        <path d="M675.556 746.667C663.282 746.667 653.333 756.616 653.333 768.889V795.556H648.889C636.616 795.556 626.667 805.505 626.667 817.778V844.445H875.556V817.778C875.556 805.505 865.606 795.556 853.333 795.556H848.889V768.889C848.889 756.616 838.94 746.667 826.667 746.667V351.111H851.111L880 253.333H702.222V746.667H675.556Z" />
       </svg>
     ),
   },
@@ -48,13 +51,14 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           {/* Left: Brand */}
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-full bg-brand-lime flex items-center justify-center text-black font-extrabold text-sm">
-                W3
-              </div>
-              <span className="font-extrabold text-foreground text-lg">
-                w3runn3rs
-              </span>
+            <div className="mb-3">
+              <Image
+                src="/images/logoAzul.png"
+                alt="w3runn3rs"
+                width={980}
+                height={656}
+                className="h-12 w-auto"
+              />
             </div>
             <p className="text-muted text-sm max-w-xs">
               The global hub for running clubs.
@@ -71,7 +75,7 @@ export default function Footer() {
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted hover:text-brand-lime transition-colors"
+                className="text-white hover:text-brand-lime transition-colors"
                 aria-label={name}
               >
                 {icon}

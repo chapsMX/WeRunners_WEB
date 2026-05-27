@@ -19,13 +19,13 @@ const config: Config = {
 
         /* ── Brand palette ── */
         brand: {
-          green:   "#7AC142",   // primary accent
-          lime:    "#7AC142",   // alias kept for backward compat
-          navy:    "#002A5C",   // dark navy
-          blue:    "#2D5980",   // medium blue
-          gray:    "#B2B7BB",   // light gray
-          dark:    "#002A5C",   // was #0a0a0a → now navy
-          emerald: "#7AC142",   // alias kept
+          green:   "#63f807",   // neon green — primary accent / CTA
+          lime:    "#63f807",   // alias
+          navy:    "#11326e",   // dark navy
+          blue:    "#1e4a9a",   // medium blue (derivado del navy)
+          gray:    "#c2c2c2",   // light gray
+          dark:    "#11326e",   // alias navy
+          emerald: "#30bc18",   // secondary / deeper green
         },
       },
       fontFamily: {

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Space_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { ThemeProvider } from "next-themes";
@@ -7,20 +6,7 @@ import { notFound } from "next/navigation";
 import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { routing } from "@/i18n/routing";
-import "../globals.css";
-
-// Space Grotesk — modern, athletic, geometric
-const spaceSans = Space_Grotesk({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-});
-
-const spaceMono = Space_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  weight: ["400", "700"],
-});
+import { LangSetter } from "@/components/LangSetter";
 
 const BASE_URL = "https://www.w3runn3rs.com";
 const TITLE    = "W3Runn3rs — Pick your running club, make it count!";
@@ -33,9 +19,19 @@ export const metadata: Metadata = {
   title: TITLE,
   description: DESC,
 
-  // ─── Canonical + hreflang ─────────────────────────────────────────────────
-  // Generado dinámicamente por página en generateMetadata().
-  // Aquí solo definimos el fallback para el layout raíz.
+  icons: {
+    icon: [
+      { url: "/images/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/images/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [
+      { url: "/images/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    other: [
+      { rel: "manifest", url: "/site.webmanifest" },
+    ],
+  },
+
   alternates: {
     canonical: BASE_URL,
     languages: {
@@ -85,33 +81,30 @@ export function generateStaticParams() {
 export default async function LocaleLayout({ children, params }: Props) {
   const { locale } = await params;
 
-  // Ensure that the incoming `locale` is valid
   if (!routing.locales.includes(locale as "en" | "es")) {
     notFound();
   }
 
-  // Providing all messages to the client side
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <body
-        className={`${spaceSans.variable} ${spaceMono.variable} antialiased`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          <NextIntlClientProvider messages={messages}>
-            {children}
-          </NextIntlClientProvider>
-        </ThemeProvider>
+    <>
+      {/* Aplica lang={locale} al <html> que vive en el root layout */}
+      <LangSetter locale={locale} />
 
-        <Analytics />
-        <GoogleAnalytics gaId="G-0SQR3G71T8" />
-      </body>
-    </html>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="dark"
+        enableSystem={false}
+        disableTransitionOnChange
+      >
+        <NextIntlClientProvider messages={messages}>
+          {children}
+        </NextIntlClientProvider>
+      </ThemeProvider>
+
+      <Analytics />
+      <GoogleAnalytics gaId="G-0SQR3G71T8" />
+    </>
   );
 }
