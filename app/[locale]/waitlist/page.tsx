@@ -10,16 +10,24 @@ import { trackEvent } from "@/lib/analytics";
 
 type Status = "idle" | "loading" | "success" | "duplicate" | "error";
 
+type Club = { id: string; clubName: string; city: string };
+
 export default function WaitlistPage() {
   const [email, setEmail]   = useState("");
   const [name, setName]     = useState("");
+  const [clubId, setClubId] = useState("");
+  const [clubs, setClubs]   = useState<Club[]>([]);
   const [status, setStatus] = useState<Status>("idle");
 
-  // On mount: check if user already joined
+  // On mount: check if user already joined + fetch enabled clubs
   useEffect(() => {
     if (localStorage.getItem("w3_waitlist_joined") === "1") {
       setStatus("success");
     }
+    fetch("/api/clubs")
+      .then((r) => r.json())
+      .then((data: Club[]) => setClubs(data))
+      .catch(() => {});
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -32,7 +40,7 @@ export default function WaitlistPage() {
       const res = await fetch("/api/waitlist", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ email, name }),
+        body:    JSON.stringify({ email, name, clubId: clubId || undefined }),
       });
 
       if (res.status === 201)  {
@@ -113,6 +121,34 @@ export default function WaitlistPage() {
                   required
                   disabled={status === "loading"}
                 />
+
+                {/* ── Club selector ── */}
+                <div>
+                  <p className="text-white/60 text-sm mb-2">
+                    Already know your club? Pick it now.
+                  </p>
+                  {clubs.length === 0 ? (
+                    <p className="text-sm text-white/40 italic px-1">
+                      No clubs available yet — check back soon.
+                    </p>
+                  ) : (
+                    <select
+                      value={clubId}
+                      onChange={(e) => setClubId(e.target.value)}
+                      disabled={status === "loading"}
+                      className="w-full rounded-lg border border-line bg-surface-alt text-foreground
+                                 px-4 py-3 text-sm focus:outline-none focus:border-brand-green
+                                 disabled:opacity-50"
+                    >
+                      <option value="">— Select your club (optional) —</option>
+                      {clubs.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.clubName} · {c.city}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
                 <Button
                   type="submit"
                   variant="primary"
