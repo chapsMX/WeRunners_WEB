@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/Button";
@@ -54,8 +55,18 @@ export default function WaitlistPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-background flex items-center justify-center pt-24 pb-16 px-4">
-        <div className="max-w-lg w-full mx-auto text-center">
+      <main className="relative min-h-screen flex items-center justify-center pt-24 pb-16 px-4 overflow-hidden">
+        {/* Hero background — mismo efecto que home */}
+        <Image
+          src="/images/fondoWaitlist.jpg"
+          alt=""
+          fill
+          priority
+          className="object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-brand-navy/70" />
+
+        <div className="relative z-10 max-w-lg w-full mx-auto text-center">
 
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-brand-green/10 text-brand-green text-sm font-medium px-4 py-2 rounded-full mb-8">
@@ -63,10 +74,10 @@ export default function WaitlistPage() {
             <span>Early Access</span>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-4">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
             Join the Waitlist
           </h1>
-          <p className="text-lg text-muted mb-10">
+          <p className="text-lg text-white/70 mb-10">
             Be the first to know when w3runn3rs launches.
             Pick your running club, make it count.
           </p>
@@ -75,10 +86,10 @@ export default function WaitlistPage() {
           {status === "success" ? (
             <div className="bg-brand-green/10 border border-brand-green/30 rounded-2xl p-8 text-center">
               <p className="text-4xl mb-4">🎉</p>
-              <h2 className="text-2xl font-extrabold text-foreground mb-2">
+              <h2 className="text-2xl font-extrabold text-white mb-2">
                 You&apos;re in!
               </h2>
-              <p className="text-muted">
+              <p className="text-white/70">
                 We&apos;ll reach out as soon as w3runn3rs is ready to launch.
                 Start warming up.
               </p>
@@ -125,7 +136,7 @@ export default function WaitlistPage() {
                 </p>
               )}
 
-              <p className="text-muted text-sm mt-4">No spam. Unsubscribe anytime.</p>
+              <p className="text-white/50 text-sm mt-4">No spam. Unsubscribe anytime.</p>
             </>
           )}
 

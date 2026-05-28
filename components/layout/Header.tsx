@@ -36,6 +36,8 @@ export default function Header() {
   const otherLocale = locale === "en" ? "es" : "en";
   const localePath = pathname.replace(/^\/(en|es)/, "") || "/";
 
+  const textBase = scrolled ? "text-foreground/80 hover:text-foreground" : "text-white/90 hover:text-white";
+
   return (
     <header
       className={cn(
@@ -61,7 +63,7 @@ export default function Header() {
               className="h-14 w-auto opacity-90 group-hover:opacity-100 transition-opacity"
               priority
             />
-            <span className="font-extrabold text-xl text-white/90 group-hover:text-white transition-colors tracking-tight">
+            <span className={cn("font-extrabold text-xl transition-colors tracking-tight", textBase)}>
               We Runners
             </span>
           </Link>
@@ -76,7 +78,7 @@ export default function Header() {
                   "text-base font-medium transition-colors",
                   pathname.includes(href)
                     ? "text-brand-lime"
-                    : "text-white/90 hover:text-white"
+                    : textBase
                 )}
               >
                 {t(labelKey)}
@@ -89,7 +91,7 @@ export default function Header() {
             {/* Locale switcher */}
             <Link
               href={`/${otherLocale}${localePath}`}
-              className="text-base font-medium text-white/90 hover:text-white transition-colors uppercase"
+              className={cn("text-base font-medium transition-colors uppercase", textBase)}
               onClick={() => trackEvent.languageSwitch(otherLocale as "en" | "es")}
             >
               {otherLocale}
@@ -103,7 +105,7 @@ export default function Header() {
                   setTheme(next);
                   trackEvent.themeToggle(next as "dark" | "light");
                 }}
-                className="text-white/90 hover:text-white transition-colors p-1"
+                className={cn("transition-colors p-1", textBase)}
                 aria-label="Toggle theme"
               >
                 {theme === "dark" ? (
@@ -144,7 +146,7 @@ export default function Header() {
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden text-white/90 hover:text-white"
+            className={cn("md:hidden transition-colors", textBase)}
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
