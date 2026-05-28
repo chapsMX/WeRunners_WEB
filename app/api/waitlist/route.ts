@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@/lib/db";
+import { resend } from "@/lib/resend";
+import { waitlistWelcomeHtml, waitlistWelcomeSubject } from "@/emails/waitlistWelcome";
+import { waitlistNotificationHtml, waitlistNotificationSubject } from "@/emails/waitlistNotification";
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,6 +21,22 @@ export async function POST(req: NextRequest) {
       INSERT INTO "WaitlistEntry" (id, email, name, "clubId", "createdAt")
       VALUES (gen_random_uuid()::text, ${normalized}, ${name?.trim() || null}, ${clubId || null}, NOW())
     `;
+
+    // Fire both emails concurrently — failures don't block the 201 response
+    await Promise.allSettled([
+      resend.emails.send({
+        from:    "w3runn3rs <noreply@w3runn3rs.com>",
+        to:      normalized,
+        subject: waitlistWelcomeSubject,
+        html:    waitlistWelcomeHtml(name?.trim()),
+      }),
+      resend.emails.send({
+        from:    "w3runn3rs <noreply@w3runn3rs.com>",
+        to:      "run@w3runn3rs.com",
+        subject: waitlistNotificationSubject(normalized),
+        html:    waitlistNotificationHtml({ email: normalized, name: name?.trim(), clubId }),
+      }),
+    ]);
 
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (error: unknown) {
