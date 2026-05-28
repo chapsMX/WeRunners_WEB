@@ -68,33 +68,74 @@ export async function POST(req: NextRequest) {
       )
     `;
 
-    // Send notification email — non-blocking, failure doesn't affect the response
+    // Build social block
     const social = [
-      instagram && `Instagram: ${instagram}`,
-      twitter   && `Twitter/X: ${twitter}`,
-      tiktok    && `TikTok: ${tiktok}`,
-      facebook  && `Facebook: ${facebook}`,
+      instagram && `Instagram : ${instagram}`,
+      twitter   && `Twitter/X : ${twitter}`,
+      tiktok    && `TikTok    : ${tiktok}`,
+      facebook  && `Facebook  : ${facebook}`,
     ].filter(Boolean).join("\n") || "—";
 
-    resend.emails.send({
-      from:    "w3runn3rs <noreply@w3runn3rs.com>",
-      to:      "run@w3runn3rs.com",
-      subject: `🏃 New club registration: ${clubName.trim()}`,
-      text: [
-        `New club registration on w3runn3rs`,
-        ``,
-        `Club name : ${clubName.trim()}`,
-        `City      : ${city.trim()}`,
-        `Email     : ${email.trim().toLowerCase()}`,
-        `Runners   : ${runners || "—"}`,
-        `Logo      : ${logoUrl || "—"}`,
-        ``,
-        `Social media`,
-        social,
-        ``,
-        `Submitted at: ${new Date().toISOString()}`,
-      ].join("\n"),
-    }).catch((err) => console.error("[clubs] email error:", err));
+    const notifyBody = [
+      `New club registration on w3runn3rs`,
+      ``,
+      `Club name : ${clubName.trim()}`,
+      `City      : ${city.trim()}`,
+      `Email     : ${email.trim().toLowerCase()}`,
+      `Runners   : ${runners || "—"}`,
+      `Logo      : ${logoUrl || "—"}`,
+      ``,
+      `Social media`,
+      social,
+      ``,
+      `Submitted at: ${new Date().toISOString()}`,
+    ].join("\n");
+
+    const confirmBody = [
+      `Hi! We received your club registration for ${clubName.trim()}.`,
+      ``,
+      `Your submission is pending approval. We'll review it and reach out soon.`,
+      ``,
+      `Details we received`,
+      `—————————————`,
+      `Club name : ${clubName.trim()}`,
+      `City      : ${city.trim()}`,
+      `Runners   : ${runners || "—"}`,
+      ``,
+      `Social media`,
+      social,
+      ``,
+      `Questions? Reply to this email or reach us at run@w3runn3rs.com`,
+      ``,
+      `— The w3runn3rs team`,
+    ].join("\n");
+
+    // Send both emails and log any errors
+    const [notifyResult, confirmResult] = await Promise.allSettled([
+      resend.emails.send({
+        from:    "w3runn3rs <noreply@w3runn3rs.com>",
+        to:      "run@w3runn3rs.com",
+        subject: `New club registration: ${clubName.trim()}`,
+        text:    notifyBody,
+      }),
+      resend.emails.send({
+        from:    "w3runn3rs <noreply@w3runn3rs.com>",
+        to:      email.trim().toLowerCase(),
+        subject: `We received your club registration — ${clubName.trim()}`,
+        text:    confirmBody,
+      }),
+    ]);
+
+    if (notifyResult.status === "rejected") {
+      console.error("[clubs] notify email failed:", notifyResult.reason);
+    } else {
+      console.log("[clubs] notify email sent:", JSON.stringify(notifyResult.value));
+    }
+    if (confirmResult.status === "rejected") {
+      console.error("[clubs] confirm email failed:", confirmResult.reason);
+    } else {
+      console.log("[clubs] confirm email sent:", JSON.stringify(confirmResult.value));
+    }
 
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (error: unknown) {
