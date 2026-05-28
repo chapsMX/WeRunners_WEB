@@ -3,7 +3,7 @@ import { sql } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, name } = await req.json();
+    const { email, name, clubId } = await req.json();
 
     if (!email || typeof email !== "string") {
       return NextResponse.json(
@@ -15,8 +15,8 @@ export async function POST(req: NextRequest) {
     const normalized = email.trim().toLowerCase();
 
     await sql`
-      INSERT INTO "WaitlistEntry" (id, email, name, "createdAt")
-      VALUES (gen_random_uuid()::text, ${normalized}, ${name?.trim() || null}, NOW())
+      INSERT INTO "WaitlistEntry" (id, email, name, "clubId", "createdAt")
+      VALUES (gen_random_uuid()::text, ${normalized}, ${name?.trim() || null}, ${clubId || null}, NOW())
     `;
 
     return NextResponse.json({ success: true }, { status: 201 });

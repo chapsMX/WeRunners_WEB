@@ -11,9 +11,9 @@ import { trackEvent } from "@/lib/analytics";
 type Status = "idle" | "loading" | "success" | "error";
 
 const STEPS = [
-  { step: 1, title: "Create your club",    description: "Fill in your club name, city, logo and a short description." },
-  { step: 2, title: "Set up your profile", description: "Your club gets its own dashboard — ready from day one." },
-  { step: 3, title: "Invite your runners", description: "Your runners join, sync their wearables and start logging km." },
+  { step: 1, title: "Register your club",  description: "Fill out the form with your club details — name, city, logo and social media." },
+  { step: 2, title: "Verification",        description: "Your club info is reviewed by our team. Once approved, you get your own dashboard." },
+  { step: 3, title: "Invite your runners", description: "Share your club link. Your runners join, sync their wearables and start logging km." },
   { step: 4, title: "Start competing",     description: "Weekly and monthly leaderboards, powered by real data from every run." },
 ];
 
@@ -22,6 +22,10 @@ export default function ForClubsPage() {
   const [city, setCity]           = useState("");
   const [email, setEmail]         = useState("");
   const [runners, setRunners]     = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [twitter, setTwitter]     = useState("");
+  const [tiktok, setTiktok]       = useState("");
+  const [facebook, setFacebook]   = useState("");
   const [logoFile, setLogoFile]   = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [status, setStatus]       = useState<Status>("idle");
@@ -54,10 +58,14 @@ export default function ForClubsPage() {
     try {
       // Use FormData so the logo file travels alongside text fields
       const form = new FormData();
-      form.append("clubName", clubName);
-      form.append("city",     city);
-      form.append("email",    email);
-      form.append("runners",  runners);
+      form.append("clubName",  clubName);
+      form.append("city",      city);
+      form.append("email",     email);
+      form.append("runners",   runners);
+      form.append("instagram", instagram);
+      form.append("twitter",   twitter);
+      form.append("tiktok",    tiktok);
+      form.append("facebook",  facebook);
       if (logoFile) form.append("logo", logoFile);
 
       const res = await fetch("/api/clubs", { method: "POST", body: form });
@@ -93,16 +101,21 @@ export default function ForClubsPage() {
           </div>
 
           {/* Steps */}
-          <div className="grid md:grid-cols-2 gap-6 mb-20">
-            {STEPS.map(({ step, title, description }) => (
-              <div key={step} className="p-6 rounded-2xl border border-line bg-surface-alt">
-                <div className="text-brand-green font-bold text-sm mb-2">
-                  Step {step}
+          <div className="relative mb-20">
+            {/* Connector line — desktop only */}
+            <div className="hidden lg:block absolute top-8 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-transparent via-brand-green to-transparent opacity-30" />
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {STEPS.map(({ step, title, description }) => (
+                <div key={step} className="relative flex flex-col items-center text-center">
+                  <div className="w-16 h-16 rounded-full bg-brand-green/10 border border-brand-green/30 flex items-center justify-center mb-6 relative z-10">
+                    <span className="text-brand-green font-extrabold text-xl">{step}</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-foreground mb-2">{title}</h3>
+                  <p className="text-muted text-sm leading-relaxed">{description}</p>
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-2">{title}</h3>
-                <p className="text-muted">{description}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
           {/* Registration form */}
@@ -116,11 +129,11 @@ export default function ForClubsPage() {
               <div className="bg-brand-green/10 border border-brand-green/30 rounded-2xl p-8 text-center">
                 <p className="text-4xl mb-4">🏃</p>
                 <h3 className="text-2xl font-extrabold text-foreground mb-2">
-                  Your club is on the list!
+                  Submission received!
                 </h3>
                 <p className="text-muted">
-                  We&apos;ll be in touch as soon as w3runn3rs is ready to launch.
-                  Get your runners warmed up.
+                  Your club registration is <strong className="text-foreground">pending approval</strong>.
+                  We&apos;ll review it and reach out to you soon. Get your runners warmed up.
                 </p>
               </div>
             ) : (
@@ -158,6 +171,43 @@ export default function ForClubsPage() {
                   disabled={status === "loading"}
                 />
 
+                {/* ── Social Media ── */}
+                <div className="pt-2">
+                  <p className="text-sm font-semibold text-foreground mb-3">
+                    Social Media <span className="text-muted font-normal">(optional)</span>
+                  </p>
+                  <div className="flex flex-col gap-3">
+                    <Input
+                      type="text"
+                      placeholder="Instagram  @handle"
+                      value={instagram}
+                      onChange={(e) => setInstagram(e.target.value)}
+                      disabled={status === "loading"}
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Twitter / X  @handle"
+                      value={twitter}
+                      onChange={(e) => setTwitter(e.target.value)}
+                      disabled={status === "loading"}
+                    />
+                    <Input
+                      type="text"
+                      placeholder="TikTok  @handle"
+                      value={tiktok}
+                      onChange={(e) => setTiktok(e.target.value)}
+                      disabled={status === "loading"}
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Facebook  @handle"
+                      value={facebook}
+                      onChange={(e) => setFacebook(e.target.value)}
+                      disabled={status === "loading"}
+                    />
+                  </div>
+                </div>
+
                 {/* ── Logo upload ── */}
                 <div>
                   <input
@@ -193,10 +243,14 @@ export default function ForClubsPage() {
                       </svg>
                     )}
                     <span className="text-sm text-muted">
-                      {logoFile ? logoFile.name : "Upload your club logo (PNG, JPG, SVG)"}
+                      {logoFile ? logoFile.name : "Upload your club logo"}
                     </span>
-                    {logoFile && (
+                    {logoFile ? (
                       <span className="text-xs text-brand-green">✓ Ready to upload</span>
+                    ) : (
+                      <span className="text-xs text-muted/60">
+                        Recommended size: 1,000 × 1,000 px · JPG or PNG
+                      </span>
                     )}
                   </button>
                 </div>
