@@ -13,66 +13,70 @@ const TITLE    = "W3Runn3rs — Pick your running club, make it count!";
 const DESC     = "The global hub for running clubs. One runner, one club — every kilometer counts exclusively for yours.";
 const OG_IMAGE = `${BASE_URL}/images/share.png`;
 
-export const metadata: Metadata = {
-  metadataBase: new URL(BASE_URL),
-
-  title: TITLE,
-  description: DESC,
-
-  icons: {
-    icon: [
-      { url: "/images/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/images/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-    ],
-    apple: [
-      { url: "/images/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
-    other: [
-      { rel: "manifest", url: "/site.webmanifest" },
-    ],
-  },
-
-  alternates: {
-    canonical: BASE_URL,
-    languages: {
-      "en": `${BASE_URL}/en`,
-      "es": `${BASE_URL}/es`,
-      "x-default": `${BASE_URL}/en`,
-    },
-  },
-
-  openGraph: {
-    title: TITLE,
-    description: DESC,
-    url: BASE_URL,
-    siteName: "W3Runn3rs",
-    type: "website",
-    locale: "en_US",
-    alternateLocale: ["es_MX", "es_ES"],
-    images: [
-      {
-        url: OG_IMAGE,
-        width: 1200,
-        height: 630,
-        alt: "W3Runn3rs — Pick your running club, make it count!",
-      },
-    ],
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    site: "@w3runn3rs",
-    creator: "@w3runn3rs",
-    title: TITLE,
-    description: DESC,
-    images: [OG_IMAGE],
-  },
-};
-
 type Props = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+
+  return {
+    metadataBase: new URL(BASE_URL),
+
+    title: TITLE,
+    description: DESC,
+
+    icons: {
+      icon: [
+        { url: "/images/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+        { url: "/images/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      ],
+      apple: [
+        { url: "/images/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      ],
+      other: [
+        { rel: "manifest", url: "/site.webmanifest" },
+      ],
+    },
+
+    alternates: {
+      canonical: `${BASE_URL}/${locale}`,
+      languages: {
+        "en": `${BASE_URL}/en`,
+        "es": `${BASE_URL}/es`,
+        "x-default": `${BASE_URL}/en`,
+      },
+    },
+
+    openGraph: {
+      title: TITLE,
+      description: DESC,
+      url: `${BASE_URL}/${locale}`,
+      siteName: "W3Runn3rs",
+      type: "website",
+      locale: locale === "es" ? "es_MX" : "en_US",
+      alternateLocale: locale === "es" ? ["en_US"] : ["es_MX", "es_ES"],
+      images: [
+        {
+          url: OG_IMAGE,
+          width: 1200,
+          height: 630,
+          alt: "W3Runn3rs — Pick your running club, make it count!",
+        },
+      ],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      site: "@w3runn3rs",
+      creator: "@w3runn3rs",
+      title: TITLE,
+      description: DESC,
+      images: [OG_IMAGE],
+    },
+  };
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
