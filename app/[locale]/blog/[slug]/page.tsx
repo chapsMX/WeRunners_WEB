@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/metadata";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale, slug } = await params;
+  return buildPageMetadata(locale, `/blog/${slug}`);
+}
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
