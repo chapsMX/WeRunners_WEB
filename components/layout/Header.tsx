@@ -8,6 +8,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
+import { useAlternateUrl } from "@/components/providers/AlternateUrlProvider";
 
 const NAV_LINKS = [
   { href: "/waitlist", labelKey: "nav.waitlist" },
@@ -31,10 +32,13 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const { alternateUrl } = useAlternateUrl();
+
   // Detect current locale from path
   const locale = pathname.startsWith("/es") ? "es" : "en";
   const otherLocale = locale === "en" ? "es" : "en";
   const localePath = pathname.replace(/^\/(en|es)/, "") || "/";
+  const switchHref = alternateUrl ?? `/${otherLocale}${localePath}`;
 
   const textBase = scrolled ? "text-foreground/80 hover:text-foreground" : "text-white/90 hover:text-white";
 
@@ -90,7 +94,7 @@ export default function Header() {
           <div className="hidden md:flex items-center gap-3">
             {/* Locale switcher */}
             <Link
-              href={`/${otherLocale}${localePath}`}
+              href={switchHref}
               className={cn("text-base font-medium transition-colors uppercase", textBase)}
               onClick={() => trackEvent.languageSwitch(otherLocale as "en" | "es")}
             >
@@ -198,7 +202,7 @@ export default function Header() {
             ))}
             <div className="flex items-center gap-4 pt-2 border-t border-line">
               <Link
-                href={`/${otherLocale}${localePath}`}
+                href={switchHref}
                 className="text-sm font-medium text-muted uppercase"
               >
                 {otherLocale}
