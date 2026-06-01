@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getPostBySlug, getPostSlugs, getAlternateSlug, getAllPosts } from "@/lib/blog";
 import { SetAlternateUrl } from "@/components/blog/SetAlternateUrl";
 import { RelatedPosts } from "@/components/blog/RelatedPosts";
+import { ShareButtons } from "@/components/blog/ShareButtons";
+
+const SITE_URL = "https://www.w3runn3rs.com";
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
@@ -29,9 +33,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params;
   const post = getPostBySlug(slug, locale);
   if (!post) return {};
+
+  const ogImage = post.coverImage
+    ? `${SITE_URL}${post.coverImage}`
+    : `${SITE_URL}/images/share.png`;
+
   return {
     title: `${post.title} — W3Runn3rs Blog`,
     description: post.excerpt,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      url: `${SITE_URL}/${locale}/blog/${slug}`,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: post.title }],
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt,
+      images: [ogImage],
+    },
   };
 }
 
@@ -47,7 +69,6 @@ export default async function BlogPostPage({ params }: Props) {
     ? `/${otherLocale}/blog/${alternateSlug}`
     : null;
 
-  // Related posts: same tag(s), exclude current slug, max 2
   const allPosts = getAllPosts(locale);
   const related = allPosts
     .filter(
@@ -57,29 +78,36 @@ export default async function BlogPostPage({ params }: Props) {
     )
     .slice(0, 2);
 
+  const formattedDate = new Date(post.date).toLocaleDateString(
+    locale === "es" ? "es-MX" : "en-US",
+    { year: "numeric", month: "long", day: "numeric" }
+  );
+
   return (
     <>
       <SetAlternateUrl href={alternateHref} />
       <Header />
+
       <main className="min-h-screen bg-background pt-24 pb-16 px-4">
         <div className="max-w-3xl mx-auto">
+
+          {/* Back link */}
           <Link
             href={`/${locale}/blog`}
-            className="inline-flex items-center gap-1 text-sm text-slate-400 hover:text-brand-lime mb-10 transition-colors"
+            className="inline-flex items-center gap-1 text-sm text-muted hover:text-brand-lime mb-10 transition-colors"
           >
             ← {locale === "es" ? "Volver al blog" : "Back to blog"}
           </Link>
 
           {/* Post header */}
           <header className="mb-8">
-            {/* Tags */}
             {post.tags && post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-4">
                 {post.tags.map((tag) => (
                   <Link
                     key={tag}
                     href={`/${locale}/blog?tag=${encodeURIComponent(tag)}`}
-                    className="text-xs px-2.5 py-1 rounded-full border border-slate-700 text-slate-400 hover:border-brand-lime hover:text-brand-lime transition-colors capitalize"
+                    className="text-xs px-2.5 py-1 rounded-full border border-line text-muted hover:border-brand-lime hover:text-brand-lime transition-colors capitalize"
                   >
                     {tag}
                   </Link>
@@ -87,35 +115,78 @@ export default async function BlogPostPage({ params }: Props) {
               </div>
             )}
 
-            <h1 className="text-3xl md:text-4xl font-extrabold text-foreground leading-tight mb-4">
+            <h1 className="text-3xl md:text-5xl font-extrabold text-foreground leading-tight mb-5">
               {post.title}
             </h1>
 
-            <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500">
+            <div className="flex flex-wrap items-center gap-2 text-sm text-muted">
               {post.author && (
                 <>
                   <span>{locale === "es" ? "Por" : "By"} {post.author}</span>
                   <span>·</span>
                 </>
               )}
-              <time>{post.date}</time>
+              <time>{formattedDate}</time>
               <span>·</span>
               <span>{readingTime(post.content, locale)}</span>
             </div>
           </header>
 
-          <hr className="border-slate-800 mb-10" />
+          {/* Cover image */}
+          {post.coverImage && (
+            <div className="relative w-full aspect-[16/7] rounded-2xl overflow-hidden mb-10">
+              <Image
+                src={post.coverImage}
+                alt={post.title}
+                fill
+                priority
+                className="object-cover"
+              />
+            </div>
+          )}
 
-          <article className="prose prose-invert prose-lime max-w-none prose-headings:font-extrabold prose-a:text-brand-lime prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-hr:border-slate-800 prose-p:text-slate-300 prose-li:text-slate-300">
+          <hr className="border-line mb-10" />
+
+          {/* Article */}
+          <article className="prose dark:prose-invert prose-lime max-w-none
+            prose-headings:font-extrabold prose-headings:text-foreground
+            prose-p:text-foreground prose-p:opacity-80
+            prose-li:text-foreground prose-li:opacity-80
+            prose-a:text-brand-lime prose-a:no-underline hover:prose-a:underline
+            prose-strong:text-foreground
+            prose-hr:border-line
+            prose-blockquote:border-brand-lime prose-blockquote:text-muted">
             <MDXRemote source={post.content} />
           </article>
 
-          <hr className="border-slate-800 mt-14 mb-8" />
+          {/* Share buttons */}
+          <ShareButtons slug={slug} locale={locale} title={post.title} />
 
+          <hr className="border-line mt-10 mb-10" />
+
+          {/* Big CTA */}
+          <div className="rounded-2xl bg-surface-alt border border-line p-8 md:p-10 text-center mb-10">
+            <p className="text-muted text-sm uppercase tracking-widest font-semibold mb-3">
+              {locale === "es" ? "¿Listo para correr?" : "Ready to run?"}
+            </p>
+            <h2 className="text-2xl md:text-3xl font-extrabold text-foreground mb-6">
+              {locale === "es"
+                ? "Encuentra tu club en w3runn3rs."
+                : "Find your running club on w3runn3rs."}
+            </h2>
+            <Link
+              href={`/${locale}/waitlist`}
+              className="inline-flex items-center justify-center gap-2 bg-brand-green text-black font-semibold text-base px-8 py-3.5 rounded-lg hover:bg-brand-green/80 transition-all"
+            >
+              {locale === "es" ? "Únete a la lista de espera →" : "Join the Waitlist →"}
+            </Link>
+          </div>
+
+          {/* Bottom nav */}
           <div className="flex items-center justify-between">
             <Link
               href={`/${locale}/blog`}
-              className="text-sm text-slate-400 hover:text-brand-lime transition-colors"
+              className="text-sm text-muted hover:text-brand-lime transition-colors"
             >
               ← {locale === "es" ? "Volver al blog" : "Back to blog"}
             </Link>
@@ -132,6 +203,7 @@ export default async function BlogPostPage({ params }: Props) {
           <RelatedPosts posts={related} locale={locale} />
         </div>
       </main>
+
       <Footer />
     </>
   );

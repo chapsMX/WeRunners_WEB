@@ -10,6 +10,7 @@ export type PostFrontmatter = {
   tags?: string[];
   coverImage?: string;
   alternates?: Record<string, string>;
+  draft?: boolean;
 };
 
 export type PostMeta = PostFrontmatter & {
@@ -56,6 +57,7 @@ export function getPostBySlug(slug: string, locale: string): Post | null {
     tags: data.tags,
     coverImage: data.coverImage,
     alternates: data.alternates,
+    draft: data.draft ?? false,
   };
 }
 
@@ -73,6 +75,6 @@ export function getAllPosts(locale: string): PostMeta[] {
       const { content: _content, ...meta } = post;
       return meta;
     })
-    .filter((p): p is PostMeta => p !== null)
+    .filter((p): p is PostMeta => p !== null && !p.draft)
     .sort((a, b) => (a.date < b.date ? 1 : -1));
 }

@@ -19,13 +19,13 @@ export function RelatedPosts({ posts, locale }: Props) {
           <Link
             key={post.slug}
             href={`/${locale}/blog/${post.slug}`}
-            className="group block p-5 rounded-xl border border-slate-800 hover:border-brand-lime transition-colors"
+            className="group block p-5 rounded-xl border border-line bg-surface-alt hover:border-brand-lime transition-colors"
           >
             <div className="flex flex-wrap gap-1.5 mb-2">
               {post.tags?.map((tag) => (
                 <span
                   key={tag}
-                  className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-500"
+                  className="text-xs px-2 py-0.5 rounded-full bg-background text-muted capitalize"
                 >
                   {tag}
                 </span>
@@ -34,7 +34,7 @@ export function RelatedPosts({ posts, locale }: Props) {
             <h3 className="text-base font-bold text-foreground group-hover:text-brand-lime transition-colors leading-snug mb-1">
               {post.title}
             </h3>
-            <time className="text-xs text-slate-600">{post.date}</time>
+            <time className="text-xs text-muted">{post.date}</time>
           </Link>
         ))}
       </div>
