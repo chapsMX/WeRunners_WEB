@@ -11,20 +11,29 @@ datasource db {
 }
 
 model WaitlistEntry {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
+  id         String            @id @default(cuid())
+  email      String            @unique
+  name       String?
+  clubId     String?
+  betaAccess Boolean           @default(false)
+  club       ClubRegistration? @relation(fields: [clubId], references: [id])
+  createdAt  DateTime          @default(now())
 }
 
 model ClubRegistration {
-  id        String   @id @default(cuid())
-  clubName  String
-  city      String
-  email     String   @unique
-  runners   Int?
-  logoUrl   String?
-  createdAt DateTime @default(now())
+  id              String         @id @default(cuid())
+  clubName        String
+  city            String
+  email           String         @unique
+  runners         Int?
+  logoUrl         String?
+  enabled         Boolean        @default(false)
+  instagram       String?
+  twitter         String?
+  tiktok          String?
+  facebook        String?
+  createdAt       DateTime       @default(now())
+  waitlistEntries WaitlistEntry[]
 }
 
 model AmbassadorApplication {
