@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { routing } from "@/i18n/routing";
 import { LangSetter } from "@/components/LangSetter";
+import { AlternateUrlProvider } from "@/components/providers/AlternateUrlProvider";
 
 const BASE_URL = "https://www.w3runn3rs.com";
 const TITLE    = "W3Runn3rs — Pick your running club, make it count!";
@@ -99,7 +100,9 @@ export default async function LocaleLayout({ children, params }: Props) {
         disableTransitionOnChange
       >
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <AlternateUrlProvider>
+            {children}
+          </AlternateUrlProvider>
         </NextIntlClientProvider>
       </ThemeProvider>
 
