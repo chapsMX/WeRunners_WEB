@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import Image from "next/image";
 import { buildPageMetadata } from "@/lib/metadata";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -20,19 +21,32 @@ export default async function BlogPage({ params }: Props) {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-background pt-24 pb-16 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-10">
-            <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-3">
-              Blog
-            </h1>
-            <p className="text-slate-400 text-lg">
-              {locale === "es"
-                ? "Historias del mundo del running. Clubes, carreras y cultura."
-                : "Stories from the running world. Club spotlights, race recaps & culture."}
-            </p>
-          </div>
 
+      {/* Hero */}
+      <section className="relative h-[55vh] min-h-[380px] flex items-end overflow-hidden">
+        <Image
+          src="/images/fondoBlog.jpg"
+          alt="Blog hero"
+          fill
+          priority
+          className="object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-6 pb-14">
+          <h1 className="text-6xl md:text-8xl font-extrabold text-white tracking-tight leading-none mb-4">
+            Blog
+          </h1>
+          <p className="text-slate-300 text-lg md:text-xl max-w-xl">
+            {locale === "es"
+              ? "Historias del mundo del running. Clubes, carreras y cultura."
+              : "Stories from the running world. Club spotlights, race recaps & culture."}
+          </p>
+        </div>
+      </section>
+
+      {/* Posts */}
+      <main className="bg-background py-16 px-6 min-h-[40vh]">
+        <div className="max-w-6xl mx-auto">
           {posts.length === 0 ? (
             <div className="text-center py-24 text-slate-500">
               <p className="text-5xl mb-4">🏃</p>
@@ -49,6 +63,7 @@ export default async function BlogPage({ params }: Props) {
           )}
         </div>
       </main>
+
       <Footer />
     </>
   );
