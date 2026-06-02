@@ -125,7 +125,7 @@ export default function ForClubsPage() {
       {/* ── Section 2: Form (with background image) ── */}
       <section className="relative py-20 px-4 overflow-hidden">
         <Image
-          src="/images/fondoClubes.jpg"
+          src="/images/fondoClubes.webp"
           alt=""
           fill
           priority

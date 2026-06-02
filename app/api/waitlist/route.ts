@@ -17,6 +17,14 @@ export async function POST(req: NextRequest) {
 
     const normalized = email.trim().toLowerCase();
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(normalized)) {
+      return NextResponse.json(
+        { error: "Please enter a valid email address." },
+        { status: 400 }
+      );
+    }
+
     await sql`
       INSERT INTO "WaitlistEntry" (id, email, name, "clubId", "createdAt")
       VALUES (gen_random_uuid()::text, ${normalized}, ${name?.trim() || null}, ${clubId || null}, NOW())

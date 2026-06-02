@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { XIcon, InstagramIcon, FarcasterIcon, StravaIcon } from "@/components/ui/SocialIcons";
 
 const SOCIAL_LINKS = [
@@ -10,6 +13,8 @@ const SOCIAL_LINKS = [
 ];
 
 export default function Footer() {
+  const pathname = usePathname();
+  const locale = pathname.startsWith("/es") ? "es" : "en";
   return (
     <footer className="bg-surface-alt border-t border-line">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -56,17 +61,17 @@ export default function Footer() {
           </p>
           <div className="flex items-center gap-4 text-sm">
             <Link
-              href="/en/privacy-policy"
+              href={`/${locale}/privacy-policy`}
               className="text-muted/70 hover:text-foreground/80 transition-colors"
             >
-              Privacy Policy
+              {locale === "es" ? "Privacidad" : "Privacy Policy"}
             </Link>
             <span className="text-slate-700">·</span>
             <Link
-              href="/en/terms-of-service"
+              href={`/${locale}/terms-of-service`}
               className="text-muted/70 hover:text-foreground/80 transition-colors"
             >
-              Terms of Service
+              {locale === "es" ? "Términos" : "Terms of Service"}
             </Link>
             <span className="text-slate-700">·</span>
             <a

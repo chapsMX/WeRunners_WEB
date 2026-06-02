@@ -64,7 +64,7 @@ export default function Community() {
 
       {/* Background image */}
       <Image
-        src="/images/fondoJoin.jpg"
+        src="/images/fondoJoin.webp"
         alt="Runners community"
         fill
         priority
