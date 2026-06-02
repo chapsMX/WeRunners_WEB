@@ -85,6 +85,24 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "W3Runn3rs",
+  url: BASE_URL,
+  logo: `${BASE_URL}/images/w3_logo.png`,
+  sameAs: [
+    "https://www.instagram.com/w3runn3rs",
+    "https://x.com/w3runn3rs",
+    "https://www.strava.com/clubs/w3runn3rs",
+  ],
+  contactPoint: {
+    "@type": "ContactPoint",
+    email: "run@w3runn3rs.com",
+    contactType: "customer support",
+  },
+};
+
 export default async function LocaleLayout({ children, params }: Props) {
   const { locale } = await params;
 
@@ -96,6 +114,10 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
       {/* Aplica lang={locale} al <html> que vive en el root layout */}
       <LangSetter locale={locale} />
 
