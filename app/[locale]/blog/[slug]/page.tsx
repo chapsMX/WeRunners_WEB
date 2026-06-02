@@ -84,8 +84,43 @@ export default async function BlogPostPage({ params }: Props) {
     { year: "numeric", month: "long", day: "numeric" }
   );
 
+  const ogImage = post.coverImage
+    ? `${SITE_URL}${post.coverImage}`
+    : `${SITE_URL}/images/share.png`;
+
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.excerpt,
+    image: ogImage,
+    datePublished: post.date,
+    author: {
+      "@type": "Organization",
+      name: post.author ?? "W3Runn3rs Team",
+      url: SITE_URL,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "W3Runn3rs",
+      url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/images/w3_logo.png`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${SITE_URL}/${locale}/blog/${slug}`,
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
       <SetAlternateUrl href={alternateHref} />
       <Header />
 

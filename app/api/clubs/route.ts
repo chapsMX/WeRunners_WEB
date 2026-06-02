@@ -39,9 +39,32 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim().toLowerCase())) {
+      return NextResponse.json(
+        { error: "Please enter a valid email address." },
+        { status: 400 }
+      );
+    }
+
     // Upload logo to Vercel Blob if provided
+    const ALLOWED_MIME = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
+
     let logoUrl: string | null = null;
     if (logo && logo.size > 0) {
+      if (!ALLOWED_MIME.includes(logo.type)) {
+        return NextResponse.json(
+          { error: "Logo must be a JPEG, PNG, WebP, or GIF image." },
+          { status: 400 }
+        );
+      }
+      if (logo.size > MAX_SIZE) {
+        return NextResponse.json(
+          { error: "Logo must be smaller than 5 MB." },
+          { status: 413 }
+        );
+      }
       const blob = await put(`clubs/${Date.now()}-${logo.name}`, logo, {
         access: "public",
       });
