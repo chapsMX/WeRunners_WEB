@@ -9,6 +9,7 @@ import { getPostBySlug, getPostSlugs, getAlternateSlug, getAllPosts } from "@/li
 import { SetAlternateUrl } from "@/components/blog/SetAlternateUrl";
 import { RelatedPosts } from "@/components/blog/RelatedPosts";
 import { ShareButtons } from "@/components/blog/ShareButtons";
+import { YouTubeEmbed } from "@/components/blog/YouTubeEmbed";
 
 const SITE_URL = "https://www.w3runn3rs.com";
 
@@ -156,7 +157,7 @@ export default async function BlogPostPage({ params }: Props) {
             prose-strong:text-foreground
             prose-hr:border-line
             prose-blockquote:border-brand-lime prose-blockquote:text-muted">
-            <MDXRemote source={post.content} />
+            <MDXRemote source={post.content} components={{ YouTubeEmbed }} />
           </article>
 
           {/* Share buttons */}
