@@ -25,7 +25,7 @@ export default async function BlogPage({ params }: Props) {
       {/* Hero */}
       <section className="relative h-[55vh] min-h-[380px] flex items-end overflow-hidden">
         <Image
-          src="/images/fondoBlog.jpg"
+          src="/images/fondoBlog.webp"
           alt="Blog hero"
           fill
           priority
