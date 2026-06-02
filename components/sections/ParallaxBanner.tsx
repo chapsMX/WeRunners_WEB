@@ -3,7 +3,7 @@ export default function ParallaxBanner() {
     <div
       className="relative h-72 sm:h-96 md:h-[28rem] flex items-center justify-center overflow-hidden"
       style={{
-        backgroundImage: "url('/images/fondoSeparador.jpg')",
+        backgroundImage: "url('/images/fondoSeparador.webp')",
         backgroundAttachment: "fixed",
         backgroundSize: "cover",
         backgroundPosition: "center",
