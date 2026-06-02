@@ -211,15 +211,19 @@ export default function WaitlistPage() {
 
                 {/* ── Club selector ── */}
                 <div>
-                  <p className="text-white/60 text-sm mb-2">
+                  <label
+                    htmlFor="club-select"
+                    className="block text-white/60 text-sm mb-2"
+                  >
                     Already know your club? Pick it now.
-                  </p>
+                  </label>
                   {clubs.length === 0 ? (
                     <p className="text-sm text-white/40 italic px-1">
                       No clubs available yet — check back soon.
                     </p>
                   ) : (
                     <select
+                      id="club-select"
                       value={clubId}
                       onChange={(e) => setClubId(e.target.value)}
                       disabled={status === "loading"}
