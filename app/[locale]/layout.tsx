@@ -10,8 +10,8 @@ import { LangSetter } from "@/components/LangSetter";
 import { AlternateUrlProvider } from "@/components/providers/AlternateUrlProvider";
 
 const BASE_URL = "https://www.w3runn3rs.com";
-const TITLE    = "W3Runn3rs — Pick your running club, make it count!";
-const DESC     = "The global hub for running clubs. One runner, one club — every kilometer counts exclusively for yours.";
+const TITLE    = "We Runners - The global hub for running clubs.";
+const DESC     = "Pick your running club, make it count. One runner, one club — every kilometer counts exclusively for your club.";
 const OG_IMAGE = `${BASE_URL}/images/share.png`;
 
 type Props = {
@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: TITLE,
       description: DESC,
       url: `${BASE_URL}/${locale}`,
-      siteName: "W3Runn3rs",
+      siteName: "We Runners",
       type: "website",
       locale: locale === "es" ? "es_MX" : "en_US",
       alternateLocale: locale === "es" ? ["en_US"] : ["es_MX", "es_ES"],
@@ -65,7 +65,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: OG_IMAGE,
           width: 1200,
           height: 630,
-          alt: "W3Runn3rs — Pick your running club, make it count!",
+          alt: "We Runners - The global hub for running clubs.",
         },
       ],
     },
@@ -90,7 +90,7 @@ const organizationSchema = {
   "@type": "Organization",
   name: "W3Runn3rs",
   url: BASE_URL,
-  logo: `${BASE_URL}/images/w3_logo.png`,
+  logo: `${BASE_URL}/images/logoAzul.png`,
   sameAs: [
     "https://www.instagram.com/w3runn3rs",
     "https://x.com/w3runn3rs",
