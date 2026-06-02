@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { routing } from "@/i18n/routing";
 
 const BASE_URL = "https://www.w3runn3rs.com";
-const locales  = ["en", "es"] as const;
+const locales  = routing.locales;
 
 /**
  * Genera el bloque `alternates` (canonical + hreflang) para una ruta.

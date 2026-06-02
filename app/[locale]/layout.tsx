@@ -135,7 +135,7 @@ export default async function LocaleLayout({ children, params }: Props) {
       </ThemeProvider>
 
       <Analytics />
-      <GoogleAnalytics gaId="G-0SQR3G71T8" />
+      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID!} />
     </>
   );
 }
