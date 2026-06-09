@@ -1,6 +1,6 @@
-// Prisma 7 schema — connection URL is passed via prisma.config.ts
-// DATABASE_URL        → pooled connection (Neon / Vercel integration)
-// DATABASE_URL_UNPOOLED → direct connection used for migrations
+// W3Runn3rs — schema.prisma
+// Stack: Next.js 14 App Router · Neon PostgreSQL · Prisma 7 · Better Auth
+// Last updated: 2026-06
 
 generator client {
   provider = "prisma-client-js"
@@ -10,29 +10,112 @@ datasource db {
   provider = "postgresql"
 }
 
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum Role {
+  RUNNER
+  CLUB_ADMIN
+  ADMIN
+}
+
+enum DistanceUnit {
+  KM
+  MILES
+}
+
+enum ClubType {
+  RECREATIONAL
+  COMPETITIVE
+  TRAIL
+  TRIATHLON
+}
+
+enum ActivityType {
+  RUN
+  TRAIL
+  TREADMILL
+  RACE
+}
+
+enum ActivitySource {
+  MANUAL
+  STRAVA
+  GARMIN
+  COROS
+}
+
+enum PRDistance {
+  M400
+  HALF_MILE
+  K1
+  MILE
+  K2
+  K5
+  K10
+  K15
+  MILE10
+  K20
+  HALF_MARATHON
+  K30
+  MARATHON
+  ULTRA
+}
+
+enum PRSource {
+  AUTO   // calculado automáticamente desde una Activity
+  MANUAL // ingresado por el usuario (Add PR)
+}
+
+enum PeriodType {
+  WEEKLY
+  MONTHLY
+  YEARLY
+  ALL_TIME
+}
+
+enum LeaderboardCategory {
+  DISTANCE            // km totales del club
+  PACE                // pace promedio del club
+  ELEVATION           // elevación acumulada
+  MARATHONS           // cantidad de maratones
+  CONSISTENCY         // semanas sin parar
+  DISTANCE_PER_MEMBER // km promedio por miembro activo
+}
+
+// ─────────────────────────────────────────────
+// TABLAS EXISTENTES — no se modifican
+// Solo se ajustan para convivir con el schema nuevo
+// ─────────────────────────────────────────────
+
 model WaitlistEntry {
   id         String            @id @default(cuid())
   email      String            @unique
   name       String?
   clubId     String?
   betaAccess Boolean           @default(false)
-  club       ClubRegistration? @relation(fields: [clubId], references: [id])
   createdAt  DateTime          @default(now())
+
+  // Nuevo: se marca cuando el waitlist entry se convierte en User
+  convertedAt DateTime?
+
+  club ClubRegistration? @relation(fields: [clubId], references: [id])
 }
 
 model ClubRegistration {
-  id              String         @id @default(cuid())
+  id              String          @id @default(cuid())
   clubName        String
   city            String
-  email           String         @unique
+  email           String          @unique
   runners         Int?
   logoUrl         String?
-  enabled         Boolean        @default(false)
+  enabled         Boolean         @default(false)
   instagram       String?
   twitter         String?
   tiktok          String?
   facebook        String?
-  createdAt       DateTime       @default(now())
+  createdAt       DateTime        @default(now())
   waitlistEntries WaitlistEntry[]
 }
 
@@ -49,3 +132,338 @@ model AmbassadorApplication {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
+
+// ─────────────────────────────────────────────
+// BETTER AUTH — user, session, account, verification
+// Nombres y tipos exactos que requiere Better Auth
+// con Prisma adapter. No modificar.
+// ─────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  name          String
+  image         String?   // URL foto de perfil, viene de Google OAuth
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Perfil público
+  username      String?   @unique // slug: @chaps
+  bio           String?
+
+  // Plataforma
+  role          Role         @default(RUNNER)
+  preferredUnit DistanceUnit @default(KM)
+  locale        String       @default("es") // "es" | "en"
+  timezone      String       @default("America/Mexico_City")
+  betaAccess    Boolean      @default(false)
+  lastActiveAt  DateTime?
+
+  // Relaciones Better Auth
+  sessions Session[]
+  accounts Account[]
+
+  // Relaciones W3Runn3rs
+  memberships ClubMembership[]
+  activities  Activity[]
+  records     PersonalRecord[]
+  snapshots   WeeklySnapshot[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String    // ID del usuario en el provider (Google)
+  providerId            String    // "google" | "credential"
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?   @db.Text
+  password              String?   // solo para provider "credential"
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String   // email del usuario
+  value      String   // token de verificación
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verification")
+}
+
+// ─────────────────────────────────────────────
+// CLUBS
+// Tabla nueva — los datos de ClubRegistration
+// se migran aquí en el go-live
+// ─────────────────────────────────────────────
+
+model Club {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique // w3runn3rs.com/clubs/pacers-mx
+  description String?
+  logoUrl     String?
+  city        String?
+  country     String   @default("MX") // ISO 3166-1 alpha-2
+  clubType    ClubType @default(RECREATIONAL)
+
+  // Redes sociales
+  instagram    String?
+  twitter      String?
+  tiktok       String?
+  facebook     String?
+  contactEmail String?
+
+  // Tamaño aproximado al registrarse
+  initialMemberCount Int?
+
+  // Desnormalizado para queries rápidas
+  // Se actualiza con cada cambio de membresía
+  memberCount Int     @default(0)
+  verified    Boolean @default(false) // validado por W3Runn3rs
+  active      Boolean @default(true)  // desactivar sin borrar historial
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  memberships ClubMembership[]
+  activities  Activity[]
+  stats       ClubStats[]
+  leaderboard LeaderboardEntry[]
+  snapshots   WeeklySnapshot[]
+
+  @@map("clubs")
+}
+
+// ─────────────────────────────────────────────
+// MEMBRESÍAS — historial completo + regla de 6 meses
+// ─────────────────────────────────────────────
+
+model ClubMembership {
+  id     String @id @default(cuid())
+  userId String
+  clubId String
+
+  joinedAt DateTime  @default(now())
+  leftAt   DateTime? // null = membresía activa
+  isActive Boolean   @default(true)
+
+  // Hasta esta fecha el usuario no puede cambiar de club.
+  // Se calcula al unirse: joinedAt + 6 meses.
+  lockExpiresAt DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  // Un usuario solo puede tener una membresía activa a la vez
+  @@unique([userId, isActive], name: "one_active_membership")
+  @@index([clubId])
+  @@index([userId])
+  @@map("club_memberships")
+}
+
+// ─────────────────────────────────────────────
+// ACTIVIDADES — dato más granular, corazón del sistema
+// ─────────────────────────────────────────────
+
+model Activity {
+  id     String  @id @default(cuid())
+  userId String
+  clubId String? // nullable: usuarios sin club pueden registrar actividades
+
+  // Siempre en unidades base: metros y segundos.
+  // La conversión a km/mi y mm:ss ocurre en el cliente.
+  distanceMeters      Int
+  durationSeconds     Int
+  elevationGainMeters Int?
+  elevationLossMeters Int?
+
+  // Fecha real de la carrera, no de creación del registro
+  activityDate DateTime
+  title        String?
+  activityType ActivityType   @default(RUN)
+
+  // Fuente del registro
+  source     ActivitySource @default(MANUAL)
+  externalId String?        // ID en Strava/Garmin — evita duplicados al importar
+
+  // Métricas opcionales
+  avgPaceSecPerKm Int?
+  avgHeartRate    Int?
+  maxHeartRate    Int?
+  avgCadence      Int?
+  calories        Int?
+
+  // Geolocalización — para mapas de calor futuros
+  startLat Float?
+  startLng Float?
+
+  createdAt DateTime @default(now())
+
+  user   User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  club   Club?           @relation(fields: [clubId], references: [id])
+  record PersonalRecord?
+
+  // Evita duplicados al sincronizar con Strava/Garmin
+  @@unique([userId, source, externalId])
+  @@index([userId, activityDate])
+  @@index([clubId, activityDate])
+  @@map("activities")
+}
+
+// ─────────────────────────────────────────────
+// PERSONAL RECORDS
+// ─────────────────────────────────────────────
+
+model PersonalRecord {
+  id         String     @id @default(cuid())
+  userId     String
+  activityId String?    @unique // null si fue entrada manual
+
+  distance        PRDistance
+  durationSeconds Int
+  achievedAt      DateTime
+  source          PRSource @default(AUTO)
+
+  createdAt DateTime @default(now())
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activity Activity? @relation(fields: [activityId], references: [id])
+
+  // Un PR activo por distancia por usuario
+  @@unique([userId, distance])
+  @@index([userId])
+  @@map("personal_records")
+}
+
+// ─────────────────────────────────────────────
+// CLUB STATS — motor de leaderboards
+// Calculado por cron job, no en tiempo real
+// ─────────────────────────────────────────────
+
+model ClubStats {
+  id          String     @id @default(cuid())
+  clubId      String
+  periodType  PeriodType
+  periodStart DateTime
+  periodEnd   DateTime
+
+  // Volumen
+  totalDistanceMeters  Int @default(0)
+  totalActivities      Int @default(0)
+  totalDurationSeconds Int @default(0)
+  activeMembers        Int @default(0)
+
+  // Velocidad
+  avgPaceSecPerKm  Int?
+  bestPaceSecPerKm Int?
+
+  // Elevación
+  totalElevationMeters Int @default(0)
+
+  // Conteo de carreras por distancia
+  races5k           Int @default(0)
+  races10k          Int @default(0)
+  racesHalfMarathon Int @default(0)
+  racesMarathon     Int @default(0)
+  racesUltra        Int @default(0)
+
+  // Consistencia
+  avgActivitiesPerMember Float @default(0)
+  weeksWithActivity      Int   @default(0)
+
+  updatedAt DateTime @updatedAt
+
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@unique([clubId, periodType, periodStart])
+  @@index([clubId, periodType])
+  @@map("club_stats")
+}
+
+// ─────────────────────────────────────────────
+// LEADERBOARD ENTRIES — historial de posiciones
+// ─────────────────────────────────────────────
+
+model LeaderboardEntry {
+  id          String              @id @default(cuid())
+  clubId      String
+  periodType  PeriodType
+  periodStart DateTime
+  category    LeaderboardCategory
+
+  rank         Int
+  previousRank Int?
+
+  // Snapshot del valor que determinó el rank
+  totalDistanceMeters  Int?
+  avgPaceSecPerKm      Int?
+  totalElevationMeters Int?
+  racesMarathon        Int?
+  weeksWithActivity    Int?
+  distancePerMember    Float?
+
+  calculatedAt DateTime @default(now())
+
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@unique([clubId, periodType, periodStart, category])
+  @@index([periodType, periodStart, category, rank])
+  @@map("leaderboard_entries")
+}
+
+// ─────────────────────────────────────────────
+// WEEKLY SNAPSHOTS — performance a escala
+// Cron job cada lunes materializa la semana anterior
+// ─────────────────────────────────────────────
+
+model WeeklySnapshot {
+  id     String  @id @default(cuid())
+  userId String
+  clubId String?
+
+  weekStart DateTime // lunes 00:00 UTC
+
+  totalDistanceMeters  Int @default(0)
+  totalActivities      Int @default(0)
+  totalDurationSeconds Int @default(0)
+
+  createdAt DateTime @default(now())
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  club Club? @relation(fields: [clubId], references: [id])
+
+  @@unique([userId, weekStart])
+  @@index([userId, weekStart])
+  @@map("weekly_snapshots")
+}
+
