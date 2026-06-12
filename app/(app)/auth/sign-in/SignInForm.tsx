@@ -39,7 +39,7 @@ export default function SignInForm() {
         callbackURL: callbackUrl,
       })
       if (err) {
-        setError(err.message ?? "Error al crear la cuenta")
+        setError(err.message ?? "Failed to create account")
         setLoading(false)
       } else {
         router.push(callbackUrl)
@@ -51,7 +51,7 @@ export default function SignInForm() {
         callbackURL: callbackUrl,
       })
       if (err) {
-        setError(err.message ?? "Email o contraseña incorrectos")
+        setError(err.message ?? "Invalid email or password")
         setLoading(false)
       } else {
         router.push(callbackUrl)
@@ -60,122 +60,119 @@ export default function SignInForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
+    <div className="w-full">
+      {/* Logo — mobile only */}
+      <div className="text-center mb-8 lg:hidden">
+        <span className="text-brand-green font-bold text-3xl tracking-tight">W3</span>
+        <span className="text-white font-bold text-3xl tracking-tight">RUNN3RS</span>
+        <p className="text-white/60 text-sm mt-1">Pick your running club, make it count.</p>
+      </div>
 
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <span className="text-lime-400 font-bold text-3xl tracking-tight">W3</span>
-          <span className="text-white font-bold text-3xl tracking-tight">RUNN3RS</span>
-          <p className="text-slate-400 text-sm mt-1">Pick your running club, make it count.</p>
+      {/* Card */}
+      <div className="bg-slate-900/90 backdrop-blur-sm border border-slate-700 p-8 space-y-6">
+
+        <h1 className="text-white text-2xl font-bold text-center">
+          {mode === "signin" ? "Welcome back" : "Join W3Runn3rs"}
+        </h1>
+
+        {/* Google */}
+        <button
+          onClick={handleGoogle}
+          disabled={loading}
+          className="w-full flex items-center justify-center gap-3 bg-white hover:bg-slate-100 text-slate-900 font-medium py-3  transition-colors disabled:opacity-50"
+        >
+          <GoogleIcon />
+          Continue with Google
+        </button>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-px bg-slate-700" />
+          <span className="text-slate-500 text-sm">or</span>
+          <div className="flex-1 h-px bg-slate-700" />
         </div>
 
-        {/* Card */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 space-y-6">
+        {/* Email form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {mode === "signup" && (
+            <div>
+              <label className="block text-slate-400 text-sm mb-1.5">Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                placeholder="Your name"
+                className="w-full bg-slate-800 border border-slate-700  px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brand-green transition-colors"
+              />
+            </div>
+          )}
 
-          <h1 className="text-white text-2xl font-bold text-center">
-            {mode === "signin" ? "Bienvenido de vuelta" : "Únete a W3Runn3rs"}
-          </h1>
-
-          {/* Google */}
-          <button
-            onClick={handleGoogle}
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-3 bg-white hover:bg-slate-100 text-slate-900 font-medium py-3 rounded-xl transition-colors disabled:opacity-50"
-          >
-            <GoogleIcon />
-            Continuar con Google
-          </button>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-slate-800" />
-            <span className="text-slate-500 text-sm">o</span>
-            <div className="flex-1 h-px bg-slate-800" />
+          <div>
+            <label className="block text-slate-400 text-sm mb-1.5">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="you@example.com"
+              className="w-full bg-slate-800 border border-slate-700  px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brand-green transition-colors"
+            />
           </div>
 
-          {/* Email form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {mode === "signup" && (
-              <div>
-                <label className="block text-slate-400 text-sm mb-1.5">Nombre</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  placeholder="Tu nombre"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-lime-400 transition-colors"
-                />
-              </div>
-            )}
+          <div>
+            <label className="block text-slate-400 text-sm mb-1.5">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={8}
+              placeholder="Minimum 8 characters"
+              className="w-full bg-slate-800 border border-slate-700  px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brand-green transition-colors"
+            />
+          </div>
 
-            <div>
-              <label className="block text-slate-400 text-sm mb-1.5">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                placeholder="tu@email.com"
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-lime-400 transition-colors"
-              />
-            </div>
+          {error && (
+            <p className="text-red-400 text-sm text-center">{error}</p>
+          )}
 
-            <div>
-              <label className="block text-slate-400 text-sm mb-1.5">Contraseña</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={8}
-                placeholder="Mínimo 8 caracteres"
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-lime-400 transition-colors"
-              />
-            </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-brand-green hover:bg-brand-emerald text-slate-900 font-bold py-3  transition-colors disabled:opacity-50"
+          >
+            {loading
+              ? "..."
+              : mode === "signin"
+              ? "Sign in"
+              : "Create account"}
+          </button>
+        </form>
 
-            {error && (
-              <p className="text-red-400 text-sm text-center">{error}</p>
-            )}
+        {/* Mode toggle */}
+        <p className="text-center text-slate-400 text-sm">
+          {mode === "signin" ? "First time here?" : "Already have an account?"}
+          {" "}
+          <button
+            onClick={() => { setMode(mode === "signin" ? "signup" : "signin"); setError("") }}
+            className="text-brand-green hover:text-brand-emerald font-medium transition-colors"
+          >
+            {mode === "signin" ? "Create account" : "Sign in"}
+          </button>
+        </p>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-lime-400 hover:bg-lime-300 text-slate-900 font-bold py-3 rounded-xl transition-colors disabled:opacity-50"
-            >
-              {loading
-                ? "..."
-                : mode === "signin"
-                ? "Iniciar sesión"
-                : "Crear cuenta"}
-            </button>
-          </form>
-
-          {/* Mode toggle */}
-          <p className="text-center text-slate-400 text-sm">
-            {mode === "signin" ? "¿Primera vez aquí?" : "¿Ya tienes cuenta?"}
-            {" "}
-            <button
-              onClick={() => { setMode(mode === "signin" ? "signup" : "signin"); setError("") }}
-              className="text-lime-400 hover:text-lime-300 font-medium transition-colors"
-            >
-              {mode === "signin" ? "Crear cuenta" : "Iniciar sesión"}
-            </button>
-          </p>
-
-          {/* Legal */}
-          <p className="text-center text-slate-600 text-xs">
-            Al continuar aceptas nuestros{" "}
-            <a href="https://www.w3runn3rs.com/terms-of-service" className="underline hover:text-slate-400">
-              Términos
-            </a>{" "}
-            y{" "}
-            <a href="https://www.w3runn3rs.com/privacy-policy" className="underline hover:text-slate-400">
-              Privacidad
-            </a>
-          </p>
-        </div>
+        {/* Legal */}
+        <p className="text-center text-slate-600 text-xs">
+          By continuing you agree to our{" "}
+          <a href="https://www.w3runn3rs.com/en/terms-of-service" className="underline hover:text-slate-400">
+            Terms
+          </a>{" "}
+          and{" "}
+          <a href="https://www.w3runn3rs.com/en/privacy-policy" className="underline hover:text-slate-400">
+            Privacy Policy
+          </a>
+        </p>
       </div>
     </div>
   )

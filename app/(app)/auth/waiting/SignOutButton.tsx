@@ -16,7 +16,7 @@ export default function SignOutButton() {
       onClick={handleSignOut}
       className="text-slate-500 hover:text-slate-300 text-sm transition-colors"
     >
-      Cerrar sesión
+      Sign out
     </button>
   )
 }

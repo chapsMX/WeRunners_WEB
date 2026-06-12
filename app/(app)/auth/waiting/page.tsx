@@ -1,64 +1,92 @@
+import Image from "next/image"
 import type { Metadata } from "next"
 import { headers } from "next/headers"
 import { auth } from "@/lib/auth"
+import AppHeader from "@/components/layout/AppHeader"
+import AppFooter from "@/components/layout/AppFooter"
 import SignOutButton from "./SignOutButton"
 
 export const metadata: Metadata = {
-  title: "Lista de espera — W3Runn3rs",
+  title: "You're on the list — W3Runn3rs",
+  description: "Your account is created. We'll notify you when it's your turn.",
 }
 
 export default async function WaitingPage() {
   const session = await auth.api.getSession({ headers: await headers() })
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
-      <div className="w-full max-w-md text-center space-y-6">
+    <>
+      <AppHeader />
 
-        {/* Icon */}
-        <div className="w-20 h-20 rounded-full bg-lime-400/10 border border-lime-400/20 flex items-center justify-center mx-auto">
-          <span className="text-3xl">🏃</span>
-        </div>
+      <main className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Background image */}
+        <Image
+          src="/images/fondoHero.webp"
+          alt="W3Runn3rs runners"
+          fill
+          priority
+          className="object-cover object-center"
+        />
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-brand-navy/70" />
 
-        {/* Heading */}
-        <div className="space-y-2">
-          <h1 className="text-white text-2xl font-bold">Estás en la lista</h1>
-          <p className="text-slate-400">
-            Tu cuenta está creada. Estamos abriendo el acceso de forma gradual
-            y te notificaremos en cuanto sea tu turno.
-          </p>
-        </div>
+        {/* Card */}
+        <div className="relative z-10 w-full max-w-md mx-auto px-6 pt-24 pb-16 flex items-center justify-center min-h-screen">
+          <div className="w-full bg-slate-900/90 backdrop-blur-sm border border-slate-700 p-8 space-y-6 text-center">
 
-        {/* Email */}
-        {session?.user?.email && (
-          <div className="bg-slate-900 border border-slate-800 rounded-xl px-6 py-4">
-            <p className="text-slate-500 text-sm">Cuenta registrada</p>
-            <p className="text-white font-medium mt-0.5">{session.user.email}</p>
+            {/* Heading */}
+            <div className="space-y-2">
+              <h1 className="text-white text-2xl font-bold">You&apos;re on the list</h1>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Your account is ready. We&apos;re rolling out access gradually and will notify you as soon as it&apos;s your turn.
+              </p>
+            </div>
+
+            {/* Registered email */}
+            {session?.user?.email && (
+              <div className="bg-slate-800/60 border border-slate-700  px-6 py-4">
+                <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">Registered account</p>
+                <p className="text-white font-medium">{session.user.email}</p>
+              </div>
+            )}
+
+            {/* In the meantime */}
+            <div className="bg-slate-800/60 border border-slate-700  px-6 py-5 text-left space-y-3">
+              <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">In the meantime</p>
+              <ul className="space-y-2.5 text-slate-300 text-sm">
+                <li className="flex items-center gap-2">
+                  <span className="text-brand-green">→</span>
+                  Follow us on{" "}
+                  <a
+                    href="https://x.com/w3runn3rs"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-brand-green hover:text-brand-emerald transition-colors font-medium"
+                  >
+                    @w3runn3rs
+                  </a>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-brand-green">→</span>
+                  Register your club at{" "}
+                  <a
+                    href="https://www.w3runn3rs.com/en/for-clubs"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-brand-green hover:text-brand-emerald transition-colors font-medium"
+                  >
+                    w3runn3rs.com
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <SignOutButton />
           </div>
-        )}
-
-        {/* What's next */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl px-6 py-5 text-left space-y-3">
-          <p className="text-slate-400 text-sm font-medium uppercase tracking-wider">Mientras tanto</p>
-          <ul className="space-y-2 text-slate-300 text-sm">
-            <li className="flex items-start gap-2">
-              <span className="text-lime-400 mt-0.5">→</span>
-              Síguenos en{" "}
-              <a href="https://x.com/w3runn3rs" target="_blank" rel="noopener noreferrer" className="text-lime-400 hover:underline">
-                @w3runn3rs
-              </a>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-lime-400 mt-0.5">→</span>
-              Registra tu club en{" "}
-              <a href="https://www.w3runn3rs.com/for-clubs" target="_blank" rel="noopener noreferrer" className="text-lime-400 hover:underline">
-                www.w3runn3rs.com
-              </a>
-            </li>
-          </ul>
         </div>
+      </main>
 
-        <SignOutButton />
-      </div>
-    </div>
+      <AppFooter />
+    </>
   )
 }
