@@ -25,6 +25,18 @@ enum DistanceUnit {
   MILES
 }
 
+enum DeviceProvider {
+  GARMIN
+  POLAR
+  OURA
+  WHOOP
+  COROS
+  SUUNTO
+  STRAVA
+  APPLE_HEALTH
+  GOOGLE_FIT
+}
+
 enum ClubType {
   RECREATIONAL
   COMPETITIVE
@@ -43,7 +55,13 @@ enum ActivitySource {
   MANUAL
   STRAVA
   GARMIN
+  POLAR
+  OURA
+  WHOOP
   COROS
+  SUUNTO
+  APPLE_HEALTH
+  GOOGLE_FIT
 }
 
 enum PRDistance {
@@ -85,19 +103,34 @@ enum LeaderboardCategory {
 }
 
 // ─────────────────────────────────────────────
+// APP CONFIG — feature flags globales
+// Un solo registro con id = "global"
+// betaOpen = true abre el acceso a cualquier usuario registrado
+// betaOpen = false solo dejan pasar emails en WaitlistEntry con betaAccess = true
+// ─────────────────────────────────────────────
+
+model AppConfig {
+  id       String  @id @default("global")
+  betaOpen Boolean @default(false)
+
+  updatedAt DateTime @updatedAt
+
+  @@map("app_config")
+}
+
+// ─────────────────────────────────────────────
 // TABLAS EXISTENTES — no se modifican
-// Solo se ajustan para convivir con el schema nuevo
 // ─────────────────────────────────────────────
 
 model WaitlistEntry {
-  id         String            @id @default(cuid())
-  email      String            @unique
+  id         String   @id @default(cuid())
+  email      String   @unique
   name       String?
   clubId     String?
-  betaAccess Boolean           @default(false)
-  createdAt  DateTime          @default(now())
+  betaAccess Boolean  @default(false)
+  createdAt  DateTime @default(now())
 
-  // Nuevo: se marca cuando el waitlist entry se convierte en User
+  // Se marca cuando el waitlist entry se convierte en User
   convertedAt DateTime?
 
   club ClubRegistration? @relation(fields: [clubId], references: [id])
@@ -140,25 +173,32 @@ model AmbassadorApplication {
 // ─────────────────────────────────────────────
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  emailVerified Boolean   @default(false)
+  id            String   @id @default(cuid())
+  email         String   @unique
+  emailVerified Boolean  @default(false)
   name          String
-  image         String?   // URL foto de perfil, viene de Google OAuth
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  image         String?  // URL foto de perfil, viene de Google OAuth
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   // Perfil público
-  username      String?   @unique // slug: @chaps
-  bio           String?
+  username String? @unique // slug: @chaps
+  bio      String?
 
   // Plataforma
   role          Role         @default(RUNNER)
   preferredUnit DistanceUnit @default(KM)
-  locale        String       @default("es") // "es" | "en"
+  locale        String       @default("es")
   timezone      String       @default("America/Mexico_City")
-  betaAccess    Boolean      @default(false)
   lastActiveAt  DateTime?
+
+  // Dispositivo conectado — un solo dispositivo por usuario
+  // Si cambia de Garmin a Polar se sobreescriben los campos
+  connectedDevice          DeviceProvider? // null = sin dispositivo conectado
+  connectedDeviceToken     String?         @db.Text
+  connectedDeviceRefresh   String?         @db.Text
+  connectedDeviceExpiresAt DateTime?
+  connectedDeviceLastSync  DateTime?
 
   // Relaciones Better Auth
   sessions Session[]
@@ -191,15 +231,15 @@ model Session {
 model Account {
   id                    String    @id @default(cuid())
   userId                String
-  accountId             String    // ID del usuario en el provider (Google)
-  providerId            String    // "google" | "credential"
+  accountId             String
+  providerId            String
   accessToken           String?   @db.Text
   refreshToken          String?   @db.Text
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
   scope                 String?
   idToken               String?   @db.Text
-  password              String?   // solo para provider "credential"
+  password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
@@ -210,8 +250,8 @@ model Account {
 
 model Verification {
   id         String   @id @default(cuid())
-  identifier String   // email del usuario
-  value      String   // token de verificación
+  identifier String
+  value      String
   expiresAt  DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -221,40 +261,32 @@ model Verification {
 
 // ─────────────────────────────────────────────
 // CLUBS
-// Tabla nueva — los datos de ClubRegistration
-// se migran aquí en el go-live
 // ─────────────────────────────────────────────
 
 model Club {
   id          String   @id @default(cuid())
   name        String
-  slug        String   @unique // w3runn3rs.com/clubs/pacers-mx
+  slug        String   @unique
   description String?
   logoUrl     String?
   city        String?
-  country     String   @default("MX") // ISO 3166-1 alpha-2
+  country     String   @default("MX")
   clubType    ClubType @default(RECREATIONAL)
 
-  // Redes sociales
   instagram    String?
   twitter      String?
   tiktok       String?
   facebook     String?
   contactEmail String?
 
-  // Tamaño aproximado al registrarse
   initialMemberCount Int?
-
-  // Desnormalizado para queries rápidas
-  // Se actualiza con cada cambio de membresía
-  memberCount Int     @default(0)
-  verified    Boolean @default(false) // validado por W3Runn3rs
-  active      Boolean @default(true)  // desactivar sin borrar historial
+  memberCount        Int     @default(0)
+  verified           Boolean @default(false)
+  active             Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relaciones
   memberships ClubMembership[]
   activities  Activity[]
   stats       ClubStats[]
@@ -273,18 +305,14 @@ model ClubMembership {
   userId String
   clubId String
 
-  joinedAt DateTime  @default(now())
-  leftAt   DateTime? // null = membresía activa
-  isActive Boolean   @default(true)
-
-  // Hasta esta fecha el usuario no puede cambiar de club.
-  // Se calcula al unirse: joinedAt + 6 meses.
+  joinedAt      DateTime  @default(now())
+  leftAt        DateTime?
+  isActive      Boolean   @default(true)
   lockExpiresAt DateTime
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
 
-  // Un usuario solo puede tener una membresía activa a la vez
   @@unique([userId, isActive], name: "one_active_membership")
   @@index([clubId])
   @@index([userId])
@@ -292,38 +320,31 @@ model ClubMembership {
 }
 
 // ─────────────────────────────────────────────
-// ACTIVIDADES — dato más granular, corazón del sistema
+// ACTIVIDADES
 // ─────────────────────────────────────────────
 
 model Activity {
   id     String  @id @default(cuid())
   userId String
-  clubId String? // nullable: usuarios sin club pueden registrar actividades
+  clubId String?
 
-  // Siempre en unidades base: metros y segundos.
-  // La conversión a km/mi y mm:ss ocurre en el cliente.
   distanceMeters      Int
   durationSeconds     Int
   elevationGainMeters Int?
   elevationLossMeters Int?
 
-  // Fecha real de la carrera, no de creación del registro
   activityDate DateTime
   title        String?
   activityType ActivityType   @default(RUN)
+  source       ActivitySource @default(MANUAL)
+  externalId   String?
 
-  // Fuente del registro
-  source     ActivitySource @default(MANUAL)
-  externalId String?        // ID en Strava/Garmin — evita duplicados al importar
-
-  // Métricas opcionales
   avgPaceSecPerKm Int?
   avgHeartRate    Int?
   maxHeartRate    Int?
   avgCadence      Int?
   calories        Int?
 
-  // Geolocalización — para mapas de calor futuros
   startLat Float?
   startLng Float?
 
@@ -333,7 +354,6 @@ model Activity {
   club   Club?           @relation(fields: [clubId], references: [id])
   record PersonalRecord?
 
-  // Evita duplicados al sincronizar con Strava/Garmin
   @@unique([userId, source, externalId])
   @@index([userId, activityDate])
   @@index([clubId, activityDate])
@@ -347,7 +367,7 @@ model Activity {
 model PersonalRecord {
   id         String     @id @default(cuid())
   userId     String
-  activityId String?    @unique // null si fue entrada manual
+  activityId String?    @unique
 
   distance        PRDistance
   durationSeconds Int
@@ -359,7 +379,6 @@ model PersonalRecord {
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   activity Activity? @relation(fields: [activityId], references: [id])
 
-  // Un PR activo por distancia por usuario
   @@unique([userId, distance])
   @@index([userId])
   @@map("personal_records")
@@ -367,7 +386,6 @@ model PersonalRecord {
 
 // ─────────────────────────────────────────────
 // CLUB STATS — motor de leaderboards
-// Calculado por cron job, no en tiempo real
 // ─────────────────────────────────────────────
 
 model ClubStats {
@@ -377,27 +395,22 @@ model ClubStats {
   periodStart DateTime
   periodEnd   DateTime
 
-  // Volumen
   totalDistanceMeters  Int @default(0)
   totalActivities      Int @default(0)
   totalDurationSeconds Int @default(0)
   activeMembers        Int @default(0)
 
-  // Velocidad
   avgPaceSecPerKm  Int?
   bestPaceSecPerKm Int?
 
-  // Elevación
   totalElevationMeters Int @default(0)
 
-  // Conteo de carreras por distancia
   races5k           Int @default(0)
   races10k          Int @default(0)
   racesHalfMarathon Int @default(0)
   racesMarathon     Int @default(0)
   racesUltra        Int @default(0)
 
-  // Consistencia
   avgActivitiesPerMember Float @default(0)
   weeksWithActivity      Int   @default(0)
 
@@ -411,7 +424,7 @@ model ClubStats {
 }
 
 // ─────────────────────────────────────────────
-// LEADERBOARD ENTRIES — historial de posiciones
+// LEADERBOARD ENTRIES
 // ─────────────────────────────────────────────
 
 model LeaderboardEntry {
@@ -424,7 +437,6 @@ model LeaderboardEntry {
   rank         Int
   previousRank Int?
 
-  // Snapshot del valor que determinó el rank
   totalDistanceMeters  Int?
   avgPaceSecPerKm      Int?
   totalElevationMeters Int?
@@ -442,8 +454,7 @@ model LeaderboardEntry {
 }
 
 // ─────────────────────────────────────────────
-// WEEKLY SNAPSHOTS — performance a escala
-// Cron job cada lunes materializa la semana anterior
+// WEEKLY SNAPSHOTS
 // ─────────────────────────────────────────────
 
 model WeeklySnapshot {
@@ -451,7 +462,7 @@ model WeeklySnapshot {
   userId String
   clubId String?
 
-  weekStart DateTime // lunes 00:00 UTC
+  weekStart DateTime
 
   totalDistanceMeters  Int @default(0)
   totalActivities      Int @default(0)
@@ -466,4 +477,3 @@ model WeeklySnapshot {
   @@index([userId, weekStart])
   @@map("weekly_snapshots")
 }
-

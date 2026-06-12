@@ -1,8 +1,6 @@
 import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
-import { PrismaClient } from "@prisma/client"
- 
-const prisma = new PrismaClient()
+import { prisma } from "./prisma"
  
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -63,50 +61,7 @@ export const auth = betterAuth({
         defaultValue: "America/Mexico_City",
         input: true,
       },
-      betaAccess: {
-        type: "boolean",
-        required: false,
-        defaultValue: false,
-        input: false,       // solo se activa internamente al validar waitlist
-      },
     },
-  },
- 
-  // Callbacks
-  callbacks: {
-    // Se ejecuta después de que un usuario se registra
-    // Aquí validamos si el email está en la waitlist con betaAccess = true
-    after: [
-      {
-        pathMatcher(path) {
-          return path === "/sign-up/email" || path === "/callback/google"
-        },
-        async handler(ctx) {
-          // El email del usuario recién registrado
-          const email = ctx.context.newSession?.user?.email
-          if (!email) return
- 
-          // Buscar en WaitlistEntry
-          const waitlistEntry = await prisma.waitlistEntry.findUnique({
-            where: { email },
-          })
- 
-          if (waitlistEntry?.betaAccess) {
-            // Tiene acceso — actualizar User y marcar convertedAt en waitlist
-            await Promise.all([
-              prisma.user.update({
-                where: { email },
-                data: { betaAccess: true },
-              }),
-              prisma.waitlistEntry.update({
-                where: { email },
-                data: { convertedAt: new Date() },
-              }),
-            ])
-          }
-        },
-      },
-    ],
   },
 })
  
