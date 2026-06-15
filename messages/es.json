@@ -96,5 +96,77 @@
   },
   "asseenon": {
     "label": "Mencionados en"
+  },
+  "app": {
+    "nav": {
+      "home": "Inicio",
+      "activities": "Actividades",
+      "club": "Mi club",
+      "leaderboard": "Leaderboard",
+      "profile": "Perfil",
+      "settings": "Configuración"
+    },
+    "soon": "Pronto",
+    "signOut": "Cerrar sesión",
+    "language": "Idioma"
+  },
+  "dashboard": {
+    "greeting": "Hola, {name}",
+    "subtitle": "Tu semana en W3Runn3rs",
+    "sampleBadge": "Datos de muestra",
+    "connect": {
+      "text": "Conecta tu Garmin, Polar, Suunto o Strava para sincronizar tus actividades automáticamente.",
+      "cta": "Conectar"
+    },
+    "hero": {
+      "eyebrow": "Tu aporte · esta semana",
+      "km": "km",
+      "activities": "{count, plural, one {# actividad} other {# actividades}}",
+      "contributor": "{rank}º contribuidor",
+      "ofActive": "de {total} activos",
+      "beFirst": "Sé el primero del club en sumar kilómetros esta semana.",
+      "share": "Representas el <b>{pct}%</b> del total del club",
+      "noClubTitle": "Únete a un club para empezar a sumar",
+      "noClubBody": "En W3Runn3rs cada kilómetro cuenta para un solo club. Elige el tuyo y empieza a escalar el leaderboard global.",
+      "noClubCta": "Explorar clubes"
+    },
+    "rank": {
+      "titleGlobal": "Ranking global",
+      "title": "Ranking del club",
+      "thisWeek": "{dist} esta semana",
+      "gap": "Faltan <b>{dist}</b> para alcanzar a",
+      "pending": "El ranking global se publica al cierre de la semana.",
+      "noClub": "Únete a un club para ver su posición en el leaderboard global.",
+      "viewClub": "Ver club a detalle →"
+    },
+    "personal": {
+      "title": "Tus números",
+      "week": "Semana",
+      "month": "Mes",
+      "streak": "Racha",
+      "streakHint": "días seguidos",
+      "pace": "Ritmo prom.",
+      "km": "km",
+      "records": "Récords",
+      "pr": {
+        "ONE_K": "1K",
+        "FIVE_K": "5K",
+        "TEN_K": "10K",
+        "HALF_MARATHON": "Media",
+        "MARATHON": "Maratón"
+      }
+    },
+    "recent": {
+      "title": "Actividades recientes",
+      "emptyTitle": "Sin actividades todavía",
+      "emptyBody": "Conecta tu dispositivo o registra una carrera manual para empezar a sumar.",
+      "pace": "Ritmo",
+      "time": "Tiempo",
+      "defaultTitle": "Actividad",
+      "today": "hoy",
+      "yesterday": "ayer",
+      "daysAgo": "hace {days} d",
+      "manual": "Manual"
+    }
   }
 }

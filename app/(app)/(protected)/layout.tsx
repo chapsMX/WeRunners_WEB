@@ -3,6 +3,7 @@ import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { AppShell } from "@/components/app/AppShell"
 
 export default async function ProtectedLayout({ children }: { children: ReactNode }) {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -27,5 +28,15 @@ export default async function ProtectedLayout({ children }: { children: ReactNod
     }
   }
 
-  return <>{children}</>
+  return (
+    <AppShell
+      user={{
+        name: session.user.name,
+        email: session.user.email,
+        image: session.user.image,
+      }}
+    >
+      {children}
+    </AppShell>
+  )
 }

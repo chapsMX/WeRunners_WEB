@@ -96,5 +96,77 @@
   },
   "asseenon": {
     "label": "As seen on"
+  },
+  "app": {
+    "nav": {
+      "home": "Home",
+      "activities": "Activities",
+      "club": "My club",
+      "leaderboard": "Leaderboard",
+      "profile": "Profile",
+      "settings": "Settings"
+    },
+    "soon": "Soon",
+    "signOut": "Sign out",
+    "language": "Language"
+  },
+  "dashboard": {
+    "greeting": "Hi, {name}",
+    "subtitle": "Your week on W3Runn3rs",
+    "sampleBadge": "Sample data",
+    "connect": {
+      "text": "Connect your Garmin, Polar, Suunto or Strava to sync your activities automatically.",
+      "cta": "Connect"
+    },
+    "hero": {
+      "eyebrow": "Your contribution · this week",
+      "km": "km",
+      "activities": "{count, plural, one {# activity} other {# activities}}",
+      "contributor": "{rank, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} contributor",
+      "ofActive": "of {total} active",
+      "beFirst": "Be the first in your club to log kilometers this week.",
+      "share": "You represent <b>{pct}%</b> of your club's total",
+      "noClubTitle": "Join a club to start adding up",
+      "noClubBody": "On W3Runn3rs every kilometer counts for a single club. Pick yours and start climbing the global leaderboard.",
+      "noClubCta": "Explore clubs"
+    },
+    "rank": {
+      "titleGlobal": "Global ranking",
+      "title": "Club ranking",
+      "thisWeek": "{dist} this week",
+      "gap": "<b>{dist}</b> away from reaching",
+      "pending": "The global ranking is published at the end of the week.",
+      "noClub": "Join a club to see its position on the global leaderboard.",
+      "viewClub": "View club details →"
+    },
+    "personal": {
+      "title": "Your numbers",
+      "week": "Week",
+      "month": "Month",
+      "streak": "Streak",
+      "streakHint": "days in a row",
+      "pace": "Avg pace",
+      "km": "km",
+      "records": "Records",
+      "pr": {
+        "ONE_K": "1K",
+        "FIVE_K": "5K",
+        "TEN_K": "10K",
+        "HALF_MARATHON": "Half",
+        "MARATHON": "Marathon"
+      }
+    },
+    "recent": {
+      "title": "Recent activities",
+      "emptyTitle": "No activities yet",
+      "emptyBody": "Connect your device or log a run manually to start adding up.",
+      "pace": "Pace",
+      "time": "Time",
+      "defaultTitle": "Activity",
+      "today": "today",
+      "yesterday": "yesterday",
+      "daysAgo": "{days}d ago",
+      "manual": "Manual"
+    }
   }
 }
