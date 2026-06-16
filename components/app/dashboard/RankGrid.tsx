@@ -3,14 +3,13 @@
 import { useLocale, useTranslations } from "next-intl"
 import type { HeroSummary } from "@/lib/dashboard-data"
 import { ActivityIcon, TargetIcon, TrophyIcon } from "../icons"
-import { StatCard } from "./StatCard"
+import { StatGrid, type StatGridCard } from "./StatGrid"
 
-export function HeroStats({
-  name,
+/** Las 4 tarjetas de ranking en grid 2×2 (estilo home "Does your running club…"). */
+export function RankGrid({
   hero,
   hasClub,
 }: {
-  name: string
   hero: HeroSummary
   hasClub: boolean
 }) {
@@ -27,7 +26,7 @@ export function HeroStats({
     return `${km(dist)} · ${t(`cards.${period}`)}`
   }
 
-  const cards = [
+  const cards: StatGridCard[] = [
     {
       title: t("cards.rankWeekly"),
       value: rankValue(hero.weeklyRank),
@@ -55,18 +54,12 @@ export function HeroStats({
   ]
 
   return (
-    <section>
-      {/* Banda full-bleed con título indentado */}
-      <div className="bg-brand-blue px-6 pb-20 pt-7 text-white lg:px-8">
-        <h1 className="text-2xl font-bold sm:text-3xl">{t("greeting", { name })}</h1>
-      </div>
+    <section className="flex h-full flex-col">
+      <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
+        {t("rankGridTitle")}
+      </h3>
 
-      {/* Tarjetas superpuestas con el mismo margen interior */}
-      <div className="-mt-14 grid grid-cols-1 gap-4 px-6 sm:grid-cols-2 md:grid-cols-4 lg:px-8">
-        {cards.map((c) => (
-          <StatCard key={c.title} {...c} />
-        ))}
-      </div>
+      <StatGrid cards={cards} />
     </section>
   )
 }

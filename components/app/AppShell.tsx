@@ -8,9 +8,11 @@ import { useTranslations } from "next-intl"
 import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 import { NAV_ITEMS } from "./nav"
-import { LogoutIcon, MenuIcon, PanelLeftIcon, UserIcon } from "./icons"
+import { LogoutIcon, UserIcon } from "./icons"
 import { LanguageToggle } from "./LanguageToggle"
 import { ProfileStats, type ProfileStatsData } from "./ProfileStats"
+import { AppTopbar } from "./AppTopbar"
+import AppFooter from "@/components/layout/AppFooter"
 
 type SidebarUser = {
   name?: string | null
@@ -52,12 +54,10 @@ function Avatar({
 function SidebarContent({
   user,
   stats,
-  onCollapse,
   onNavigate,
 }: {
   user: SidebarUser
   stats: ProfileStatsData
-  onCollapse: () => void
   onNavigate: () => void
 }) {
   const pathname = usePathname()
@@ -79,14 +79,6 @@ function SidebarContent({
     <div className="flex h-full flex-col px-4 py-5">
       {/* ── Header: We Runners + logotipo ── */}
       <div className="relative">
-        <button
-          onClick={onCollapse}
-          aria-label={t("collapse")}
-          title={t("collapse")}
-          className="absolute right-0 top-0 rounded-lg p-1.5 text-muted transition-colors hover:bg-foreground/5 hover:text-foreground"
-        >
-          <PanelLeftIcon size={18} />
-        </button>
         <Link
           href="/dashboard"
           onClick={onNavigate}
@@ -179,7 +171,6 @@ export function AppShell({
   stats: ProfileStatsData
   children: ReactNode
 }) {
-  const t = useTranslations("app")
   // SSR: abierto (desktop-first). En cliente ajustamos por viewport + preferencia.
   const [open, setOpen] = useState(true)
   const [mounted, setMounted] = useState(false)
@@ -202,19 +193,6 @@ export function AppShell({
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Botón flotante para abrir cuando está colapsado */}
-      <button
-        onClick={() => toggle(true)}
-        aria-label={t("expand")}
-        title={t("expand")}
-        className={cn(
-          "fixed left-4 top-4 z-40 rounded-xl border border-line bg-sidebar p-2.5 text-foreground shadow-lg transition-opacity hover:text-brand-green",
-          open ? "pointer-events-none opacity-0" : "opacity-100"
-        )}
-      >
-        <MenuIcon size={22} />
-      </button>
-
       {/* Backdrop (solo móvil, cuando está abierto) */}
       {open && (
         <div
@@ -235,7 +213,6 @@ export function AppShell({
         <SidebarContent
           user={user}
           stats={stats}
-          onCollapse={() => toggle(false)}
           onNavigate={() => {
             // En móvil, navegar cierra el panel.
             if (window.matchMedia("(max-width: 1023px)").matches) toggle(false)
@@ -246,13 +223,13 @@ export function AppShell({
       {/* Contenido */}
       <main
         className={cn(
-          "transition-[padding] duration-300 ease-in-out",
+          "flex min-h-screen flex-col transition-[padding] duration-300 ease-in-out",
           open ? "lg:pl-72" : "lg:pl-0"
         )}
       >
-        <div className="w-full py-6 lg:py-8">
-          {children}
-        </div>
+        <AppTopbar onToggleSidebar={() => toggle(!open)} />
+        <div className="flex-1">{children}</div>
+        <AppFooter />
       </main>
     </div>
   )

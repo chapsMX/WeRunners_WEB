@@ -33,35 +33,36 @@ export function ClubFeedCard({
   }
 
   return (
-    <section className="flex h-full flex-col border border-line bg-surface-alt/40">
-      {/* Encabezado: nombre del club */}
-      <div className="border-b border-line p-5">
-        <h3 className="text-lg font-bold text-foreground">{clubName ?? t("fallbackName")}</h3>
-        <p className="text-xs text-muted">{t("subtitle")}</p>
-      </div>
+    <section className="flex h-full flex-col">
+      {/* Nombre del club como título — mismo estilo que "Your numbers" */}
+      <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
+        {clubName ?? t("fallbackName")}
+      </h3>
 
-      {/* Cabecera de columnas */}
-      <div className="flex items-center gap-4 border-b border-line px-5 py-2.5 text-xs font-medium uppercase tracking-wide text-muted">
-        <span className="flex-1">{t("colRunner")}</span>
-        <span className="hidden w-24 text-right sm:block">{t("colDistance")}</span>
-        <span className="w-20 text-right">{t("colWhen")}</span>
-      </div>
+      <div className="flex flex-1 flex-col border border-line bg-surface-alt/40">
+        {/* Cabecera de columnas */}
+        <div className="flex items-center gap-4 border-b border-line px-5 py-2.5 text-xs font-medium uppercase tracking-wide text-muted">
+          <span className="flex-1">{t("colRunner")}</span>
+          <span className="hidden w-24 text-right sm:block">{t("colDistance")}</span>
+          <span className="w-20 text-right">{t("colWhen")}</span>
+        </div>
 
-      {/* Filas */}
-      <ul className="flex flex-1 flex-col divide-y divide-line">
-        {feed.map((row) => (
-          <li key={row.id} className="flex items-center gap-4 px-5 py-3">
-            <div className="flex min-w-0 flex-1 items-center gap-3">
-              <Avatar name={row.name} />
-              <span className="truncate text-sm font-semibold text-foreground">{row.name}</span>
-            </div>
-            <span className="hidden w-24 text-right text-sm font-medium text-foreground sm:block">
-              {formatDistance(row.distanceMeters)}
-            </span>
-            <span className="w-20 text-right text-sm text-muted">{when(row.date)}</span>
-          </li>
-        ))}
-      </ul>
+        {/* Filas */}
+        <ul className="flex flex-1 flex-col divide-y divide-line">
+          {feed.map((row) => (
+            <li key={row.id} className="flex items-center gap-4 px-5 py-3">
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                <Avatar name={row.name} />
+                <span className="truncate text-sm font-semibold text-foreground">{row.name}</span>
+              </div>
+              <span className="hidden w-24 text-right text-sm font-medium text-foreground sm:block">
+                {formatDistance(row.distanceMeters)}
+              </span>
+              <span className="w-20 text-right text-sm text-muted">{when(row.date)}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   )
 }

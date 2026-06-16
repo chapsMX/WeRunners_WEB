@@ -4,11 +4,15 @@ import Link from "next/link"
 import { useTranslations } from "next-intl"
 import type { DashboardData } from "@/lib/dashboard-data"
 import { DeviceIcon } from "../icons"
-import { HeroStats } from "./HeroStats"
+import { DashboardHero } from "./DashboardHero"
+import { RankGrid } from "./RankGrid"
 import { PersonalStats } from "./PersonalStats"
 import { RecordsCard } from "./RecordsCard"
 import { ClubFeedCard } from "./ClubFeedCard"
 import { RecentActivities } from "./RecentActivities"
+
+// Nombre de club simulado mientras no exista una membresía real.
+const SIMULATED_CLUB = "Pacers CDMX"
 
 export function DashboardView({
   data,
@@ -18,22 +22,23 @@ export function DashboardView({
   firstName: string
 }) {
   const t = useTranslations("dashboard")
+  const clubName = data.club?.name ?? SIMULATED_CLUB
 
   return (
-    <div className="space-y-6">
-      {data.isSample && (
-        <div className="flex justify-end px-6 lg:px-8">
-          <span className="border border-brand-green/40 bg-brand-green/10 px-3 py-1 text-xs font-medium text-brand-green">
-            {t("sampleBadge")}
-          </span>
-        </div>
-      )}
+    <div>
+      {/* Hero full-bleed: imagen + saludo + club */}
+      <DashboardHero name={firstName} clubName={clubName} />
 
-      {/* Hero full-bleed: saludo + 4 tarjetas (ranking, aporte, productividad) */}
-      <HeroStats name={firstName} hero={data.hero} hasClub={data.club !== null} />
+      {/* Contenido con margen interior */}
+      <div className="space-y-8 px-6 py-8 lg:px-8">
+        {data.isSample && (
+          <div className="flex justify-end">
+            <span className="border border-brand-green/40 bg-brand-green/10 px-3 py-1 text-xs font-medium text-brand-green">
+              {t("sampleBadge")}
+            </span>
+          </div>
+        )}
 
-      {/* Resto del contenido con margen interior */}
-      <div className="space-y-6 px-6 lg:px-8">
         {/* Banner: conectar dispositivo */}
         {!data.deviceConnected && (
           <div className="flex flex-wrap items-center gap-3 border border-line bg-surface-alt/40 px-4 py-3">
@@ -50,20 +55,19 @@ export function DashboardView({
           </div>
         )}
 
-        {/* Actividades recientes */}
-        <RecentActivities activities={data.recent} />
+        {/* Sección 50/50: actividad reciente · ranking */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <RecentActivities activities={data.recent} />
+          <RankGrid hero={data.hero} hasClub={data.club !== null} />
+        </div>
 
-        {/* Stats personales — mismo formato de card que el hero */}
-        <PersonalStats personal={data.personal} />
+        {/* Personal records — contenedor de 3 columnas (estilo home) */}
+        <RecordsCard records={data.personal.records} />
 
-        {/* Fila: records (1/3) + actividad del club (2/3) */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-1">
-            <RecordsCard records={data.personal.records} />
-          </div>
-          <div className="lg:col-span-2">
-            <ClubFeedCard clubName={data.club?.name ?? null} feed={data.clubFeed} />
-          </div>
+        {/* Sección 50/50: tus números (izquierda) · tabla del club (derecha) */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <PersonalStats personal={data.personal} />
+          <ClubFeedCard clubName={data.club?.name ?? null} feed={data.clubFeed} />
         </div>
       </div>
     </div>

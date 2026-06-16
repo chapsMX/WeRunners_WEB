@@ -3,37 +3,85 @@
 import { useTranslations } from "next-intl"
 import { formatDuration } from "@/lib/format"
 import type { PersonalRecordRow } from "@/lib/dashboard-data"
+import { TrophyIcon } from "../icons"
 
-// Distancias destacadas en este panel (el enum HALF_MARATHON se muestra como 21K).
+// Distancias destacadas (el enum HALF_MARATHON se muestra como 21K).
+// Estilo de las tres columnas del home (WhatIs): verde / azul / navy.
 const TARGETS = [
-  { key: "FIVE_K", label: "5K" },
-  { key: "TEN_K", label: "10K" },
-  { key: "HALF_MARATHON", label: "21K" },
-]
+  {
+    key: "FIVE_K",
+    label: "5K",
+    bg: "bg-brand-green",
+    iconColor: "text-brand-green",
+    titleCls: "text-brand-navy",
+    valueCls: "text-brand-navy",
+    captionCls: "text-brand-navy/70",
+  },
+  {
+    key: "TEN_K",
+    label: "10K",
+    bg: "bg-surface-alt",
+    iconColor: "text-brand-green",
+    titleCls: "text-white",
+    valueCls: "text-brand-green",
+    captionCls: "text-white/80",
+  },
+  {
+    key: "HALF_MARATHON",
+    label: "21K",
+    bg: "bg-brand-blue",
+    iconColor: "text-brand-blue",
+    titleCls: "text-white",
+    valueCls: "text-brand-green",
+    captionCls: "text-white/80",
+  },
+] as const
 
 export function RecordsCard({ records }: { records: PersonalRecordRow[] }) {
   const t = useTranslations("dashboard.records")
   const byKey = new Map(records.map((r) => [r.key, r.durationSeconds]))
 
   return (
-    <section className="flex h-full flex-col border border-line bg-surface-alt/40 p-5">
-      <h3 className="text-sm font-semibold uppercase tracking-wide text-muted">{t("title")}</h3>
+    <section>
+      <h3 className="mb-1 text-sm font-semibold uppercase tracking-wide text-muted">
+        {t("title")}
+      </h3>
+      <p className="mb-3 text-sm text-muted">{t("subtitle")}</p>
 
-      <ul className="mt-2 flex flex-1 flex-col divide-y divide-line">
+      {/* Tres columnas full-bleed estilo home: rompe el padding del wrapper */}
+      <div className="-mx-6 grid grid-cols-1 md:grid-cols-3 lg:-mx-8">
         {TARGETS.map((target) => {
           const dur = byKey.get(target.key)
           return (
-            <li key={target.key} className="flex items-center justify-between gap-3 py-4">
-              <span className="flex h-10 w-12 items-center justify-center bg-brand-green/10 text-sm font-bold text-brand-green">
+            <div
+              key={target.key}
+              className={`${target.bg} flex flex-col gap-6 px-8 py-10`}
+            >
+              {/* Círculo de ícono — fondo blanco como en el home */}
+              <div
+                className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-white ${target.iconColor}`}
+              >
+                <TrophyIcon size={26} />
+              </div>
+
+              <h4
+                className={`text-3xl font-extrabold uppercase leading-none tracking-wide ${target.titleCls}`}
+              >
                 {target.label}
-              </span>
-              <span className="text-xl font-bold text-foreground">
-                {dur ? formatDuration(dur) : "—"}
-              </span>
-            </li>
+              </h4>
+
+              <div>
+                <p className={`text-3xl font-extrabold leading-none ${target.valueCls}`}>
+                  {dur ? formatDuration(dur) : "—"}
+                </p>
+                <p className={`mt-2 text-sm ${target.captionCls}`}>
+                  {dur ? t("best") : t("none")}
+                </p>
+              </div>
+            </div>
           )
         })}
-      </ul>
+      </div>
     </section>
   )
 }

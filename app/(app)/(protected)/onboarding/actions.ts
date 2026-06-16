@@ -9,7 +9,7 @@ import { APP_LOCALE_COOKIE } from "@/lib/app-i18n"
 
 export type OnboardingState = {
   error?: {
-    field: "username" | "form"
+    field: "username" | "facebook" | "strava" | "form"
     code: string // clave i18n bajo onboarding.errors
   }
 }
@@ -21,6 +21,39 @@ const RESERVED = new Set([
   "club", "leaderboard", "onboarding", "w3runn3rs", "runners", "support",
   "about", "help", "me", "new", "edit",
 ])
+
+/**
+ * Normaliza un @handle de red social. Acepta que el usuario pegue el handle
+ * con o sin `@`, o incluso una URL completa del perfil. Devuelve el handle
+ * limpio o null si quedó vacío.
+ */
+function cleanHandle(raw: string): string | null {
+  let v = raw.trim()
+  if (!v) return null
+  // Si pegaron una URL de perfil, quédate sólo con el último segmento.
+  v = v.replace(/^https?:\/\/(www\.)?(twitter\.com|x\.com|instagram\.com)\//i, "")
+  v = v.replace(/^@/, "").replace(/\/.*$/, "").trim()
+  v = v.replace(/[^a-zA-Z0-9_.]/g, "")
+  return v.length ? v.slice(0, 30) : null
+}
+
+/**
+ * Normaliza y valida una URL de perfil. Agrega `https://` si falta el esquema.
+ * Devuelve { url } con la URL normalizada, { url: null } si venía vacía, o
+ * { invalid: true } si no es parseable.
+ */
+function cleanUrl(raw: string): { url: string | null; invalid?: boolean } {
+  const trimmed = raw.trim()
+  if (!trimmed) return { url: null }
+  const withScheme = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`
+  try {
+    const u = new URL(withScheme)
+    if (!u.hostname.includes(".")) return { url: null, invalid: true }
+    return { url: u.toString() }
+  } catch {
+    return { url: null, invalid: true }
+  }
+}
 
 export async function completeOnboarding(
   _prev: OnboardingState,
@@ -44,6 +77,16 @@ export async function completeOnboarding(
   const preferredUnit = unit === "MILES" ? "MILES" : "KM"
   const safeLocale = locale === "es" ? "es" : "en"
 
+  // ── Redes sociales (todas opcionales) ──
+  const twitterHandle = cleanHandle(String(formData.get("twitterHandle") ?? ""))
+  const instagramHandle = cleanHandle(String(formData.get("instagramHandle") ?? ""))
+
+  const facebook = cleanUrl(String(formData.get("facebookProfileUrl") ?? ""))
+  if (facebook.invalid) return { error: { field: "facebook", code: "invalidUrl" } }
+
+  const strava = cleanUrl(String(formData.get("stravaProfileUrl") ?? ""))
+  if (strava.invalid) return { error: { field: "strava", code: "invalidUrl" } }
+
   try {
     await prisma.user.update({
       where: { id: session.user.id },
@@ -51,6 +94,10 @@ export async function completeOnboarding(
         username: rawUsername,
         preferredUnit,
         locale: safeLocale,
+        twitterHandle,
+        instagramHandle,
+        facebookProfileUrl: facebook.url,
+        stravaProfileUrl: strava.url,
         onboardingCompletedAt: new Date(),
       },
     })

@@ -180,7 +180,7 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
     await Promise.all([
       prisma.user.findUnique({
         where: { id: userId },
-        select: { connectedDevice: true },
+        select: { connectedProvider: true },
       }),
       prisma.clubMembership.findFirst({
         where: { userId, isActive: true },
@@ -221,7 +221,7 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
     return sampleData()
   }
 
-  const deviceConnected = Boolean(user?.connectedDevice)
+  const deviceConnected = Boolean(user?.connectedProvider)
 
   // ── Aporte al club (semana en curso) ──
   const weekDistance = weekAgg._sum.distanceMeters ?? 0

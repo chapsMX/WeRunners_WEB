@@ -121,6 +121,8 @@
   "dashboard": {
     "greeting": "Hi, {name}",
     "subtitle": "Your week on W3Runn3rs",
+    "heroClub": "Running with {club}",
+    "rankGridTitle": "Your ranking",
     "sampleBadge": "Sample data",
     "cards": {
       "rankWeekly": "Global Ranking Weekly",
@@ -193,7 +195,10 @@
       "manual": "Manual"
     },
     "records": {
-      "title": "Personal records"
+      "title": "Personal records",
+      "subtitle": "Your best times across key distances.",
+      "best": "Personal best",
+      "none": "No record yet"
     },
     "clubFeed": {
       "fallbackName": "Your club",
@@ -214,12 +219,19 @@
     "unitKm": "Kilometers",
     "unitMiles": "Miles",
     "localeLabel": "Language",
+    "socialLabel": "Social profiles",
+    "socialHint": "Optional — link your profiles so other runners can find you. You can change these later.",
+    "twitterPlaceholder": "your_handle",
+    "instagramPlaceholder": "your_handle",
+    "facebookPlaceholder": "your.profile",
+    "stravaPlaceholder": "12345678",
     "submit": "Enter W3Runn3rs",
     "submitting": "Saving…",
     "errors": {
       "invalid": "Use 3–20 lowercase letters, numbers or underscores.",
       "reserved": "That username isn't available.",
       "taken": "That username is already taken.",
+      "invalidUrl": "That doesn't look like a valid link.",
       "unknown": "Something went wrong. Please try again."
     }
   }
