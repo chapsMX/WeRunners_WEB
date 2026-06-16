@@ -108,12 +108,33 @@
     },
     "soon": "Pronto",
     "signOut": "Cerrar sesión",
-    "language": "Idioma"
+    "language": "Idioma",
+    "collapse": "Ocultar menú",
+    "expand": "Abrir menú",
+    "tagline": "We Runners",
+    "stats": {
+      "following": "Following",
+      "followers": "Followers",
+      "activities": "Actividades"
+    }
   },
   "dashboard": {
     "greeting": "Hola, {name}",
     "subtitle": "Tu semana en W3Runn3rs",
     "sampleBadge": "Datos de muestra",
+    "cards": {
+      "rankWeekly": "Ranking Global Semanal",
+      "rankMonthly": "Ranking Global Mensual",
+      "contribution": "Tu Aporte",
+      "productivity": "Productividad",
+      "thisWeek": "esta semana",
+      "thisMonth": "este mes",
+      "toYourClub": "sumados a tu club",
+      "ofClubTotal": "del total del club",
+      "noClub": "Únete a un club",
+      "noRankWeek": "Sin actividad esta semana",
+      "noRankMonth": "Sin actividad este mes"
+    },
     "connect": {
       "text": "Conecta tu Garmin, Polar, Suunto o Strava para sincronizar tus actividades automáticamente.",
       "cta": "Conectar"
@@ -146,6 +167,9 @@
       "streak": "Racha",
       "streakHint": "días seguidos",
       "pace": "Ritmo prom.",
+      "thisWeek": "esta semana",
+      "thisMonth": "este mes",
+      "paceSub": "promedio",
       "km": "km",
       "records": "Récords",
       "pr": {
@@ -167,6 +191,36 @@
       "yesterday": "ayer",
       "daysAgo": "hace {days} d",
       "manual": "Manual"
+    },
+    "records": {
+      "title": "Récords personales"
+    },
+    "clubFeed": {
+      "fallbackName": "Tu club",
+      "subtitle": "Actividad reciente del club",
+      "colRunner": "Corredor",
+      "colDistance": "Distancia",
+      "colWhen": "Cuándo",
+      "noClub": "Únete a un club para ver su actividad aquí."
+    }
+  },
+  "onboarding": {
+    "welcome": "Te damos la bienvenida, {name}",
+    "welcomeNoName": "Te damos la bienvenida",
+    "subtitle": "Configura tu perfil de runner antes de empezar.",
+    "usernameLabel": "Nombre de usuario",
+    "usernameHint": "3–20 caracteres: minúsculas, números y guiones bajos. Este es tu @usuario público.",
+    "unitLabel": "Unidad de distancia",
+    "unitKm": "Kilómetros",
+    "unitMiles": "Millas",
+    "localeLabel": "Idioma",
+    "submit": "Entrar a W3Runn3rs",
+    "submitting": "Guardando…",
+    "errors": {
+      "invalid": "Usa 3–20 minúsculas, números o guiones bajos.",
+      "reserved": "Ese nombre de usuario no está disponible.",
+      "taken": "Ese nombre de usuario ya está en uso.",
+      "unknown": "Algo salió mal. Inténtalo de nuevo."
     }
   }
 }

@@ -108,12 +108,33 @@
     },
     "soon": "Soon",
     "signOut": "Sign out",
-    "language": "Language"
+    "language": "Language",
+    "collapse": "Collapse menu",
+    "expand": "Open menu",
+    "tagline": "We Runners",
+    "stats": {
+      "following": "Following",
+      "followers": "Followers",
+      "activities": "Activities"
+    }
   },
   "dashboard": {
     "greeting": "Hi, {name}",
     "subtitle": "Your week on W3Runn3rs",
     "sampleBadge": "Sample data",
+    "cards": {
+      "rankWeekly": "Global Ranking Weekly",
+      "rankMonthly": "Global Ranking Monthly",
+      "contribution": "Your Contribution",
+      "productivity": "Productivity",
+      "thisWeek": "this week",
+      "thisMonth": "this month",
+      "toYourClub": "added to your club",
+      "ofClubTotal": "of club total",
+      "noClub": "Join a club",
+      "noRankWeek": "No activity this week",
+      "noRankMonth": "No activity this month"
+    },
     "connect": {
       "text": "Connect your Garmin, Polar, Suunto or Strava to sync your activities automatically.",
       "cta": "Connect"
@@ -146,6 +167,9 @@
       "streak": "Streak",
       "streakHint": "days in a row",
       "pace": "Avg pace",
+      "thisWeek": "this week",
+      "thisMonth": "this month",
+      "paceSub": "average",
       "km": "km",
       "records": "Records",
       "pr": {
@@ -167,6 +191,36 @@
       "yesterday": "yesterday",
       "daysAgo": "{days}d ago",
       "manual": "Manual"
+    },
+    "records": {
+      "title": "Personal records"
+    },
+    "clubFeed": {
+      "fallbackName": "Your club",
+      "subtitle": "Latest club activity",
+      "colRunner": "Runner",
+      "colDistance": "Distance",
+      "colWhen": "When",
+      "noClub": "Join a club to see its activity here."
+    }
+  },
+  "onboarding": {
+    "welcome": "Welcome, {name}",
+    "welcomeNoName": "Welcome",
+    "subtitle": "Let's set up your runner profile before you start.",
+    "usernameLabel": "Username",
+    "usernameHint": "3–20 characters: lowercase letters, numbers and underscores. This is your public @handle.",
+    "unitLabel": "Distance unit",
+    "unitKm": "Kilometers",
+    "unitMiles": "Miles",
+    "localeLabel": "Language",
+    "submit": "Enter W3Runn3rs",
+    "submitting": "Saving…",
+    "errors": {
+      "invalid": "Use 3–20 lowercase letters, numbers or underscores.",
+      "reserved": "That username isn't available.",
+      "taken": "That username is already taken.",
+      "unknown": "Something went wrong. Please try again."
     }
   }
 }

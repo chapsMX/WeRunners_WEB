@@ -113,6 +113,33 @@ export function LogoutIcon({ size = 18, className }: IconProps) {
   )
 }
 
+export function TargetIcon({ size = 20, className }: IconProps) {
+  return (
+    <svg {...base(size, className)}>
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="5" />
+      <circle cx="12" cy="12" r="1.5" />
+    </svg>
+  )
+}
+
+export function MenuIcon({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size, className)}>
+      <path d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  )
+}
+
+export function PanelLeftIcon({ size = 20, className }: IconProps) {
+  return (
+    <svg {...base(size, className)}>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M9 4v16" />
+    </svg>
+  )
+}
+
 export function DeviceIcon({ size = 20, className }: IconProps) {
   return (
     <svg {...base(size, className)}>

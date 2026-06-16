@@ -188,9 +188,13 @@ model User {
   // Plataforma
   role          Role         @default(RUNNER)
   preferredUnit DistanceUnit @default(KM)
-  locale        String       @default("es")
+  locale        String       @default("en")
   timezone      String       @default("America/Mexico_City")
   lastActiveAt  DateTime?
+
+  // Onboarding: null = perfil incompleto (gate lo manda a /onboarding).
+  // Se setea al terminar el flujo de primer ingreso.
+  onboardingCompletedAt DateTime?
 
   // Dispositivo conectado — un solo dispositivo por usuario
   // Si cambia de Garmin a Polar se sobreescriben los campos

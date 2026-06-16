@@ -58,14 +58,51 @@ export type PersonalSummary = {
   records: PersonalRecordRow[]
 }
 
+export type HeroSummary = {
+  /** Posición del usuario dentro del club por km (semana en curso). null = sin ranking. */
+  weeklyRank: number | null
+  weeklyDistanceMeters: number
+  /** Posición del usuario dentro del club por km (mes en curso). */
+  monthlyRank: number | null
+  monthlyDistanceMeters: number
+  /** Km totales que el usuario ha aportado al club (histórico). */
+  contributionMeters: number
+  /** % del total histórico del club que representa el aporte del usuario. */
+  productivityPct: number
+}
+
+export type ClubFeedRow = {
+  id: string
+  name: string
+  distanceMeters: number
+  activityType: string
+  date: Date
+}
+
 export type DashboardData = {
   /** true cuando se muestran datos de demostración (el usuario aún no tiene actividades). */
   isSample: boolean
   deviceConnected: boolean
   club: ClubSummary | null
+  hero: HeroSummary
   contribution: ContributionSummary
   personal: PersonalSummary
   recent: ActivityRow[]
+  /** Últimas actividades de los miembros del club. Simuladas hasta que existan datos reales. */
+  clubFeed: ClubFeedRow[]
+}
+
+// Feed simulado del club — placeholder hasta que haya actividades reales de miembros.
+function simulatedClubFeed(now = new Date()): ClubFeedRow[] {
+  const daysAgo = (n: number) => new Date(now.getTime() - n * 86_400_000)
+  return [
+    { id: "cf1", name: "Ana Torres", distanceMeters: 12_500, activityType: "RUN", date: daysAgo(0) },
+    { id: "cf2", name: "Luis Gómez", distanceMeters: 8_200, activityType: "RUN", date: daysAgo(0) },
+    { id: "cf3", name: "Sofía Ramírez", distanceMeters: 21_100, activityType: "RUN", date: daysAgo(1) },
+    { id: "cf4", name: "Diego Herrera", distanceMeters: 6_400, activityType: "TRAIL_RUN", date: daysAgo(2) },
+    { id: "cf5", name: "Mariana López", distanceMeters: 15_000, activityType: "RUN", date: daysAgo(3) },
+    { id: "cf6", name: "Carlos Mendoza", distanceMeters: 10_000, activityType: "RUN", date: daysAgo(4) },
+  ]
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -93,6 +130,14 @@ function sampleData(): DashboardData {
       gapToNextMeters: 53_000,
       nextRivalName: "NNC Berlin",
     },
+    hero: {
+      weeklyRank: 7,
+      weeklyDistanceMeters: 42_300,
+      monthlyRank: 5,
+      monthlyDistanceMeters: 168_500,
+      contributionMeters: 1_240_000,
+      productivityPct: 8.4,
+    },
     contribution: {
       distanceMeters: 42_300,
       activities: 4,
@@ -117,6 +162,7 @@ function sampleData(): DashboardData {
       { id: "s3", title: "Tirada larga", type: "RUN", distanceMeters: 18_900, durationSeconds: 6_120, avgPaceSecPerKm: 324, date: daysAgo(4), source: "STRAVA" },
       { id: "s4", title: "Trote de recuperación", type: "RUN", distanceMeters: 6_000, durationSeconds: 2_040, avgPaceSecPerKm: 340, date: daysAgo(6), source: "MANUAL" },
     ],
+    clubFeed: simulatedClubFeed(),
   }
 }
 
@@ -180,6 +226,7 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
   // ── Aporte al club (semana en curso) ──
   const weekDistance = weekAgg._sum.distanceMeters ?? 0
   const weekCount = weekAgg._count ?? 0
+  const monthDistance = monthAgg._sum.distanceMeters ?? 0
 
   let club: ClubSummary | null = null
   let contribution: ContributionSummary = {
@@ -188,6 +235,14 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
     rankInClub: null,
     totalContributors: 0,
     sharePct: 0,
+  }
+  const hero: HeroSummary = {
+    weeklyRank: null,
+    weeklyDistanceMeters: weekDistance,
+    monthlyRank: null,
+    monthlyDistanceMeters: monthDistance,
+    contributionMeters: 0,
+    productivityPct: 0,
   }
 
   if (membership?.club) {
@@ -218,6 +273,36 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
       totalContributors: ranked.length,
       sharePct: clubWeekDistance > 0 ? (weekDistance / clubWeekDistance) * 100 : 0,
     }
+
+    // Ranking mensual del usuario dentro del club.
+    const perMemberMonth = await prisma.activity.groupBy({
+      by: ["userId"],
+      where: { clubId: c.id, activityDate: { gte: monthStart } },
+      _sum: { distanceMeters: true },
+    })
+    const rankedMonth = perMemberMonth
+      .map((m) => ({ userId: m.userId, dist: m._sum.distanceMeters ?? 0 }))
+      .sort((a, b) => b.dist - a.dist)
+    const monthlyRankIdx = rankedMonth.findIndex((m) => m.userId === userId)
+
+    // Aporte histórico del usuario al club + productividad (% del total del club).
+    const [userClubAgg, clubAllTimeAgg] = await Promise.all([
+      prisma.activity.aggregate({
+        where: { userId, clubId: c.id },
+        _sum: { distanceMeters: true },
+      }),
+      prisma.activity.aggregate({
+        where: { clubId: c.id },
+        _sum: { distanceMeters: true },
+      }),
+    ])
+    const contributionMeters = userClubAgg._sum.distanceMeters ?? 0
+    const clubAllTime = clubAllTimeAgg._sum.distanceMeters ?? 0
+
+    hero.weeklyRank = contribution.rankInClub
+    hero.monthlyRank = monthlyRankIdx >= 0 ? monthlyRankIdx + 1 : null
+    hero.contributionMeters = contributionMeters
+    hero.productivityPct = clubAllTime > 0 ? (contributionMeters / clubAllTime) * 100 : 0
 
     club = {
       name: c.name,
@@ -265,7 +350,16 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
     source: a.source,
   }))
 
-  return { isSample: false, deviceConnected, club, contribution, personal, recent }
+  return {
+    isSample: false,
+    deviceConnected,
+    club,
+    hero,
+    contribution,
+    personal,
+    recent,
+    clubFeed: simulatedClubFeed(),
+  }
 }
 
 /** Días consecutivos (incluyendo hoy o ayer) con al menos una actividad. */

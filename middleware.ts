@@ -5,7 +5,8 @@ import { routing } from "./i18n/routing"
 const intlMiddleware = createMiddleware(routing)
 
 // Rutas del app que no requieren sesión activa
-const APP_PUBLIC_PATHS = ["/auth/sign-in", "/auth/sign-up", "/auth/waiting"]
+// "/u/" = perfiles públicos de corredores (compartibles sin login)
+const APP_PUBLIC_PATHS = ["/auth/sign-in", "/auth/sign-up", "/auth/waiting", "/u/"]
 
 // Cookie que Better Auth escribe al autenticar
 const SESSION_COOKIE = "better-auth.session_token"
@@ -13,7 +14,9 @@ const SESSION_COOKIE = "better-auth.session_token"
 // Prefijos de rutas que pertenecen al app — se saltan i18n en cualquier host
 const APP_PATH_PREFIXES = [
   "/auth/",
+  "/onboarding",
   "/dashboard",
+  "/u/",
   "/profile",
   "/clubs",
   "/leaderboard",

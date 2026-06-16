@@ -16,6 +16,7 @@ const config: Config = {
         "surface-alt":"var(--surface-alt)",
         muted:        "var(--muted)",
         line:         "var(--line)",
+        sidebar:      "var(--sidebar)",
 
         /* ── Brand palette ── */
         brand: {

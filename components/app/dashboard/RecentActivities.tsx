@@ -41,19 +41,19 @@ export function RecentActivities({ activities }: { activities: ActivityRow[] }) 
       </h3>
 
       {activities.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-line bg-surface-alt/30 p-8 text-center">
+        <div className="border border-dashed border-line bg-surface-alt/30 p-8 text-center">
           <ActivityIcon size={26} className="mx-auto text-muted" />
           <p className="mt-3 text-sm font-semibold text-foreground">{t("emptyTitle")}</p>
           <p className="mt-1 text-sm text-muted">{t("emptyBody")}</p>
         </div>
       ) : (
-        <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface-alt/40">
+        <ul className="divide-y divide-line overflow-hidden border border-line bg-surface-alt/40">
           {activities.map((a) => (
             <li
               key={a.id}
               className="flex items-center gap-4 px-4 py-3.5 transition-colors hover:bg-surface-alt"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-green/10 text-brand-green">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-brand-green/10 text-brand-green">
                 <ActivityIcon size={18} />
               </div>
 
