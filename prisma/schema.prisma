@@ -37,6 +37,11 @@ enum DeviceProvider {
   GOOGLE_FIT
 }
 
+enum PolarRegistrationStatus {
+  PENDING    // token obtenido, falta POST /v3/users
+  REGISTERED // usuario registrado en Polar, listo para leer datos
+}
+
 enum ClubType {
   RECREATIONAL
   COMPETITIVE
@@ -185,6 +190,12 @@ model User {
   username String? @unique // slug: @chaps
   bio      String?
 
+  // Redes sociales
+  twitterHandle     String?
+  instagramHandle   String?
+  facebookProfileUrl String?
+  stravaProfileUrl  String?
+
   // Plataforma
   role          Role         @default(RUNNER)
   preferredUnit DistanceUnit @default(KM)
@@ -196,23 +207,23 @@ model User {
   // Se setea al terminar el flujo de primer ingreso.
   onboardingCompletedAt DateTime?
 
-  // Dispositivo conectado — un solo dispositivo por usuario
-  // Si cambia de Garmin a Polar se sobreescriben los campos
-  connectedDevice          DeviceProvider? // null = sin dispositivo conectado
-  connectedDeviceToken     String?         @db.Text
-  connectedDeviceRefresh   String?         @db.Text
-  connectedDeviceExpiresAt DateTime?
-  connectedDeviceLastSync  DateTime?
+  // Qué dispositivo tiene conectado HOY. Las credenciales reales
+  // viven en su tabla específica (DeviceConnectionGarmin, DeviceConnectionPolar, etc.)
+  // porque cada proveedor entrega datos distintos. Un usuario, un dispositivo activo.
+  connectedProvider DeviceProvider? // null = sin dispositivo conectado
 
   // Relaciones Better Auth
   sessions Session[]
   accounts Account[]
 
   // Relaciones W3Runn3rs
-  memberships ClubMembership[]
-  activities  Activity[]
-  records     PersonalRecord[]
-  snapshots   WeeklySnapshot[]
+  memberships      ClubMembership[]
+  activities       Activity[]
+  records          PersonalRecord[]
+  snapshots        WeeklySnapshot[]
+  garminConnection DeviceConnectionGarmin?
+  polarConnection  DeviceConnectionPolar?
+  stravaConnection DeviceConnectionStrava?
 
   @@map("user")
 }
@@ -480,4 +491,81 @@ model WeeklySnapshot {
   @@unique([userId, weekStart])
   @@index([userId, weekStart])
   @@map("weekly_snapshots")
+}
+
+// ─────────────────────────────────────────────
+// DEVICE CONNECTIONS — una tabla por proveedor
+// Cada wearable entrega credenciales y metadata distintos.
+// Un usuario solo puede tener UNA conexión activa a la vez
+// (enforced por User.connectedProvider + unique userId aquí).
+// ─────────────────────────────────────────────
+
+// Garmin — OAuth2 PKCE
+// El userId de Garmin NO viene en la respuesta del token;
+// se obtiene con una llamada separada a GET /wellness-api/rest/user/id
+// después de intercambiar el código de autorización.
+model DeviceConnectionGarmin {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  garminUserId          String   @unique // viene de GET /wellness-api/rest/user/id
+  accessToken           String   @db.Text
+  refreshToken          String   @db.Text
+  tokenExpiresAt         DateTime // expires_in: 86400s (24h) desde la respuesta del token
+  refreshTokenExpiresAt DateTime // refresh_token vence en ~90 días
+
+  scope String? // PARTNER_WRITE PARTNER_READ CONNECT_READ CONNECT_WRITE
+
+  connectedAt DateTime  @default(now())
+  lastSyncAt  DateTime?
+  isActive    Boolean   @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("device_connections_garmin")
+}
+
+// Polar — OAuth2 estándar
+// El access_token de Polar NO expira a menos que se revoque.
+// Requiere un paso extra: registrar al usuario con POST /v3/users
+// usando un member_id propio ANTES de poder leer sus datos.
+model DeviceConnectionPolar {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  polarUserId String @unique // x_user_id, viene en la respuesta del token
+  memberId    String @unique // nuestro identificador, enviado en el registro
+  accessToken String @db.Text // no expira salvo revocación
+
+  registrationStatus PolarRegistrationStatus @default(PENDING)
+
+  connectedAt  DateTime  @default(now())
+  registeredAt DateTime? // cuándo se completó POST /v3/users
+  lastSyncAt   DateTime?
+  isActive     Boolean   @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("device_connections_polar")
+}
+
+// Strava — OAuth2 estándar
+model DeviceConnectionStrava {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  stravaAthleteId String   @unique
+  accessToken     String   @db.Text
+  refreshToken    String   @db.Text
+  tokenExpiresAt  DateTime
+
+  scope String? // read,activity:read_all,etc.
+
+  connectedAt DateTime  @default(now())
+  lastSyncAt  DateTime?
+  isActive    Boolean   @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("device_connections_strava")
 }
