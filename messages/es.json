@@ -104,7 +104,7 @@
       "club": "Mi club",
       "leaderboard": "Leaderboard",
       "profile": "Perfil",
-      "settings": "Configuración"
+      "settings": "Editar perfil"
     },
     "soon": "Pronto",
     "signOut": "Cerrar sesión",
@@ -221,8 +221,8 @@
     "localeLabel": "Idioma",
     "socialLabel": "Perfiles sociales",
     "socialHint": "Opcional — enlaza tus perfiles para que otros runners te encuentren. Puedes cambiarlos después.",
-    "twitterPlaceholder": "tu_usuario",
-    "instagramPlaceholder": "tu_usuario",
+    "twitterPlaceholder": "tu_usuario_x",
+    "instagramPlaceholder": "tu_usuario_instagram",
     "facebookPlaceholder": "tu.perfil",
     "stravaPlaceholder": "12345678",
     "submit": "Entrar a W3Runn3rs",
@@ -232,6 +232,56 @@
       "reserved": "Ese nombre de usuario no está disponible.",
       "taken": "Ese nombre de usuario ya está en uso.",
       "invalidUrl": "Eso no parece un enlace válido.",
+      "unknown": "Algo salió mal. Inténtalo de nuevo."
+    }
+  },
+  "settings": {
+    "back": "Volver al dashboard",
+    "title": "Editar perfil",
+    "subtitle": "Actualiza cómo te muestras en W3Runn3rs.",
+    "photo": {
+      "label": "Foto de perfil",
+      "upload": "Subir foto",
+      "uploading": "Subiendo…",
+      "remove": "Quitar",
+      "hint": "JPG, PNG o WebP, hasta 5 MB.",
+      "error": "No se pudo subir esa imagen. Inténtalo de nuevo."
+    },
+    "basics": {
+      "label": "Datos básicos"
+    },
+    "nameLabel": "Nombre visible",
+    "usernameLabel": "Nombre de usuario",
+    "usernameHint": "3–20 caracteres: minúsculas, números y guiones bajos. Cambiarlo actualiza el enlace de tu perfil público.",
+    "bioLabel": "Bio",
+    "bioHint": "Una línea sobre ti y tu running.",
+    "bioPlaceholder": "Maratonista. Madrugador. Pacers CDMX.",
+    "prefs": {
+      "label": "Preferencias"
+    },
+    "unitLabel": "Unidad de distancia",
+    "unitKm": "Kilómetros",
+    "unitMiles": "Millas",
+    "localeLabel": "Idioma",
+    "social": {
+      "label": "Perfiles sociales",
+      "hint": "Opcional — enlaza tus perfiles para que otros corredores te encuentren."
+    },
+    "twitterPlaceholder": "tu_usuario_x",
+    "instagramPlaceholder": "tu_usuario_instagram",
+    "facebookPlaceholder": "tu.perfil",
+    "stravaPlaceholder": "12345678",
+    "save": "Guardar cambios",
+    "saving": "Guardando…",
+    "saved": "Guardado",
+    "errors": {
+      "invalidName": "Escribe un nombre (hasta 60 caracteres).",
+      "invalid": "Usa 3–20 minúsculas, números o guiones bajos.",
+      "reserved": "Ese nombre de usuario no está disponible.",
+      "taken": "Ese nombre de usuario ya está en uso.",
+      "bioTooLong": "Tu bio es demasiado larga.",
+      "invalidUrl": "Eso no parece un enlace válido.",
+      "unauthorized": "Tu sesión expiró. Inicia sesión de nuevo.",
       "unknown": "Algo salió mal. Inténtalo de nuevo."
     }
   }

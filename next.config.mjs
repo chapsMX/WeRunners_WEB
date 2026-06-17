@@ -8,6 +8,8 @@ const nextConfig = {
     remotePatterns: [
       // Fotos de perfil de Google OAuth
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
+      // Avatares subidos a Vercel Blob
+      { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
     ],
   },
 };

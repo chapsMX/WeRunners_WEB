@@ -1,32 +1,45 @@
 "use server"
 
 import { headers, cookies } from "next/headers"
-import { redirect } from "next/navigation"
+import { revalidatePath } from "next/cache"
 import { Prisma } from "@prisma/client"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { APP_LOCALE_COOKIE } from "@/lib/app-i18n"
 import { cleanHandle, cleanUrl, validateUsername } from "@/lib/profile-validation"
 
-export type OnboardingState = {
+export type ProfileState = {
+  ok?: boolean
   error?: {
-    field: "username" | "facebook" | "strava" | "form"
-    code: string // clave i18n bajo onboarding.errors
+    field: "name" | "username" | "bio" | "facebook" | "strava" | "form"
+    code: string // clave i18n bajo settings.errors
   }
 }
 
-export async function completeOnboarding(
-  _prev: OnboardingState,
-  formData: FormData
-): Promise<OnboardingState> {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session) redirect("/auth/sign-in")
+const MAX_BIO = 280
+const MAX_NAME = 60
 
+export async function updateProfile(
+  _prev: ProfileState,
+  formData: FormData
+): Promise<ProfileState> {
+  const session = await auth.api.getSession({ headers: await headers() })
+  if (!session) return { error: { field: "form", code: "unauthorized" } }
+
+  const name = String(formData.get("name") ?? "").trim()
   const rawUsername = String(formData.get("username") ?? "").trim().toLowerCase()
+  const bio = String(formData.get("bio") ?? "").trim()
   const unit = String(formData.get("preferredUnit") ?? "KM")
   const locale = String(formData.get("locale") ?? "en")
+  const image = String(formData.get("image") ?? "").trim()
 
-  // ── Validación username ──
+  // ── Validaciones ──
+  if (!name || name.length > MAX_NAME) {
+    return { error: { field: "name", code: "invalidName" } }
+  }
+  if (bio.length > MAX_BIO) {
+    return { error: { field: "bio", code: "bioTooLong" } }
+  }
   const usernameError = validateUsername(rawUsername)
   if (usernameError) {
     return { error: { field: "username", code: usernameError } }
@@ -49,18 +62,20 @@ export async function completeOnboarding(
     await prisma.user.update({
       where: { id: session.user.id },
       data: {
+        name,
         username: rawUsername,
+        bio: bio || null,
+        image: image || null,
         preferredUnit,
         locale: safeLocale,
         twitterHandle,
         instagramHandle,
         facebookProfileUrl: facebook.url,
         stravaProfileUrl: strava.url,
-        onboardingCompletedAt: new Date(),
       },
     })
   } catch (e) {
-    // P2002 = violación de unique (username ya tomado)
+    // P2002 = violación de unique (username ya tomado por otro usuario)
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
       return { error: { field: "username", code: "taken" } }
     }
@@ -74,5 +89,7 @@ export async function completeOnboarding(
     sameSite: "lax",
   })
 
-  redirect("/dashboard")
+  revalidatePath("/settings")
+  revalidatePath("/dashboard")
+  return { ok: true }
 }

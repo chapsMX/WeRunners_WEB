@@ -104,7 +104,7 @@
       "club": "My club",
       "leaderboard": "Leaderboard",
       "profile": "Profile",
-      "settings": "Settings"
+      "settings": "Edit profile"
     },
     "soon": "Soon",
     "signOut": "Sign out",
@@ -221,8 +221,8 @@
     "localeLabel": "Language",
     "socialLabel": "Social profiles",
     "socialHint": "Optional — link your profiles so other runners can find you. You can change these later.",
-    "twitterPlaceholder": "your_handle",
-    "instagramPlaceholder": "your_handle",
+    "twitterPlaceholder": "your_x_handle",
+    "instagramPlaceholder": "your_instagram_handle",
     "facebookPlaceholder": "your.profile",
     "stravaPlaceholder": "12345678",
     "submit": "Enter W3Runn3rs",
@@ -232,6 +232,56 @@
       "reserved": "That username isn't available.",
       "taken": "That username is already taken.",
       "invalidUrl": "That doesn't look like a valid link.",
+      "unknown": "Something went wrong. Please try again."
+    }
+  },
+  "settings": {
+    "back": "Back to dashboard",
+    "title": "Edit profile",
+    "subtitle": "Update how you show up across W3Runn3rs.",
+    "photo": {
+      "label": "Profile photo",
+      "upload": "Upload photo",
+      "uploading": "Uploading…",
+      "remove": "Remove",
+      "hint": "JPG, PNG or WebP, up to 5 MB.",
+      "error": "Couldn't upload that image. Try again."
+    },
+    "basics": {
+      "label": "Basics"
+    },
+    "nameLabel": "Display name",
+    "usernameLabel": "Username",
+    "usernameHint": "3–20 characters: lowercase letters, numbers and underscores. Changing it updates your public profile link.",
+    "bioLabel": "Bio",
+    "bioHint": "A short line about you and your running.",
+    "bioPlaceholder": "Marathoner. Early riser. Pacers CDMX.",
+    "prefs": {
+      "label": "Preferences"
+    },
+    "unitLabel": "Distance unit",
+    "unitKm": "Kilometers",
+    "unitMiles": "Miles",
+    "localeLabel": "Language",
+    "social": {
+      "label": "Social profiles",
+      "hint": "Optional — link your profiles so other runners can find you."
+    },
+    "twitterPlaceholder": "your_x_handle",
+    "instagramPlaceholder": "your_instagram_handle",
+    "facebookPlaceholder": "your.profile",
+    "stravaPlaceholder": "12345678",
+    "save": "Save changes",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "errors": {
+      "invalidName": "Enter a name (up to 60 characters).",
+      "invalid": "Use 3–20 lowercase letters, numbers or underscores.",
+      "reserved": "That username isn't available.",
+      "taken": "That username is already taken.",
+      "bioTooLong": "Your bio is too long.",
+      "invalidUrl": "That doesn't look like a valid link.",
+      "unauthorized": "Your session expired. Please sign in again.",
       "unknown": "Something went wrong. Please try again."
     }
   }

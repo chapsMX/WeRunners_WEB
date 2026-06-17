@@ -114,18 +114,41 @@ function SidebarContent({
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon
           const label = t(`nav.${item.key}`)
+
+          // Items aún sin pantalla: deshabilitados con badge "Soon".
+          if (item.soon) {
+            return (
+              <span
+                key={item.href}
+                aria-disabled
+                className="flex cursor-not-allowed select-none items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted/50"
+              >
+                <Icon size={20} className="shrink-0" />
+                <span className="flex-1">{label}</span>
+                <span className="rounded-full border border-line px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted/70">
+                  {t("soon")}
+                </span>
+              </span>
+            )
+          }
+
+          const active = pathname.startsWith(item.href)
           return (
-            <span
+            <Link
               key={item.href}
-              aria-disabled
-              className="flex cursor-not-allowed select-none items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted/50"
+              href={item.href}
+              onClick={onNavigate}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+                active
+                  ? "bg-brand-green/10 text-brand-green"
+                  : "text-muted hover:bg-foreground/5 hover:text-foreground"
+              )}
             >
               <Icon size={20} className="shrink-0" />
               <span className="flex-1">{label}</span>
-              <span className="rounded-full border border-line px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted/70">
-                {t("soon")}
-              </span>
-            </span>
+            </Link>
           )
         })}
 

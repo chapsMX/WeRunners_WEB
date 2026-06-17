@@ -15,5 +15,5 @@ export type NavItem = {
 export const NAV_ITEMS: NavItem[] = [
   { key: "activities", href: "/activities", icon: ActivityIcon, soon: true },
   { key: "leaderboard", href: "/leaderboard", icon: TrophyIcon, soon: true },
-  { key: "settings", href: "/settings", icon: SettingsIcon, soon: true },
+  { key: "settings", href: "/settings", icon: SettingsIcon },
 ]
