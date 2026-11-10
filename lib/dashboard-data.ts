@@ -334,7 +334,9 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
     monthDistanceMeters: monthAgg._sum.distanceMeters ?? 0,
     streakDays: computeStreak(recentActivities.map((a) => a.activityDate)),
     avgPaceSecPerKm: avgPace,
+    // Solo récords de tiempo; LONGEST_RUN (distancia) se mostrará aparte.
     records: prRecords
+      .filter((r): r is typeof r & { durationSeconds: number } => r.durationSeconds != null)
       .map((r) => ({ key: r.distance, durationSeconds: r.durationSeconds }))
       .slice(0, 4),
   }

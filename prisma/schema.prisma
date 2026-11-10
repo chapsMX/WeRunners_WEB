@@ -38,7 +38,7 @@ enum DeviceProvider {
 }
 
 enum PolarRegistrationStatus {
-  PENDING    // token obtenido, falta POST /v3/users
+  PENDING // token obtenido, falta POST /v3/users
   REGISTERED // usuario registrado en Polar, listo para leer datos
 }
 
@@ -84,11 +84,23 @@ enum PRDistance {
   K30
   MARATHON
   ULTRA
+  LONGEST_RUN // distancia, no tiempo → usa PersonalRecord.distanceMeters
 }
 
 enum PRSource {
-  AUTO   // calculado automáticamente desde una Activity
-  MANUAL // ingresado por el usuario (Add PR)
+  AUTO // verificado: calculado desde una Activity grabada por dispositivo
+  MANUAL // declarado por el usuario (p. ej. sus récords de Garmin Connect al conectar)
+}
+
+// Por qué una Activity no cuenta para el leaderboard del club.
+// Se decide automáticamente al ingerir; no hay moderación manual.
+enum ExclusionReason {
+  MANUAL // creada a mano en el proveedor (no grabada por dispositivo)
+  WEB_UPLOAD // subida por la web del proveedor
+  NO_CLUB // el usuario no tenía club activo
+  BEFORE_JOIN // anterior a ClubMembership.joinedAt
+  DUPLICATE // misma carrera grabada en otro dispositivo
+  IMPLAUSIBLE_PACE // ritmo más rápido que el umbral (~2:30 min/km) → excluida automáticamente
 }
 
 enum PeriodType {
@@ -99,11 +111,11 @@ enum PeriodType {
 }
 
 enum LeaderboardCategory {
-  DISTANCE            // km totales del club
-  PACE                // pace promedio del club
-  ELEVATION           // elevación acumulada
-  MARATHONS           // cantidad de maratones
-  CONSISTENCY         // semanas sin parar
+  DISTANCE // km totales del club
+  PACE // pace promedio del club
+  ELEVATION // elevación acumulada
+  MARATHONS // cantidad de maratones
+  CONSISTENCY // semanas sin parar
   DISTANCE_PER_MEMBER // km promedio por miembro activo
 }
 
@@ -182,7 +194,7 @@ model User {
   email         String   @unique
   emailVerified Boolean  @default(false)
   name          String
-  image         String?  // URL foto de perfil, viene de Google OAuth
+  image         String? // URL foto de perfil, viene de Google OAuth
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -191,10 +203,10 @@ model User {
   bio      String?
 
   // Redes sociales
-  twitterHandle     String?
-  instagramHandle   String?
+  twitterHandle      String?
+  instagramHandle    String?
   facebookProfileUrl String?
-  stravaProfileUrl  String?
+  stravaProfileUrl   String?
 
   // Plataforma
   role          Role         @default(RUNNER)
@@ -351,8 +363,21 @@ model Activity {
   activityDate DateTime
   title        String?
   activityType ActivityType   @default(RUN)
-  source       ActivitySource @default(MANUAL)
-  externalId   String?
+  source       ActivitySource
+  externalId   String? // id del proveedor (Garmin: summaryId)
+
+  // Datos crudos del proveedor (auditoría / dedupe / bucketing)
+  providerActivityType   String? // p. ej. "TREADMILL_RUNNING"
+  startTimeOffsetSeconds Int? // hora local del dispositivo = activityDate + offset
+  deviceName             String?
+  parentExternalId       String? // multisport: summaryId de la actividad padre
+  isManual               Boolean @default(false)
+  isWebUpload            Boolean @default(false)
+
+  // Fairness: se calcula al ingerir. Default false = fail-closed (si algo no
+  // pasó por las reglas, no cuenta). exclusionReason explica el false.
+  countsForLeaderboard Boolean          @default(false)
+  exclusionReason      ExclusionReason?
 
   avgPaceSecPerKm Int?
   avgHeartRate    Int?
@@ -365,9 +390,9 @@ model Activity {
 
   createdAt DateTime @default(now())
 
-  user   User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  club   Club?           @relation(fields: [clubId], references: [id])
-  record PersonalRecord?
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  club    Club?            @relation(fields: [clubId], references: [id])
+  records PersonalRecord[]
 
   @@unique([userId, source, externalId])
   @@index([userId, activityDate])
@@ -380,22 +405,25 @@ model Activity {
 // ─────────────────────────────────────────────
 
 model PersonalRecord {
-  id         String     @id @default(cuid())
+  id         String  @id @default(cuid())
   userId     String
-  activityId String?    @unique
+  // Una misma carrera puede ser récord de varias distancias (p. ej. 5K + LONGEST_RUN).
+  activityId String?
 
   distance        PRDistance
-  durationSeconds Int
-  achievedAt      DateTime
-  source          PRSource @default(AUTO)
+  durationSeconds Int? // null para LONGEST_RUN declarado sin tiempo
+  distanceMeters  Int? // LONGEST_RUN: la distancia del récord
+  achievedAt      DateTime? // opcional: un récord declarado puede no tener fecha exacta
+  source          PRSource   @default(AUTO)
 
   createdAt DateTime @default(now())
 
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  activity Activity? @relation(fields: [activityId], references: [id])
+  activity Activity? @relation(fields: [activityId], references: [id], onDelete: SetNull)
 
   @@unique([userId, distance])
   @@index([userId])
+  @@index([activityId])
   @@map("personal_records")
 }
 
@@ -500,29 +528,50 @@ model WeeklySnapshot {
 // (enforced por User.connectedProvider + unique userId aquí).
 // ─────────────────────────────────────────────
 
-// Garmin — OAuth2 PKCE
-// El userId de Garmin NO viene en la respuesta del token;
-// se obtiene con una llamada separada a GET /wellness-api/rest/user/id
-// después de intercambiar el código de autorización.
+// Garmin — OAuth2 PKCE (Activity API v2.1, plan Starter: solo Push)
+// El userId de Garmin NO viene en la respuesta del token; se obtiene con
+// GET https://apis.garmin.com/partner-gateway/rest/user/id tras el intercambio.
+// Es estable entre reconexiones → llave para empatar los payloads de push.
 model DeviceConnectionGarmin {
   id     String @id @default(cuid())
   userId String @unique
 
-  garminUserId          String   @unique // viene de GET /wellness-api/rest/user/id
-  accessToken           String   @db.Text
-  refreshToken          String   @db.Text
-  tokenExpiresAt         DateTime // expires_in: 86400s (24h) desde la respuesta del token
-  refreshTokenExpiresAt DateTime // refresh_token vence en ~90 días
+  garminUserId          String   @unique // GET /partner-gateway/rest/user/id
+  accessToken           String   @db.Text // se encriptará en la app antes de producción
+  refreshToken          String   @db.Text // rota en cada refresh: guardar siempre el último
+  tokenExpiresAt        DateTime // expires_in: 86400s (24h)
+  refreshTokenExpiresAt DateTime // refresh_token_expires_in: ~90 días
 
-  scope String? // PARTNER_WRITE PARTNER_READ CONNECT_READ CONNECT_WRITE
+  scope String? // PARTNER_WRITE PARTNER_READ CONNECT_READ CONNECT_WRITE (fijo)
 
-  connectedAt DateTime  @default(now())
-  lastSyncAt  DateTime?
-  isActive    Boolean   @default(true)
+  // GET /partner-gateway/rest/user/permissions + webhook userPermissionsChange.
+  // Sin ACTIVITY_EXPORT no llegan actividades (el token sigue siendo válido).
+  permissions          String[]  @default([])
+  permissionsUpdatedAt DateTime?
+
+  connectedAt    DateTime  @default(now())
+  lastSyncAt     DateTime?
+  isActive       Boolean   @default(true)
+  deregisteredAt DateTime? // webhook deregistrations o DELETE /user/registration
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("device_connections_garmin")
+}
+
+// Payload crudo de cada push de Garmin. El webhook lo guarda y responde 200
+// de inmediato (límite 30 s); otro paso lo procesa de forma idempotente.
+model GarminWebhookEvent {
+  id          String    @id @default(cuid())
+  summaryType String // activities | deregistrations | userPermissionsChange
+  payload     Json
+  receivedAt  DateTime  @default(now())
+  processedAt DateTime?
+  attempts    Int       @default(0)
+  error       String?   @db.Text
+
+  @@index([processedAt, receivedAt])
+  @@map("garmin_webhook_events")
 }
 
 // Polar — OAuth2 estándar
