@@ -284,5 +284,29 @@
       "unauthorized": "Your session expired. Please sign in again.",
       "unknown": "Something went wrong. Please try again."
     }
+  },
+  "profile": {
+    "sampleBadge": "Sample data",
+    "club": {
+      "label": "Running club",
+      "none": "Not in a running club yet"
+    },
+    "clubStats": {
+      "title": "In the club",
+      "rankWeekly": "Club rank · week",
+      "rankMonthly": "Club rank · month",
+      "contribution": "Total contribution",
+      "share": "Share of club",
+      "thisWeek": "this week",
+      "thisMonth": "this month",
+      "toClub": "added to {club}",
+      "ofClubTotal": "of the club’s total km",
+      "noRankWeek": "No runs this week",
+      "noRankMonth": "No runs this month"
+    },
+    "records": {
+      "title": "Personal records",
+      "subtitle": "Best times across key distances."
+    }
   }
 }

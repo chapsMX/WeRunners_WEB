@@ -37,19 +37,31 @@ const TARGETS = [
   },
 ] as const
 
-export function RecordsCard({ records }: { records: PersonalRecordRow[] }) {
+export function RecordsCard({
+  records,
+  title,
+  subtitle,
+  bleed = true,
+}: {
+  records: PersonalRecordRow[]
+  /** Overrides the dashboard copy (e.g. third person on the public profile). */
+  title?: string
+  subtitle?: string
+  /** Break out of the dashboard's px-6/lg:px-8 wrapper. Off where there's no such padding. */
+  bleed?: boolean
+}) {
   const t = useTranslations("dashboard.records")
   const byKey = new Map(records.map((r) => [r.key, r.durationSeconds]))
 
   return (
     <section>
       <h3 className="mb-1 text-sm font-semibold uppercase tracking-wide text-muted">
-        {t("title")}
+        {title ?? t("title")}
       </h3>
-      <p className="mb-3 text-sm text-muted">{t("subtitle")}</p>
+      <p className="mb-3 text-sm text-muted">{subtitle ?? t("subtitle")}</p>
 
       {/* Tres columnas full-bleed estilo home: rompe el padding del wrapper */}
-      <div className="-mx-6 grid grid-cols-1 md:grid-cols-3 lg:-mx-8">
+      <div className={`grid grid-cols-1 md:grid-cols-3 ${bleed ? "-mx-6 lg:-mx-8" : ""}`}>
         {TARGETS.map((target) => {
           const dur = byKey.get(target.key)
           return (

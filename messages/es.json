@@ -284,5 +284,29 @@
       "unauthorized": "Tu sesión expiró. Inicia sesión de nuevo.",
       "unknown": "Algo salió mal. Inténtalo de nuevo."
     }
+  },
+  "profile": {
+    "sampleBadge": "Datos de muestra",
+    "club": {
+      "label": "Club de corredores",
+      "none": "Todavía no está en un club de corredores"
+    },
+    "clubStats": {
+      "title": "En el club",
+      "rankWeekly": "Ranking en el club · semana",
+      "rankMonthly": "Ranking en el club · mes",
+      "contribution": "Aporte total",
+      "share": "Parte del club",
+      "thisWeek": "esta semana",
+      "thisMonth": "este mes",
+      "toClub": "aportados a {club}",
+      "ofClubTotal": "del total de km del club",
+      "noRankWeek": "Sin carreras esta semana",
+      "noRankMonth": "Sin carreras este mes"
+    },
+    "records": {
+      "title": "Récords personales",
+      "subtitle": "Mejores tiempos en las distancias clave."
+    }
   }
 }
