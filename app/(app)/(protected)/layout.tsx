@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { hasBetaAccess } from "@/lib/beta-access"
 
 // Capa 1 del área protegida: sesión + beta gate.
 // El gate de onboarding y el AppShell viven en el grupo (onboarded);
@@ -15,19 +15,8 @@ export default async function ProtectedLayout({ children }: { children: ReactNod
   }
 
   // Beta gate: si betaOpen = true, cualquier usuario registrado pasa
-  const config = await prisma.appConfig.findUnique({
-    where: { id: "global" },
-    select: { betaOpen: true },
-  })
-
-  if (!config?.betaOpen) {
-    const entry = await prisma.waitlistEntry.findUnique({
-      where: { email: session.user.email },
-      select: { betaAccess: true },
-    })
-    if (!entry?.betaAccess) {
-      redirect("/auth/waiting")
-    }
+  if (!(await hasBetaAccess(session.user.email))) {
+    redirect("/auth/waiting")
   }
 
   return <>{children}</>
