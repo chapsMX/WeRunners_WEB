@@ -1,10 +1,10 @@
 "use client"
 
-import Link from "next/link"
 import { useTranslations } from "next-intl"
 import type { DashboardData } from "@/lib/dashboard-data"
-import { DeviceIcon } from "../icons"
 import { DashboardHero } from "./DashboardHero"
+import type { GarminResult } from "@/lib/garmin/results"
+import { ConnectDeviceBanner, GarminResultNotice } from "./DeviceConnect"
 import { RankGrid } from "./RankGrid"
 import { PersonalStats } from "./PersonalStats"
 import { RecordsCard } from "./RecordsCard"
@@ -17,9 +17,11 @@ const SIMULATED_CLUB = "Pacers CDMX"
 export function DashboardView({
   data,
   firstName,
+  garminResult,
 }: {
   data: DashboardData
   firstName: string
+  garminResult?: GarminResult | null
 }) {
   const t = useTranslations("dashboard")
   const clubName = data.club?.name ?? SIMULATED_CLUB
@@ -39,21 +41,11 @@ export function DashboardView({
           </div>
         )}
 
-        {/* Banner: conectar dispositivo */}
-        {!data.deviceConnected && (
-          <div className="flex flex-wrap items-center gap-3 border border-line bg-surface-alt/40 px-4 py-3">
-            <div className="flex h-9 w-9 items-center justify-center bg-brand-green/10 text-brand-green">
-              <DeviceIcon size={18} />
-            </div>
-            <p className="flex-1 text-sm text-foreground">{t("connect.text")}</p>
-            <Link
-              href="/settings"
-              className="text-sm font-semibold text-brand-green hover:underline"
-            >
-              {t("connect.cta")} →
-            </Link>
-          </div>
-        )}
+        {/* Resultado al volver de Garmin (?garmin=…) */}
+        {garminResult && <GarminResultNotice result={garminResult} />}
+
+        {/* Sin dispositivo: un botón por proveedor que lleva directo a su conexión */}
+        {!data.deviceConnected && <ConnectDeviceBanner />}
 
         {/* Sección 50/50: actividad reciente · ranking */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

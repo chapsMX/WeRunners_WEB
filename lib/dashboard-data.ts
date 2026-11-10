@@ -217,8 +217,9 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
     ])
 
   // Sin actividades todavía → mostramos el dataset de muestra.
+  // El estado del dispositivo es siempre real, aunque el resto sea de muestra.
   if (recentActivities.length === 0) {
-    return sampleData()
+    return { ...sampleData(), deviceConnected: Boolean(user?.connectedProvider) }
   }
 
   const deviceConnected = Boolean(user?.connectedProvider)

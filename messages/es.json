@@ -137,10 +137,6 @@
       "noRankWeek": "Sin actividad esta semana",
       "noRankMonth": "Sin actividad este mes"
     },
-    "connect": {
-      "text": "Conecta tu Garmin, Polar, Suunto o Strava para sincronizar tus actividades automáticamente.",
-      "cta": "Conectar"
-    },
     "hero": {
       "eyebrow": "Tu aporte · esta semana",
       "km": "km",
@@ -207,6 +203,20 @@
       "colDistance": "Distancia",
       "colWhen": "Cuándo",
       "noClub": "Únete a un club para ver su actividad aquí."
+    },
+    "devices": {
+      "title": "No tienes dispositivos conectados",
+      "text": "Da click en el dispositivo con el que corres. Tus carreras se sincronizan solas y cuentan para tu club.",
+      "soon": "Próximamente",
+      "result": {
+        "connected": "Garmin conectado. Tus próximas carreras se sincronizan solas.",
+        "connected_no_activity": "Garmin quedó conectado, pero sin permiso para compartir actividades. Vuelve a conectar y activa “Activity Export” para que tus carreras cuenten.",
+        "denied": "Cancelaste la conexión con Garmin.",
+        "invalid_state": "La conexión expiró. Intenta de nuevo.",
+        "in_use": "Esa cuenta de Garmin ya está ligada a otra cuenta de W3Runn3rs.",
+        "other_provider": "Ya tienes otro dispositivo conectado. Desconéctalo primero.",
+        "failed": "No pudimos conectar Garmin. Intenta de nuevo."
+      }
     }
   },
   "onboarding": {
