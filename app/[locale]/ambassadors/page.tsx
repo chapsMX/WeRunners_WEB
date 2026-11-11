@@ -1,16 +1,43 @@
 "use client";
 
+import { useState } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { trackEvent } from "@/lib/analytics";
+import { AMBASSADOR_COUNTRIES, AMBASSADOR_LIMITS } from "@/lib/ambassadors";
+
+type Status = "idle" | "loading" | "success" | "error";
 
 export default function AmbassadorsPage() {
-  function handleSubmit(e: React.FormEvent) {
+  const [status, setStatus] = useState<Status>("idle");
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    trackEvent.ambassadorApply();
-    // TODO: wire up to /api/ambassador when ready
+    setStatus("loading");
+    setError(null);
+
+    const body = Object.fromEntries(new FormData(e.currentTarget).entries());
+    try {
+      const res = await fetch("/api/ambassadors", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (res.status === 201) {
+        trackEvent.ambassadorApply(); // only once the application is saved
+        setStatus("success");
+        return;
+      }
+      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      setError(data.error ?? "Something went wrong. Please try again.");
+      setStatus("error");
+    } catch {
+      setError("Network error. Please check your connection and try again.");
+      setStatus("error");
+    }
   }
   return (
     <>
@@ -121,75 +148,97 @@ export default function AmbassadorsPage() {
             <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
               Apply to become an Ambassador
             </h2>
+            {status === "success" ? (
+              <div role="status" className="rounded-lg border border-brand-lime/40 bg-brand-lime/10 p-8 text-center">
+                <p className="text-4xl mb-3">🏃</p>
+                <h3 className="text-2xl font-bold text-foreground mb-2">Application received</h3>
+                <p className="text-slate-400">
+                  Thanks for applying! We&apos;ve sent a confirmation to your email. If
+                  you&apos;re shortlisted, we&apos;ll reach out to you there.
+                </p>
+              </div>
+            ) : (
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label htmlFor="amb-name" className="block text-sm font-medium text-slate-300 mb-2">
                     Full name *
                   </label>
-                  <Input type="text" placeholder="Jane Runner" required />
+                  <Input
+                    id="amb-name"
+                    name="fullName"
+                    type="text"
+                    placeholder="Jane Runner"
+                    autoComplete="name"
+                    maxLength={AMBASSADOR_LIMITS.nameMax}
+                    required
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label htmlFor="amb-email" className="block text-sm font-medium text-slate-300 mb-2">
                     Email *
                   </label>
                   <Input
+                    id="amb-email"
+                    name="email"
                     type="email"
                     placeholder="jane@runnerclub.com"
+                    autoComplete="email"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label htmlFor="amb-country" className="block text-sm font-medium text-slate-300 mb-2">
                   Country *
                 </label>
                 <select
+                  id="amb-country"
+                  name="country"
+                  defaultValue=""
                   className="w-full rounded-lg bg-slate-900 border border-slate-700 text-foreground px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-lime"
                   required
                 >
-                  <option value="">Select your country</option>
-                  <option value="MX">Mexico</option>
-                  <option value="US">United States</option>
-                  <option value="GB">United Kingdom</option>
-                  <option value="JP">Japan</option>
-                  <option value="BR">Brazil</option>
-                  <option value="AU">Australia</option>
-                  <option value="SG">Singapore</option>
-                  <option value="KE">Kenya</option>
-                  <option value="other">Other</option>
+                  <option value="" disabled>Select your country</option>
+                  {AMBASSADOR_COUNTRIES.map((c) => (
+                    <option key={c.code} value={c.code}>{c.label}</option>
+                  ))}
                 </select>
               </div>
 
               <div className="grid sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label htmlFor="amb-ig" className="block text-sm font-medium text-slate-300 mb-2">
                     Instagram
                   </label>
-                  <Input type="text" placeholder="@handle" />
+                  <Input id="amb-ig" name="instagram" type="text" placeholder="@handle" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label htmlFor="amb-x" className="block text-sm font-medium text-slate-300 mb-2">
                     Twitter/X
                   </label>
-                  <Input type="text" placeholder="@handle" />
+                  <Input id="amb-x" name="twitter" type="text" placeholder="@handle" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label htmlFor="amb-tiktok" className="block text-sm font-medium text-slate-300 mb-2">
                     TikTok
                   </label>
-                  <Input type="text" placeholder="@handle" />
+                  <Input id="amb-tiktok" name="tiktok" type="text" placeholder="@handle" />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label htmlFor="amb-why" className="block text-sm font-medium text-slate-300 mb-2">
                   Why do you want to be a w3runn3rs ambassador? *
                 </label>
                 <textarea
+                  id="amb-why"
+                  name="motivation"
                   className="w-full rounded-lg bg-slate-900 border border-slate-700 text-foreground px-4 py-3 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-brand-lime"
                   placeholder="Tell us about yourself and why you'd be a great ambassador..."
+                  minLength={AMBASSADOR_LIMITS.motivationMin}
+                  maxLength={AMBASSADOR_LIMITS.motivationMax}
                   required
                 />
               </div>
@@ -199,8 +248,20 @@ export default function AmbassadorsPage() {
                 ones where you genuinely connect with your running community.
               </p>
 
-              <Button type="submit" variant="primary" size="lg" className="w-full">
-                Apply to become an Ambassador →
+              {error && (
+                <p role="alert" className="text-sm text-red-400">
+                  {error}
+                </p>
+              )}
+
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                className="w-full"
+                disabled={status === "loading"}
+              >
+                {status === "loading" ? "Sending…" : "Apply to become an Ambassador →"}
               </Button>
 
               <p className="text-slate-500 text-sm text-center">
@@ -208,6 +269,7 @@ export default function AmbassadorsPage() {
                 candidates will be contacted.
               </p>
             </form>
+            )}
           </div>
         </div>
       </main>
