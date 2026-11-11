@@ -2,12 +2,13 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useActionState, useRef, useState } from "react"
+import { useActionState, useEffect, useRef, useState } from "react"
 import { upload } from "@vercel/blob/client"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/Button"
 import { SegToggle, SocialInput } from "@/components/app/forms"
+import { trackEvent } from "@/lib/analytics"
 import { updateProfile, type ProfileState } from "./actions"
 
 type Unit = "KM" | "MILES"
@@ -65,6 +66,11 @@ export function SettingsForm({ initial }: { initial: SettingsInitial }) {
   const stravaError = state.error?.field === "strava" ? state.error.code : null
   const formError = state.error?.field === "form" ? state.error.code : null
 
+  // useActionState returns a new state object per submission → one event per save.
+  useEffect(() => {
+    if (state.ok) trackEvent.profileUpdate()
+  }, [state])
+
   const initialName = name.trim() ? name.trim() : "Runner"
   const avatarInitial = initialName.charAt(0).toUpperCase()
 
@@ -79,6 +85,7 @@ export function SettingsForm({ initial }: { initial: SettingsInitial }) {
         handleUploadUrl: "/api/profile/avatar",
       })
       setImage(blob.url)
+      trackEvent.avatarUpload()
     } catch {
       setUploadError(t("photo.error"))
     } finally {

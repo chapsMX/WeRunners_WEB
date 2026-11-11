@@ -74,5 +74,11 @@ export async function completeOnboarding(
     sameSite: "lax",
   })
 
-  redirect("/dashboard")
+  // Analytics: the dashboard fires GA4 `sign_up` once with this method.
+  // Better Auth stores email/password accounts with providerId "credential".
+  const google = await prisma.account.findFirst({
+    where: { userId: session.user.id, providerId: "google" },
+    select: { id: true },
+  })
+  redirect(`/dashboard?signup=${google ? "google" : "email"}`)
 }
