@@ -78,3 +78,42 @@ export function getAllPosts(locale: string): PostMeta[] {
     .filter((p): p is PostMeta => p !== null && !p.draft)
     .sort((a, b) => (a.date < b.date ? 1 : -1));
 }
+
+// ─── SEO: canonical + hreflang for a post ────────────────────────────────────
+// Slugs differ per locale (linked through the `alternates` frontmatter), so the
+// generic same-path buildAlternates() helpers don't apply to posts.
+
+export const BLOG_SITE_URL = "https://www.w3runn3rs.com";
+const BLOG_LOCALES = ["en", "es"] as const;
+
+export function postUrl(locale: string, slug: string): string {
+  return `${BLOG_SITE_URL}/${locale}/blog/${slug}`;
+}
+
+/**
+ * canonical: always the post itself.
+ * languages: itself + each translation that exists and isn't a draft;
+ * x-default → the English version when there is one.
+ */
+export function getPostAlternates(
+  slug: string,
+  locale: string
+): { canonical: string; languages: Record<string, string> } | null {
+  const post = getPostBySlug(slug, locale);
+  if (!post) return null;
+
+  const canonical = postUrl(locale, slug);
+  const languages: Record<string, string> = { [locale]: canonical };
+
+  for (const other of BLOG_LOCALES) {
+    if (other === locale) continue;
+    const altSlug = post.alternates?.[other];
+    const altPost = altSlug ? getPostBySlug(altSlug, other) : null;
+    if (altSlug && altPost && !altPost.draft) {
+      languages[other] = postUrl(other, altSlug);
+    }
+  }
+  if (languages.en) languages["x-default"] = languages.en;
+
+  return { canonical, languages };
+}

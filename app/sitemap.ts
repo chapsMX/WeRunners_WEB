@@ -1,4 +1,5 @@
 import { MetadataRoute } from "next";
+import { getAllPosts, getPostAlternates } from "@/lib/blog";
 
 const BASE_URL = "https://www.w3runn3rs.com";
 const locales = ["en", "es"] as const;
@@ -19,17 +20,6 @@ const staticRoutes: {
   { path: "/privacy-policy",    changeFrequency: "yearly", priority: 0.3 },
   { path: "/terms-of-service",  changeFrequency: "yearly", priority: 0.3 },
 ];
-
-// ─── Blog posts dinámicos ─────────────────────────────────────────────────────
-// Cuando tengas posts reales, reemplaza esta función con la lectura real de tu
-// fuente de contenido (Contentlayer, MDX, CMS, etc.)
-async function getBlogSlugs(): Promise<string[]> {
-  // TODO: leer slugs reales cuando existan posts
-  // Ejemplo con fs:
-  // const files = fs.readdirSync(path.join(process.cwd(), 'content/blog'))
-  // return files.map(f => f.replace(/\.mdx?$/, ''))
-  return [];
-}
 
 // ─── Builder de alternates ────────────────────────────────────────────────────
 function buildAlternates(path: string) {
@@ -61,19 +51,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // Blog posts dinámicos
-  const slugs = await getBlogSlugs();
-  for (const slug of slugs) {
-    const path = `/blog/${slug}`;
-    const alternates = buildAlternates(path);
-
-    for (const locale of locales) {
+  // Blog posts publicados (getAllPosts excluye drafts). Los slugs cambian por
+  // idioma, así que los alternates salen del frontmatter (getPostAlternates).
+  for (const locale of locales) {
+    for (const post of getAllPosts(locale)) {
+      const alt = getPostAlternates(post.slug, locale);
+      if (!alt) continue;
       entries.push({
-        url: `${BASE_URL}/${locale}${path}`,
-        lastModified: now,
+        url: alt.canonical,
+        lastModified: new Date(post.date),
         changeFrequency: "monthly",
         priority: 0.7,
-        alternates,
+        alternates: { languages: alt.languages },
       });
     }
   }

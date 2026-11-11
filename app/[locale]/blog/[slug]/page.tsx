@@ -5,7 +5,13 @@ import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { getPostBySlug, getPostSlugs, getAlternateSlug, getAllPosts } from "@/lib/blog";
+import {
+  getPostBySlug,
+  getPostSlugs,
+  getAlternateSlug,
+  getAllPosts,
+  getPostAlternates,
+} from "@/lib/blog";
 import { SetAlternateUrl } from "@/components/blog/SetAlternateUrl";
 import { RelatedPosts } from "@/components/blog/RelatedPosts";
 import { ShareButtons } from "@/components/blog/ShareButtons";
@@ -55,6 +61,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: post.excerpt,
       images: [ogImage],
     },
+    // Own canonical + hreflang (otherwise the layout's — the home — is inherited).
+    alternates: getPostAlternates(slug, locale) ?? undefined,
+    // Drafts stay reachable by URL for review but must not be indexed.
+    ...(post.draft ? { robots: { index: false, follow: false } } : {}),
   };
 }
 
