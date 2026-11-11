@@ -7,8 +7,9 @@ import { XIcon, InstagramIcon, FarcasterIcon } from "@/components/ui/SocialIcons
 // "You're on the list!" card — shared by the landing waitlist success state
 // and the app waiting room (/auth/waiting) so both stay identical.
 
+// The app link previews with the share image (app layout metadata).
 const SHARE_TEXT =
-  "I just joined the w3runn3rs waitlist — the global hub for running clubs. Pick your running club, make it count! 🏃 www.w3runn3rs.com";
+  "I just joined the @w3runn3rs waitlist, the global hub for running clubs.\n\nPick your running club, make it count! 🏃 https://app.w3runn3rs.com/";
 const SHARE_URL = `https://twitter.com/intent/tweet?text=${encodeURIComponent(SHARE_TEXT)}`;
 const CAST_URL = `https://warpcast.com/~/compose?text=${encodeURIComponent(SHARE_TEXT)}`;
 

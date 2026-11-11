@@ -4,32 +4,15 @@ import { NextIntlClientProvider } from "next-intl"
 import { ThemeProvider } from "next-themes"
 import { GoogleAnalytics } from "@next/third-parties/google"
 import { getAppLocale, getAppMessages } from "@/lib/app-i18n"
-
-const SHARE_IMAGE = "/images/share.png" // 1200×630, same as the landing
+import { appOpenGraph, appTwitter } from "@/lib/app-share-metadata"
 
 // Base share metadata for every app page (sign-in, waiting, public profiles).
 // No og:title/og:description here on purpose: link previews then fall back to
 // each page's own <title> and description.
 export const metadata: Metadata = {
   metadataBase: new URL("https://app.w3runn3rs.com"),
-  openGraph: {
-    siteName: "W3Runn3rs",
-    type: "website",
-    images: [
-      {
-        url: SHARE_IMAGE,
-        width: 1200,
-        height: 630,
-        alt: "W3Runn3rs - The global hub for running clubs.",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    site: "@w3runn3rs",
-    creator: "@w3runn3rs",
-    images: [SHARE_IMAGE],
-  },
+  openGraph: appOpenGraph,
+  twitter: appTwitter,
 }
 
 export default async function AppShellLayout({ children }: { children: ReactNode }) {
