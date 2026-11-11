@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
-import { hasBetaAccess } from "@/lib/beta-access"
+import { resolveBetaAccess } from "@/lib/beta-access"
 
 // Capa 1 del área protegida: sesión + beta gate.
 // El gate de onboarding y el AppShell viven en el grupo (onboarded);
@@ -14,8 +14,9 @@ export default async function ProtectedLayout({ children }: { children: ReactNod
     redirect("/auth/sign-in")
   }
 
-  // Beta gate: si betaOpen = true, cualquier usuario registrado pasa
-  if (!(await hasBetaAccess(session.user.email))) {
+  // Beta gate: si betaOpen = true, cualquier usuario registrado pasa.
+  // De paso registra en el waitlist a quien entró directo al app.
+  if (!(await resolveBetaAccess(session.user))) {
     redirect("/auth/waiting")
   }
 
