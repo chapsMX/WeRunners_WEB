@@ -96,5 +96,227 @@
   },
   "asseenon": {
     "label": "Mencionados en"
+  },
+  "app": {
+    "nav": {
+      "home": "Inicio",
+      "activities": "Actividades",
+      "club": "Mi club",
+      "leaderboard": "Leaderboard",
+      "profile": "Perfil",
+      "settings": "Editar perfil"
+    },
+    "soon": "Pronto",
+    "signOut": "Cerrar sesión",
+    "language": "Idioma",
+    "collapse": "Ocultar menú",
+    "expand": "Abrir menú",
+    "tagline": "We Runners",
+    "stats": {
+      "following": "Following",
+      "followers": "Followers",
+      "activities": "Actividades"
+    }
+  },
+  "dashboard": {
+    "greeting": "Hola, {name}",
+    "subtitle": "Tu semana en W3Runn3rs",
+    "heroClub": "Corriendo con {club}",
+    "rankGridTitle": "Tu ranking",
+    "sampleBadge": "Datos de muestra",
+    "cards": {
+      "rankWeekly": "Ranking Global Semanal",
+      "rankMonthly": "Ranking Global Mensual",
+      "contribution": "Tu Aporte",
+      "productivity": "Productividad",
+      "thisWeek": "esta semana",
+      "thisMonth": "este mes",
+      "toYourClub": "sumados a tu club",
+      "ofClubTotal": "del total del club",
+      "noClub": "Únete a un club",
+      "noRankWeek": "Sin actividad esta semana",
+      "noRankMonth": "Sin actividad este mes"
+    },
+    "hero": {
+      "eyebrow": "Tu aporte · esta semana",
+      "km": "km",
+      "activities": "{count, plural, one {# actividad} other {# actividades}}",
+      "contributor": "{rank}º contribuidor",
+      "ofActive": "de {total} activos",
+      "beFirst": "Sé el primero del club en sumar kilómetros esta semana.",
+      "share": "Representas el <b>{pct}%</b> del total del club",
+      "noClubTitle": "Únete a un club para empezar a sumar",
+      "noClubBody": "En W3Runn3rs cada kilómetro cuenta para un solo club. Elige el tuyo y empieza a escalar el leaderboard global.",
+      "noClubCta": "Explorar clubes"
+    },
+    "rank": {
+      "titleGlobal": "Ranking global",
+      "title": "Ranking del club",
+      "thisWeek": "{dist} esta semana",
+      "gap": "Faltan <b>{dist}</b> para alcanzar a",
+      "pending": "El ranking global se publica al cierre de la semana.",
+      "noClub": "Únete a un club para ver su posición en el leaderboard global.",
+      "viewClub": "Ver club a detalle →"
+    },
+    "personal": {
+      "title": "Tus números",
+      "week": "Semana",
+      "month": "Mes",
+      "streak": "Racha",
+      "streakHint": "días seguidos",
+      "pace": "Ritmo prom.",
+      "thisWeek": "esta semana",
+      "thisMonth": "este mes",
+      "paceSub": "promedio",
+      "km": "km",
+      "records": "Récords",
+      "pr": {
+        "ONE_K": "1K",
+        "FIVE_K": "5K",
+        "TEN_K": "10K",
+        "HALF_MARATHON": "Media",
+        "MARATHON": "Maratón"
+      }
+    },
+    "recent": {
+      "title": "Actividades recientes",
+      "emptyTitle": "Sin actividades todavía",
+      "emptyBody": "Conecta tu dispositivo o registra una carrera manual para empezar a sumar.",
+      "pace": "Ritmo",
+      "time": "Tiempo",
+      "defaultTitle": "Actividad",
+      "today": "hoy",
+      "yesterday": "ayer",
+      "daysAgo": "hace {days} d",
+      "manual": "Manual"
+    },
+    "records": {
+      "title": "Récords personales",
+      "subtitle": "Tus mejores tiempos en las distancias clave.",
+      "best": "Mejor marca",
+      "none": "Sin marca aún"
+    },
+    "clubFeed": {
+      "fallbackName": "Tu club",
+      "subtitle": "Actividad reciente del club",
+      "colRunner": "Corredor",
+      "colDistance": "Distancia",
+      "colWhen": "Cuándo",
+      "noClub": "Únete a un club para ver su actividad aquí."
+    },
+    "devices": {
+      "title": "No tienes dispositivos conectados",
+      "text": "Da click en el dispositivo con el que corres. Tus carreras se sincronizan solas y cuentan para tu club.",
+      "soon": "Próximamente",
+      "result": {
+        "connected": "Garmin conectado. Tus próximas carreras se sincronizan solas.",
+        "connected_no_activity": "Garmin quedó conectado, pero sin permiso para compartir actividades. Vuelve a conectar y activa “Activity Export” para que tus carreras cuenten.",
+        "denied": "Cancelaste la conexión con Garmin.",
+        "invalid_state": "La conexión expiró. Intenta de nuevo.",
+        "in_use": "Esa cuenta de Garmin ya está ligada a otra cuenta de W3Runn3rs.",
+        "other_provider": "Ya tienes otro dispositivo conectado. Desconéctalo primero.",
+        "failed": "No pudimos conectar Garmin. Intenta de nuevo."
+      }
+    }
+  },
+  "onboarding": {
+    "welcome": "Te damos la bienvenida, {name}",
+    "welcomeNoName": "Te damos la bienvenida",
+    "subtitle": "Configura tu perfil de runner antes de empezar.",
+    "usernameLabel": "Nombre de usuario",
+    "usernameHint": "3–20 caracteres: minúsculas, números y guiones bajos. Este es tu @usuario público.",
+    "unitLabel": "Unidad de distancia",
+    "unitKm": "Kilómetros",
+    "unitMiles": "Millas",
+    "localeLabel": "Idioma",
+    "socialLabel": "Perfiles sociales",
+    "socialHint": "Opcional — enlaza tus perfiles para que otros runners te encuentren. Puedes cambiarlos después.",
+    "twitterPlaceholder": "tu_usuario_x",
+    "instagramPlaceholder": "tu_usuario_instagram",
+    "facebookPlaceholder": "tu.perfil",
+    "stravaPlaceholder": "12345678",
+    "submit": "Entrar a W3Runn3rs",
+    "submitting": "Guardando…",
+    "errors": {
+      "invalid": "Usa 3–20 minúsculas, números o guiones bajos.",
+      "reserved": "Ese nombre de usuario no está disponible.",
+      "taken": "Ese nombre de usuario ya está en uso.",
+      "invalidUrl": "Eso no parece un enlace válido.",
+      "unknown": "Algo salió mal. Inténtalo de nuevo."
+    }
+  },
+  "settings": {
+    "back": "Volver al dashboard",
+    "title": "Editar perfil",
+    "subtitle": "Actualiza cómo te muestras en W3Runn3rs.",
+    "photo": {
+      "label": "Foto de perfil",
+      "upload": "Subir foto",
+      "uploading": "Subiendo…",
+      "remove": "Quitar",
+      "hint": "JPG, PNG o WebP, hasta 5 MB.",
+      "error": "No se pudo subir esa imagen. Inténtalo de nuevo."
+    },
+    "basics": {
+      "label": "Datos básicos"
+    },
+    "nameLabel": "Nombre visible",
+    "usernameLabel": "Nombre de usuario",
+    "usernameHint": "3–20 caracteres: minúsculas, números y guiones bajos. Cambiarlo actualiza el enlace de tu perfil público.",
+    "bioLabel": "Bio",
+    "bioHint": "Una línea sobre ti y tu running.",
+    "bioPlaceholder": "Maratonista. Madrugador. Pacers CDMX.",
+    "prefs": {
+      "label": "Preferencias"
+    },
+    "unitLabel": "Unidad de distancia",
+    "unitKm": "Kilómetros",
+    "unitMiles": "Millas",
+    "localeLabel": "Idioma",
+    "social": {
+      "label": "Perfiles sociales",
+      "hint": "Opcional — enlaza tus perfiles para que otros corredores te encuentren."
+    },
+    "twitterPlaceholder": "tu_usuario_x",
+    "instagramPlaceholder": "tu_usuario_instagram",
+    "facebookPlaceholder": "tu.perfil",
+    "stravaPlaceholder": "12345678",
+    "save": "Guardar cambios",
+    "saving": "Guardando…",
+    "saved": "Guardado",
+    "errors": {
+      "invalidName": "Escribe un nombre (hasta 60 caracteres).",
+      "invalid": "Usa 3–20 minúsculas, números o guiones bajos.",
+      "reserved": "Ese nombre de usuario no está disponible.",
+      "taken": "Ese nombre de usuario ya está en uso.",
+      "bioTooLong": "Tu bio es demasiado larga.",
+      "invalidUrl": "Eso no parece un enlace válido.",
+      "unauthorized": "Tu sesión expiró. Inicia sesión de nuevo.",
+      "unknown": "Algo salió mal. Inténtalo de nuevo."
+    }
+  },
+  "profile": {
+    "sampleBadge": "Datos de muestra",
+    "club": {
+      "label": "Club de corredores",
+      "none": "Todavía no está en un club de corredores"
+    },
+    "clubStats": {
+      "title": "En el club",
+      "rankWeekly": "Ranking en el club · semana",
+      "rankMonthly": "Ranking en el club · mes",
+      "contribution": "Aporte total",
+      "share": "Parte del club",
+      "thisWeek": "esta semana",
+      "thisMonth": "este mes",
+      "toClub": "aportados a {club}",
+      "ofClubTotal": "del total de km del club",
+      "noRankWeek": "Sin carreras esta semana",
+      "noRankMonth": "Sin carreras este mes"
+    },
+    "records": {
+      "title": "Récords personales",
+      "subtitle": "Mejores tiempos en las distancias clave."
+    }
   }
 }

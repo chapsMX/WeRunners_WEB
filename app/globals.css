@@ -17,6 +17,7 @@
   --surface-alt:  #edf1fb;   /* light blue tint for alternate sections */
   --muted:        #2a5090;   /* medium navy for secondary text */
   --line:         #c2c2c2;   /* gray borders */
+  --sidebar:      #11326e;   /* navy sidebar over off-white content */
 }
 
 .dark {
@@ -26,6 +27,7 @@
   --surface-alt:  #0a1e41;   /* deeper navy for alternate sections */
   --muted:        #c2c2c2;   /* gray for secondary text */
   --line:         #1e3d7a;   /* medium navy borders */
+  --sidebar:      #081226;   /* deep navy — distinct from navy content */
 }
 
 @layer base {

@@ -1,0 +1,67 @@
+"use client"
+
+import { useTranslations } from "next-intl"
+import type { DashboardData } from "@/lib/dashboard-data"
+import { DashboardHero } from "./DashboardHero"
+import type { GarminResult } from "@/lib/garmin/results"
+import { ConnectDeviceBanner, GarminResultNotice } from "./DeviceConnect"
+import { RankGrid } from "./RankGrid"
+import { PersonalStats } from "./PersonalStats"
+import { RecordsCard } from "./RecordsCard"
+import { ClubFeedCard } from "./ClubFeedCard"
+import { RecentActivities } from "./RecentActivities"
+
+// Nombre de club simulado mientras no exista una membresía real.
+const SIMULATED_CLUB = "Pacers CDMX"
+
+export function DashboardView({
+  data,
+  firstName,
+  garminResult,
+}: {
+  data: DashboardData
+  firstName: string
+  garminResult?: GarminResult | null
+}) {
+  const t = useTranslations("dashboard")
+  const clubName = data.club?.name ?? SIMULATED_CLUB
+
+  return (
+    <div>
+      {/* Hero full-bleed: imagen + saludo + club */}
+      <DashboardHero name={firstName} clubName={clubName} />
+
+      {/* Contenido con margen interior */}
+      <div className="space-y-8 px-6 py-8 lg:px-8">
+        {data.isSample && (
+          <div className="flex justify-end">
+            <span className="border border-brand-green/40 bg-brand-green/10 px-3 py-1 text-xs font-medium text-brand-green">
+              {t("sampleBadge")}
+            </span>
+          </div>
+        )}
+
+        {/* Resultado al volver de Garmin (?garmin=…) */}
+        {garminResult && <GarminResultNotice result={garminResult} />}
+
+        {/* Sin dispositivo: un botón por proveedor que lleva directo a su conexión */}
+        {!data.deviceConnected && <ConnectDeviceBanner />}
+
+        {/* Sección 50/50: actividad reciente · ranking */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <RecentActivities activities={data.recent} />
+          <RankGrid hero={data.hero} hasClub={data.club !== null} />
+        </div>
+
+        {/* Personal records — contenedor de 3 columnas (estilo home) */}
+        <RecordsCard records={data.personal.records} />
+
+        {/* Sección 50/50: tus números (izquierda) · tabla del club (derecha) */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <PersonalStats personal={data.personal} />
+          <ClubFeedCard clubName={data.club?.name ?? null} feed={data.clubFeed} />
+        </div>
+      </div>
+    </div>
+  )
+}

@@ -1,6 +1,6 @@
-// Prisma 7 schema — connection URL is passed via prisma.config.ts
-// DATABASE_URL        → pooled connection (Neon / Vercel integration)
-// DATABASE_URL_UNPOOLED → direct connection used for migrations
+// W3Runn3rs — schema.prisma
+// Stack: Next.js 14 App Router · Neon PostgreSQL · Prisma 7 · Better Auth
+// Last updated: 2026-06
 
 generator client {
   provider = "prisma-client-js"
@@ -10,29 +10,162 @@ datasource db {
   provider = "postgresql"
 }
 
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum Role {
+  RUNNER
+  CLUB_ADMIN
+  ADMIN
+}
+
+enum DistanceUnit {
+  KM
+  MILES
+}
+
+enum DeviceProvider {
+  GARMIN
+  POLAR
+  OURA
+  WHOOP
+  COROS
+  SUUNTO
+  STRAVA
+  APPLE_HEALTH
+  GOOGLE_FIT
+}
+
+enum PolarRegistrationStatus {
+  PENDING // token obtenido, falta POST /v3/users
+  REGISTERED // usuario registrado en Polar, listo para leer datos
+}
+
+enum ClubType {
+  RECREATIONAL
+  COMPETITIVE
+  TRAIL
+  TRIATHLON
+}
+
+enum ActivityType {
+  RUN
+  TRAIL
+  TREADMILL
+  RACE
+}
+
+enum ActivitySource {
+  MANUAL
+  STRAVA
+  GARMIN
+  POLAR
+  OURA
+  WHOOP
+  COROS
+  SUUNTO
+  APPLE_HEALTH
+  GOOGLE_FIT
+}
+
+enum PRDistance {
+  M400
+  HALF_MILE
+  K1
+  MILE
+  K2
+  K5
+  K10
+  K15
+  MILE10
+  K20
+  HALF_MARATHON
+  K30
+  MARATHON
+  ULTRA
+  LONGEST_RUN // distancia, no tiempo → usa PersonalRecord.distanceMeters
+}
+
+enum PRSource {
+  AUTO // verificado: calculado desde una Activity grabada por dispositivo
+  MANUAL // declarado por el usuario (p. ej. sus récords de Garmin Connect al conectar)
+}
+
+// Por qué una Activity no cuenta para el leaderboard del club.
+// Se decide automáticamente al ingerir; no hay moderación manual.
+enum ExclusionReason {
+  MANUAL // creada a mano en el proveedor (no grabada por dispositivo)
+  WEB_UPLOAD // subida por la web del proveedor
+  NO_CLUB // el usuario no tenía club activo
+  BEFORE_JOIN // anterior a ClubMembership.joinedAt
+  DUPLICATE // misma carrera grabada en otro dispositivo
+  IMPLAUSIBLE_PACE // ritmo más rápido que el umbral (~2:30 min/km) → excluida automáticamente
+}
+
+enum PeriodType {
+  WEEKLY
+  MONTHLY
+  YEARLY
+  ALL_TIME
+}
+
+enum LeaderboardCategory {
+  DISTANCE // km totales del club
+  PACE // pace promedio del club
+  ELEVATION // elevación acumulada
+  MARATHONS // cantidad de maratones
+  CONSISTENCY // semanas sin parar
+  DISTANCE_PER_MEMBER // km promedio por miembro activo
+}
+
+// ─────────────────────────────────────────────
+// APP CONFIG — feature flags globales
+// Un solo registro con id = "global"
+// betaOpen = true abre el acceso a cualquier usuario registrado
+// betaOpen = false solo dejan pasar emails en WaitlistEntry con betaAccess = true
+// ─────────────────────────────────────────────
+
+model AppConfig {
+  id       String  @id @default("global")
+  betaOpen Boolean @default(false)
+
+  updatedAt DateTime @updatedAt
+
+  @@map("app_config")
+}
+
+// ─────────────────────────────────────────────
+// TABLAS EXISTENTES — no se modifican
+// ─────────────────────────────────────────────
+
 model WaitlistEntry {
-  id         String            @id @default(cuid())
-  email      String            @unique
+  id         String   @id @default(cuid())
+  email      String   @unique
   name       String?
   clubId     String?
-  betaAccess Boolean           @default(false)
-  club       ClubRegistration? @relation(fields: [clubId], references: [id])
-  createdAt  DateTime          @default(now())
+  betaAccess Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  // Se marca cuando el waitlist entry se convierte en User
+  convertedAt DateTime?
+
+  club ClubRegistration? @relation(fields: [clubId], references: [id])
 }
 
 model ClubRegistration {
-  id              String         @id @default(cuid())
+  id              String          @id @default(cuid())
   clubName        String
   city            String
-  email           String         @unique
+  email           String          @unique
   runners         Int?
   logoUrl         String?
-  enabled         Boolean        @default(false)
+  enabled         Boolean         @default(false)
   instagram       String?
   twitter         String?
   tiktok          String?
   facebook        String?
-  createdAt       DateTime       @default(now())
+  createdAt       DateTime        @default(now())
   waitlistEntries WaitlistEntry[]
 }
 
@@ -48,4 +181,440 @@ model AmbassadorApplication {
   status     String   @default("pending") // pending | shortlisted | rejected
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────
+// BETTER AUTH — user, session, account, verification
+// Nombres y tipos exactos que requiere Better Auth
+// con Prisma adapter. No modificar.
+// ─────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  name          String
+  image         String? // URL foto de perfil, viene de Google OAuth
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Perfil público
+  username String? @unique // slug: @chaps
+  bio      String?
+
+  // Redes sociales
+  twitterHandle      String?
+  instagramHandle    String?
+  facebookProfileUrl String?
+  stravaProfileUrl   String?
+
+  // Plataforma
+  role          Role         @default(RUNNER)
+  preferredUnit DistanceUnit @default(KM)
+  locale        String       @default("en")
+  timezone      String       @default("America/Mexico_City")
+  lastActiveAt  DateTime?
+
+  // Onboarding: null = perfil incompleto (gate lo manda a /onboarding).
+  // Se setea al terminar el flujo de primer ingreso.
+  onboardingCompletedAt DateTime?
+
+  // Qué dispositivo tiene conectado HOY. Las credenciales reales
+  // viven en su tabla específica (DeviceConnectionGarmin, DeviceConnectionPolar, etc.)
+  // porque cada proveedor entrega datos distintos. Un usuario, un dispositivo activo.
+  connectedProvider DeviceProvider? // null = sin dispositivo conectado
+
+  // Relaciones Better Auth
+  sessions Session[]
+  accounts Account[]
+
+  // Relaciones W3Runn3rs
+  memberships      ClubMembership[]
+  activities       Activity[]
+  records          PersonalRecord[]
+  snapshots        WeeklySnapshot[]
+  garminConnection DeviceConnectionGarmin?
+  polarConnection  DeviceConnectionPolar?
+  stravaConnection DeviceConnectionStrava?
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?   @db.Text
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verification")
+}
+
+// ─────────────────────────────────────────────
+// CLUBS
+// ─────────────────────────────────────────────
+
+model Club {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  logoUrl     String?
+  city        String?
+  country     String   @default("MX")
+  clubType    ClubType @default(RECREATIONAL)
+
+  instagram    String?
+  twitter      String?
+  tiktok       String?
+  facebook     String?
+  contactEmail String?
+
+  initialMemberCount Int?
+  memberCount        Int     @default(0)
+  verified           Boolean @default(false)
+  active             Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships ClubMembership[]
+  activities  Activity[]
+  stats       ClubStats[]
+  leaderboard LeaderboardEntry[]
+  snapshots   WeeklySnapshot[]
+
+  @@map("clubs")
+}
+
+// ─────────────────────────────────────────────
+// MEMBRESÍAS — historial completo + regla de 6 meses
+// ─────────────────────────────────────────────
+
+model ClubMembership {
+  id     String @id @default(cuid())
+  userId String
+  clubId String
+
+  joinedAt      DateTime  @default(now())
+  leftAt        DateTime?
+  isActive      Boolean   @default(true)
+  lockExpiresAt DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, isActive], name: "one_active_membership")
+  @@index([clubId])
+  @@index([userId])
+  @@map("club_memberships")
+}
+
+// ─────────────────────────────────────────────
+// ACTIVIDADES
+// ─────────────────────────────────────────────
+
+model Activity {
+  id     String  @id @default(cuid())
+  userId String
+  clubId String?
+
+  distanceMeters      Int
+  durationSeconds     Int
+  elevationGainMeters Int?
+  elevationLossMeters Int?
+
+  activityDate DateTime
+  title        String?
+  activityType ActivityType   @default(RUN)
+  source       ActivitySource
+  externalId   String? // id del proveedor (Garmin: summaryId)
+
+  // Datos crudos del proveedor (auditoría / dedupe / bucketing)
+  providerActivityType   String? // p. ej. "TREADMILL_RUNNING"
+  startTimeOffsetSeconds Int? // hora local del dispositivo = activityDate + offset
+  deviceName             String?
+  parentExternalId       String? // multisport: summaryId de la actividad padre
+  isManual               Boolean @default(false)
+  isWebUpload            Boolean @default(false)
+
+  // Fairness: se calcula al ingerir. Default false = fail-closed (si algo no
+  // pasó por las reglas, no cuenta). exclusionReason explica el false.
+  countsForLeaderboard Boolean          @default(false)
+  exclusionReason      ExclusionReason?
+
+  avgPaceSecPerKm Int?
+  avgHeartRate    Int?
+  maxHeartRate    Int?
+  avgCadence      Int?
+  calories        Int?
+
+  startLat Float?
+  startLng Float?
+
+  createdAt DateTime @default(now())
+
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  club    Club?            @relation(fields: [clubId], references: [id])
+  records PersonalRecord[]
+
+  @@unique([userId, source, externalId])
+  @@index([userId, activityDate])
+  @@index([clubId, activityDate])
+  @@map("activities")
+}
+
+// ─────────────────────────────────────────────
+// PERSONAL RECORDS
+// ─────────────────────────────────────────────
+
+model PersonalRecord {
+  id         String  @id @default(cuid())
+  userId     String
+  // Una misma carrera puede ser récord de varias distancias (p. ej. 5K + LONGEST_RUN).
+  activityId String?
+
+  distance        PRDistance
+  durationSeconds Int? // null para LONGEST_RUN declarado sin tiempo
+  distanceMeters  Int? // LONGEST_RUN: la distancia del récord
+  achievedAt      DateTime? // opcional: un récord declarado puede no tener fecha exacta
+  source          PRSource   @default(AUTO)
+
+  createdAt DateTime @default(now())
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activity Activity? @relation(fields: [activityId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, distance])
+  @@index([userId])
+  @@index([activityId])
+  @@map("personal_records")
+}
+
+// ─────────────────────────────────────────────
+// CLUB STATS — motor de leaderboards
+// ─────────────────────────────────────────────
+
+model ClubStats {
+  id          String     @id @default(cuid())
+  clubId      String
+  periodType  PeriodType
+  periodStart DateTime
+  periodEnd   DateTime
+
+  totalDistanceMeters  Int @default(0)
+  totalActivities      Int @default(0)
+  totalDurationSeconds Int @default(0)
+  activeMembers        Int @default(0)
+
+  avgPaceSecPerKm  Int?
+  bestPaceSecPerKm Int?
+
+  totalElevationMeters Int @default(0)
+
+  races5k           Int @default(0)
+  races10k          Int @default(0)
+  racesHalfMarathon Int @default(0)
+  racesMarathon     Int @default(0)
+  racesUltra        Int @default(0)
+
+  avgActivitiesPerMember Float @default(0)
+  weeksWithActivity      Int   @default(0)
+
+  updatedAt DateTime @updatedAt
+
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@unique([clubId, periodType, periodStart])
+  @@index([clubId, periodType])
+  @@map("club_stats")
+}
+
+// ─────────────────────────────────────────────
+// LEADERBOARD ENTRIES
+// ─────────────────────────────────────────────
+
+model LeaderboardEntry {
+  id          String              @id @default(cuid())
+  clubId      String
+  periodType  PeriodType
+  periodStart DateTime
+  category    LeaderboardCategory
+
+  rank         Int
+  previousRank Int?
+
+  totalDistanceMeters  Int?
+  avgPaceSecPerKm      Int?
+  totalElevationMeters Int?
+  racesMarathon        Int?
+  weeksWithActivity    Int?
+  distancePerMember    Float?
+
+  calculatedAt DateTime @default(now())
+
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@unique([clubId, periodType, periodStart, category])
+  @@index([periodType, periodStart, category, rank])
+  @@map("leaderboard_entries")
+}
+
+// ─────────────────────────────────────────────
+// WEEKLY SNAPSHOTS
+// ─────────────────────────────────────────────
+
+model WeeklySnapshot {
+  id     String  @id @default(cuid())
+  userId String
+  clubId String?
+
+  weekStart DateTime
+
+  totalDistanceMeters  Int @default(0)
+  totalActivities      Int @default(0)
+  totalDurationSeconds Int @default(0)
+
+  createdAt DateTime @default(now())
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  club Club? @relation(fields: [clubId], references: [id])
+
+  @@unique([userId, weekStart])
+  @@index([userId, weekStart])
+  @@map("weekly_snapshots")
+}
+
+// ─────────────────────────────────────────────
+// DEVICE CONNECTIONS — una tabla por proveedor
+// Cada wearable entrega credenciales y metadata distintos.
+// Un usuario solo puede tener UNA conexión activa a la vez
+// (enforced por User.connectedProvider + unique userId aquí).
+// ─────────────────────────────────────────────
+
+// Garmin — OAuth2 PKCE (Activity API v2.1, plan Starter: solo Push)
+// El userId de Garmin NO viene en la respuesta del token; se obtiene con
+// GET https://apis.garmin.com/partner-gateway/rest/user/id tras el intercambio.
+// Es estable entre reconexiones → llave para empatar los payloads de push.
+model DeviceConnectionGarmin {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  garminUserId          String   @unique // GET /partner-gateway/rest/user/id
+  accessToken           String   @db.Text // se encriptará en la app antes de producción
+  refreshToken          String   @db.Text // rota en cada refresh: guardar siempre el último
+  tokenExpiresAt        DateTime // expires_in: 86400s (24h)
+  refreshTokenExpiresAt DateTime // refresh_token_expires_in: ~90 días
+
+  scope String? // PARTNER_WRITE PARTNER_READ CONNECT_READ CONNECT_WRITE (fijo)
+
+  // GET /partner-gateway/rest/user/permissions + webhook userPermissionsChange.
+  // Sin ACTIVITY_EXPORT no llegan actividades (el token sigue siendo válido).
+  permissions          String[]  @default([])
+  permissionsUpdatedAt DateTime?
+
+  connectedAt    DateTime  @default(now())
+  lastSyncAt     DateTime?
+  isActive       Boolean   @default(true)
+  deregisteredAt DateTime? // webhook deregistrations o DELETE /user/registration
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("device_connections_garmin")
+}
+
+// Payload crudo de cada push de Garmin. El webhook lo guarda y responde 200
+// de inmediato (límite 30 s); otro paso lo procesa de forma idempotente.
+model GarminWebhookEvent {
+  id          String    @id @default(cuid())
+  summaryType String // activities | deregistrations | userPermissionsChange
+  payload     Json
+  receivedAt  DateTime  @default(now())
+  processedAt DateTime?
+  attempts    Int       @default(0)
+  error       String?   @db.Text
+
+  @@index([processedAt, receivedAt])
+  @@map("garmin_webhook_events")
+}
+
+// Polar — OAuth2 estándar
+// El access_token de Polar NO expira a menos que se revoque.
+// Requiere un paso extra: registrar al usuario con POST /v3/users
+// usando un member_id propio ANTES de poder leer sus datos.
+model DeviceConnectionPolar {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  polarUserId String @unique // x_user_id, viene en la respuesta del token
+  memberId    String @unique // nuestro identificador, enviado en el registro
+  accessToken String @db.Text // no expira salvo revocación
+
+  registrationStatus PolarRegistrationStatus @default(PENDING)
+
+  connectedAt  DateTime  @default(now())
+  registeredAt DateTime? // cuándo se completó POST /v3/users
+  lastSyncAt   DateTime?
+  isActive     Boolean   @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("device_connections_polar")
+}
+
+// Strava — OAuth2 estándar
+model DeviceConnectionStrava {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  stravaAthleteId String   @unique
+  accessToken     String   @db.Text
+  refreshToken    String   @db.Text
+  tokenExpiresAt  DateTime
+
+  scope String? // read,activity:read_all,etc.
+
+  connectedAt DateTime  @default(now())
+  lastSyncAt  DateTime?
+  isActive    Boolean   @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("device_connections_strava")
 }
