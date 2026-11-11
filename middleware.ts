@@ -1,5 +1,6 @@
 import createMiddleware from "next-intl/middleware"
 import { NextRequest, NextResponse } from "next/server"
+import { getSessionCookie } from "better-auth/cookies"
 import { routing } from "./i18n/routing"
 
 const intlMiddleware = createMiddleware(routing)
@@ -8,8 +9,9 @@ const intlMiddleware = createMiddleware(routing)
 // "/u/" = perfiles públicos de corredores (compartibles sin login)
 const APP_PUBLIC_PATHS = ["/auth/sign-in", "/auth/sign-up", "/auth/waiting", "/u/"]
 
-// Cookie que Better Auth escribe al autenticar
-const SESSION_COOKIE = "better-auth.session_token"
+// La cookie de sesión de Better Auth se llama "better-auth.session_token" en
+// HTTP (local) y "__Secure-better-auth.session_token" en HTTPS (producción).
+// getSessionCookie resuelve ambos nombres.
 
 // Prefijos de rutas que pertenecen al app — se saltan i18n en cualquier host
 const APP_PATH_PREFIXES = [
@@ -41,7 +43,7 @@ function handleAppRequest(request: NextRequest): NextResponse {
 
   // Checa solo la existencia de la cookie — sin DB, edge-compatible.
   // La validación real de sesión + beta gate ocurre en (protected)/layout.tsx
-  const hasSession = request.cookies.has(SESSION_COOKIE)
+  const hasSession = Boolean(getSessionCookie(request))
 
   if (!hasSession) {
     const signInUrl = new URL("/auth/sign-in", request.url)
