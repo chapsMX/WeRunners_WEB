@@ -4,10 +4,19 @@ import type { Metadata } from "next"
 import AppHeader from "@/components/layout/AppHeader"
 import AppFooter from "@/components/layout/AppFooter"
 import SignInForm from "./SignInForm"
+import { appOpenGraph, appTwitter } from "@/lib/app-share-metadata"
+
+// The tab keeps "Sign In"; link previews (app.w3runn3rs.com is the link people
+// share from the waitlist) get the marketing title instead.
+const SHARE_TITLE = "W3Runn3rs — Pick your running club, make it count"
+const SHARE_DESCRIPTION =
+  "The global hub for running clubs. One runner, one club — every kilometer you run counts for yours."
 
 export const metadata: Metadata = {
   title: "Sign In — W3Runn3rs",
   description: "Sign in to your W3Runn3rs account and track your club's progress.",
+  openGraph: { ...appOpenGraph, title: SHARE_TITLE, description: SHARE_DESCRIPTION },
+  twitter: { ...appTwitter, title: SHARE_TITLE, description: SHARE_DESCRIPTION },
 }
 
 export default function SignInPage() {
