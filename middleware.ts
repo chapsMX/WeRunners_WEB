@@ -55,6 +55,12 @@ function handleAppRequest(request: NextRequest): NextResponse {
 export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  // app.* no tiene página en "/" → al dashboard. Sin sesión, /dashboard
+  // a su vez manda al login con callbackUrl=/dashboard.
+  if (isAppSubdomain(request) && pathname === "/") {
+    return NextResponse.redirect(new URL("/dashboard", request.url))
+  }
+
   // Rutas del app: por subdominio (prod) o por path (dev + prod)
   if (isAppSubdomain(request) || isAppPath(pathname)) {
     return handleAppRequest(request)
