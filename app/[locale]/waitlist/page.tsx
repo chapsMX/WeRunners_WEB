@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { OnTheListCard, BackArrow } from "@/components/waitlist/OnTheListCard";
 import { trackEvent } from "@/lib/analytics";
+import { hasOnListCookie } from "@/lib/on-list-cookie";
 
 type Status = "idle" | "loading" | "success" | "duplicate" | "error";
 
@@ -21,9 +22,10 @@ export default function WaitlistPage() {
   const [clubs, setClubs]     = useState<Club[]>([]);
   const [status, setStatus]   = useState<Status>("idle");
 
-  // On mount: check if user already joined + fetch enabled clubs
+  // On mount: check if user already joined (this form, or signed up in the
+  // app — shared w3_on_list cookie) + fetch enabled clubs
   useEffect(() => {
-    if (localStorage.getItem("w3_waitlist_joined") === "1") {
+    if (localStorage.getItem("w3_waitlist_joined") === "1" || hasOnListCookie()) {
       setStatus("success");
     }
     fetch("/api/clubs")
