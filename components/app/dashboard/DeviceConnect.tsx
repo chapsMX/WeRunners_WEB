@@ -4,6 +4,7 @@ import { useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import type { GarminResult } from "@/lib/garmin/results"
+import { trackEvent } from "@/lib/analytics"
 import { DeviceIcon } from "../icons"
 
 // Providers shown in the banner. Only Garmin is live; the rest render disabled.
@@ -37,6 +38,7 @@ export function ConnectDeviceBanner() {
             <a
               key={d.id}
               href={d.href}
+              onClick={() => trackEvent.deviceConnectClick(d.id)}
               className="border border-brand-green bg-brand-green px-4 py-2 text-sm font-semibold text-brand-navy transition-colors hover:bg-brand-green/90"
             >
               {d.label}
@@ -72,13 +74,14 @@ const TONE: Record<GarminResult, "ok" | "warn" | "error"> = {
 export function GarminResultNotice({ result }: { result: GarminResult }) {
   const t = useTranslations("dashboard.devices.result")
 
-  // Drop the query param so a refresh doesn't show the notice again.
-  // history.replaceState keeps this render (no Next navigation).
+  // Track the outcome once, then drop the query param so a refresh doesn't
+  // show (or count) it again. history.replaceState keeps this render.
   useEffect(() => {
+    trackEvent.deviceConnectResult("garmin", result)
     const url = new URL(window.location.href)
     url.searchParams.delete("garmin")
     window.history.replaceState(window.history.state, "", url)
-  }, [])
+  }, [result])
 
   const tone = TONE[result]
   return (
