@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import { sql } from "@/lib/db";
 import { resend } from "@/lib/resend";
+import { countryName, isCountryCode } from "@/lib/countries";
 
 export async function GET() {
   try {
@@ -24,6 +25,7 @@ export async function POST(req: NextRequest) {
 
     const clubName  = form.get("clubName")  as string;
     const city      = form.get("city")      as string;
+    const country   = form.get("country")   as string | null;
     const email     = form.get("email")     as string;
     const runners   = form.get("runners")   as string | null;
     const instagram = form.get("instagram") as string | null;
@@ -38,6 +40,14 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    if (!isCountryCode(country)) {
+      return NextResponse.json(
+        { error: "Please select your club's country." },
+        { status: 400 }
+      );
+    }
+    const countryLabel = `${countryName(country, "en")} (${country})`;
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim().toLowerCase())) {
@@ -75,11 +85,12 @@ export async function POST(req: NextRequest) {
 
     await sql`
       INSERT INTO "ClubRegistration"
-        (id, "clubName", city, email, runners, "logoUrl", instagram, twitter, tiktok, facebook, "createdAt")
+        (id, "clubName", city, country, email, runners, "logoUrl", instagram, twitter, tiktok, facebook, "createdAt")
       VALUES (
         gen_random_uuid()::text,
         ${clubName.trim()},
         ${city.trim()},
+        ${country},
         ${email.trim().toLowerCase()},
         ${runners ? parseInt(runners) : null},
         ${logoUrl},
@@ -104,6 +115,7 @@ export async function POST(req: NextRequest) {
       ``,
       `Club name : ${clubName.trim()}`,
       `City      : ${city.trim()}`,
+      `Country   : ${countryLabel}`,
       `Email     : ${email.trim().toLowerCase()}`,
       `Runners   : ${runners || "—"}`,
       `Logo      : ${logoUrl || "—"}`,
@@ -123,6 +135,7 @@ export async function POST(req: NextRequest) {
       `—————————————`,
       `Club name : ${clubName.trim()}`,
       `City      : ${city.trim()}`,
+      `Country   : ${countryLabel}`,
       `Runners   : ${runners || "—"}`,
       ``,
       `Social media`,

@@ -1,10 +1,13 @@
 "use client"
 
 import { useActionState, useState } from "react"
-import { useTranslations } from "next-intl"
+import Image from "next/image"
+import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/Button"
 import { SegToggle, SocialInput } from "@/components/app/forms"
+import type { SelectableClub } from "@/lib/clubs"
+import { countryName } from "@/lib/countries"
 import { completeOnboarding, type OnboardingState } from "./actions"
 
 type Unit = "KM" | "MILES"
@@ -15,11 +18,13 @@ export function OnboardingForm({
   suggestedUsername,
   defaultUnit,
   defaultLocale,
+  clubs,
 }: {
   name: string | null
   suggestedUsername: string
   defaultUnit: Unit
   defaultLocale: Locale
+  clubs: SelectableClub[]
 }) {
   const t = useTranslations("onboarding")
   const [state, formAction, isPending] = useActionState<OnboardingState, FormData>(
@@ -34,24 +39,21 @@ export function OnboardingForm({
   const [instagram, setInstagram] = useState("")
   const [facebook, setFacebook] = useState("")
   const [strava, setStrava] = useState("")
+  const [club, setClub] = useState("")
 
   const firstName = (name ?? "").split(" ")[0]
   const usernameError = state.error?.field === "username" ? state.error.code : null
+  const clubError = state.error?.field === "club" ? state.error.code : null
   const facebookError = state.error?.field === "facebook" ? state.error.code : null
   const stravaError = state.error?.field === "strava" ? state.error.code : null
   const formError = state.error?.field === "form" ? state.error.code : null
 
   return (
-    <div>
-      <p className="text-xl font-bold tracking-tight">
-        <span className="text-brand-green">W3</span>
-        <span className="text-foreground">RUNN3RS</span>
-      </p>
-
-      <h1 className="mt-6 text-2xl font-bold text-foreground sm:text-3xl">
+    <div className="bg-white/5 border border-brand-green/30 rounded-2xl p-6 sm:p-8 backdrop-blur-sm">
+      <h1 className="text-2xl font-bold text-white sm:text-3xl">
         {firstName ? t("welcome", { name: firstName }) : t("welcomeNoName")}
       </h1>
-      <p className="mt-2 text-sm text-muted">{t("subtitle")}</p>
+      <p className="mt-2 text-sm text-white/70">{t("subtitle")}</p>
 
       <form action={formAction} className="mt-8 space-y-6">
         {/* Username */}
@@ -89,6 +91,58 @@ export function OnboardingForm({
             {usernameError ? t(`errors.${usernameError}`) : t("usernameHint")}
           </p>
         </div>
+
+        {/* Club (obligatorio) */}
+        <fieldset>
+          <legend className="block text-sm font-semibold text-foreground">{t("clubLabel")}</legend>
+          <p className="mt-1 text-xs text-muted">{t("clubHint")}</p>
+          <div className="mt-3 space-y-2" role="radiogroup">
+            {clubs.map((c) => (
+              <ClubOption
+                key={c.id}
+                club={c}
+                checked={club === c.id}
+                onSelect={() => setClub(c.id)}
+              />
+            ))}
+            <label
+              className={cn(
+                "flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition-colors",
+                club === "none"
+                  ? "border-brand-green bg-brand-green/10"
+                  : "border-line bg-surface-alt/40 hover:border-brand-green/50"
+              )}
+            >
+              <input
+                type="radio"
+                name="club"
+                value="none"
+                checked={club === "none"}
+                onChange={() => setClub("none")}
+                required
+                className="sr-only"
+              />
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold text-foreground">{t("clubNone")}</span>
+                <span className="block text-xs text-muted">
+                  {t("clubNoneHint")}{" "}
+                  <a
+                    href="https://www.w3runn3rs.com/en/for-clubs"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-brand-green hover:underline"
+                  >
+                    {t("clubRegister")} →
+                  </a>
+                </span>
+              </span>
+              <RadioDot checked={club === "none"} />
+            </label>
+          </div>
+          <p className={cn("mt-2 text-xs", clubError ? "text-red-400" : "text-muted")}>
+            {clubError ? t(`errors.${clubError}`) : t("clubLock")}
+          </p>
+        </fieldset>
 
         {/* Unidad */}
         <div>
@@ -175,5 +229,70 @@ export function OnboardingForm({
         </Button>
       </form>
     </div>
+  )
+}
+
+function ClubOption({
+  club,
+  checked,
+  onSelect,
+}: {
+  club: SelectableClub
+  checked: boolean
+  onSelect: () => void
+}) {
+  const t = useTranslations("onboarding")
+  const locale = useLocale()
+  const fmt = (n: number) => n.toLocaleString(locale)
+
+  return (
+    <label
+      className={cn(
+        "flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition-colors",
+        checked
+          ? "border-brand-green bg-brand-green/10"
+          : "border-line bg-surface-alt/40 hover:border-brand-green/50"
+      )}
+    >
+      <input
+        type="radio"
+        name="club"
+        value={club.id}
+        checked={checked}
+        onChange={onSelect}
+        required
+        className="sr-only"
+      />
+      <span className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white/10 ring-1 ring-line">
+        {club.logoUrl ? (
+          <Image src={club.logoUrl} alt="" fill sizes="48px" className="object-cover" />
+        ) : (
+          <span className="text-lg font-bold text-brand-green">{club.name.charAt(0).toUpperCase()}</span>
+        )}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate font-semibold text-foreground">{club.name}</span>
+        <span className="block text-xs text-muted">
+          {club.city}, {countryName(club.country, locale)}
+          {club.declaredRunners ? ` · ${t("clubRunners", { count: fmt(club.declaredRunners) })}` : ""}
+          {club.members > 0 ? ` · ${t("clubOnApp", { count: fmt(club.members) })}` : ""}
+        </span>
+      </span>
+      <RadioDot checked={checked} />
+    </label>
+  )
+}
+
+function RadioDot({ checked }: { checked: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border",
+        checked ? "border-brand-green bg-brand-green" : "border-line"
+      )}
+    >
+      {checked && <span className="h-2 w-2 rounded-full bg-brand-navy" />}
+    </span>
   )
 }

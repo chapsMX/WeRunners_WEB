@@ -157,6 +157,7 @@ model ClubRegistration {
   id              String          @id @default(cuid())
   clubName        String
   city            String
+  country         String // ISO 3166-1 alpha-2 (MX, PH, US…), required in the form
   email           String          @unique
   runners         Int?
   logoUrl         String?

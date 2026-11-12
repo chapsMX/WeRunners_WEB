@@ -242,8 +242,18 @@
       "reserved": "That username isn't available.",
       "taken": "That username is already taken.",
       "invalidUrl": "That doesn't look like a valid link.",
-      "unknown": "Something went wrong. Please try again."
-    }
+      "unknown": "Something went wrong. Please try again.",
+      "clubRequired": "Pick your club, or choose “My club isn’t listed”.",
+      "clubUnavailable": "That club isn’t available anymore. Please pick another one."
+    },
+    "clubLabel": "Your running club",
+    "clubHint": "Every kilometer you run counts for the club you pick.",
+    "clubLock": "You can switch clubs once every 6 months. Kilometers you run with a club stay with that club — they never move to a new one.",
+    "clubRunners": "{count} runners",
+    "clubOnApp": "{count} on W3Runn3rs",
+    "clubNone": "My club isn’t listed",
+    "clubNoneHint": "Finish now and join a club later. You can also register your club.",
+    "clubRegister": "Register your club"
   },
   "settings": {
     "back": "Back to dashboard",
