@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/Button"
 import { SegToggle, SocialInput } from "@/components/app/forms"
 import type { SelectableClub } from "@/lib/clubs"
+import { countryName } from "@/lib/countries"
 import { completeOnboarding, type OnboardingState } from "./actions"
 
 type Unit = "KM" | "MILES"
@@ -272,7 +273,7 @@ function ClubOption({
       <span className="min-w-0 flex-1">
         <span className="block truncate font-semibold text-foreground">{club.name}</span>
         <span className="block text-xs text-muted">
-          {club.city}
+          {club.city}, {countryName(club.country, locale)}
           {club.declaredRunners ? ` · ${t("clubRunners", { count: fmt(club.declaredRunners) })}` : ""}
           {club.members > 0 ? ` · ${t("clubOnApp", { count: fmt(club.members) })}` : ""}
         </span>

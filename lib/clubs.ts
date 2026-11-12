@@ -13,6 +13,8 @@ export type SelectableClub = {
   id: string
   name: string
   city: string
+  /** ISO 3166-1 alpha-2, e.g. "MX", "PH". */
+  country: string
   logoUrl: string | null
   /** Runners declared by the club when it registered. */
   declaredRunners: number | null
@@ -28,6 +30,7 @@ export async function getSelectableClubs(): Promise<SelectableClub[]> {
       id: true,
       clubName: true,
       city: true,
+      country: true,
       logoUrl: true,
       runners: true,
       club: { select: { memberCount: true } },
@@ -37,6 +40,7 @@ export async function getSelectableClubs(): Promise<SelectableClub[]> {
     id: r.id,
     name: r.clubName,
     city: r.city,
+    country: r.country,
     logoUrl: r.logoUrl,
     declaredRunners: r.runners,
     members: r.club?.memberCount ?? 0,
@@ -84,6 +88,7 @@ async function ensureClubForRegistration(tx: Tx, registrationId: string): Promis
       name: reg.clubName,
       slug,
       city: reg.city,
+      country: reg.country,
       logoUrl: reg.logoUrl,
       instagram: reg.instagram,
       twitter: reg.twitter,
@@ -91,7 +96,6 @@ async function ensureClubForRegistration(tx: Tx, registrationId: string): Promis
       facebook: reg.facebook,
       initialMemberCount: reg.runners,
       registrationId: reg.id,
-      // country: defaults to "MX" — registrations don't capture it yet.
     },
     select: { id: true },
   })

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
@@ -8,6 +9,7 @@ import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { trackEvent } from "@/lib/analytics";
+import { countryOptions } from "@/lib/countries";
 
 type Status = "idle" | "loading" | "success" | "duplicate" | "error";
 
@@ -21,6 +23,7 @@ const STEPS = [
 export default function ForClubsPage() {
   const [clubName, setClubName]   = useState("");
   const [city, setCity]           = useState("");
+  const [country, setCountry]     = useState("");
   const [email, setEmail]         = useState("");
   const [runners, setRunners]     = useState("");
   const [instagram, setInstagram] = useState("");
@@ -30,6 +33,9 @@ export default function ForClubsPage() {
   const [logoFile, setLogoFile]   = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [status, setStatus]       = useState<Status>("idle");
+  const { locale } = useParams<{ locale: string }>();
+  // Country names in the page's language ("Mexico" / "México"), sorted by name.
+  const countries = useMemo(() => countryOptions(locale ?? "en"), [locale]);
   const fileInputRef              = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -58,6 +64,7 @@ export default function ForClubsPage() {
       const form = new FormData();
       form.append("clubName",  clubName);
       form.append("city",      city);
+      form.append("country",   country);
       form.append("email",     email);
       form.append("runners",   runners);
       form.append("instagram", instagram);
@@ -179,6 +186,23 @@ export default function ForClubsPage() {
                 required
                 disabled={status === "loading"}
               />
+              <select
+                aria-label="Country"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                required
+                disabled={status === "loading"}
+                className={`w-full rounded-lg bg-surface-alt border border-line px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-transparent transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${country ? "text-foreground" : "text-muted"}`}
+              >
+                <option value="" disabled>
+                  {locale === "es" ? "País *" : "Country *"}
+                </option>
+                {countries.map((c) => (
+                  <option key={c.code} value={c.code} className="text-foreground" suppressHydrationWarning>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
               <Input
                 type="email"
                 placeholder="Contact email *"
