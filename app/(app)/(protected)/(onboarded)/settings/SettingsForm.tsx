@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/Button"
 import { SegToggle, SocialInput } from "@/components/app/forms"
 import { trackEvent } from "@/lib/analytics"
+import { DeviceSection, type DeviceStatus } from "@/components/app/settings/DeviceSection"
 import { updateProfile, type ProfileState } from "./actions"
 
 type Unit = "KM" | "MILES"
@@ -37,7 +38,13 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function SettingsForm({ initial }: { initial: SettingsInitial }) {
+export function SettingsForm({
+  initial,
+  device,
+}: {
+  initial: SettingsInitial
+  device: DeviceStatus
+}) {
   const t = useTranslations("settings")
   const [state, formAction, isPending] = useActionState<ProfileState, FormData>(
     updateProfile,
@@ -324,6 +331,11 @@ export function SettingsForm({ initial }: { initial: SettingsInitial }) {
           </Button>
         </div>
       </form>
+
+      {/* Outside the profile form: connecting/disconnecting isn't a profile "save". */}
+      <div className="mt-8">
+        <DeviceSection device={device} />
+      </div>
     </div>
   )
 }

@@ -7,10 +7,13 @@ import type { GarminResult } from "@/lib/garmin/results"
 import { trackEvent } from "@/lib/analytics"
 import { DeviceIcon } from "../icons"
 
+/** Full navigation (plain <a>, not next/link): the route redirects to Garmin. */
+export const GARMIN_CONNECT_PATH = "/api/integrations/garmin/connect"
+
 // Providers shown in the banner. Only Garmin is live; the rest render disabled.
 // Text buttons for now — brand logos come later (check each brand's guidelines).
 const DEVICES = [
-  { id: "garmin", label: "Garmin", href: "/api/integrations/garmin/connect" },
+  { id: "garmin", label: "Garmin", href: GARMIN_CONNECT_PATH },
   { id: "polar", label: "Polar", href: null },
   { id: "suunto", label: "Suunto", href: null },
 ] as const
@@ -96,5 +99,31 @@ export function GarminResultNotice({ result }: { result: GarminResult }) {
     >
       {t(result)}
     </p>
+  )
+}
+
+/** Connected to Garmin but activity sharing is off → no runs will arrive. */
+export function ActivitySharingWarning() {
+  const t = useTranslations("dashboard.devices")
+  return (
+    <section className="flex flex-col gap-3 border border-yellow-400/40 bg-yellow-400/10 p-5 sm:flex-row sm:items-center">
+      <p className="flex-1 text-sm text-yellow-100">{t("sharingOff")}</p>
+      <div className="flex flex-wrap gap-2">
+        <a
+          href="https://connect.garmin.com/modern/settings/accountInformation"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="border border-yellow-400/60 px-4 py-2 text-sm font-semibold text-yellow-100 transition-colors hover:bg-yellow-400/10"
+        >
+          {t("sharingManage")} ↗
+        </a>
+        <a
+          href={GARMIN_CONNECT_PATH}
+          className="border border-brand-green bg-brand-green px-4 py-2 text-sm font-semibold text-brand-navy transition-colors hover:bg-brand-green/90"
+        >
+          {t("sharingReconnect")}
+        </a>
+      </div>
+    </section>
   )
 }

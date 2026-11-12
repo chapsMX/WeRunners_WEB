@@ -216,7 +216,10 @@
         "in_use": "That Garmin account is already linked to another W3Runn3rs account.",
         "other_provider": "You already have another device connected. Disconnect it first.",
         "failed": "We couldn’t connect Garmin. Please try again."
-      }
+      },
+      "sharingOff": "Garmin is connected, but activity sharing is off — your runs won’t sync or count for your club.",
+      "sharingManage": "Manage in Garmin Connect",
+      "sharingReconnect": "Connect again"
     }
   },
   "onboarding": {
@@ -303,6 +306,25 @@
       "invalidUrl": "That doesn't look like a valid link.",
       "unauthorized": "Your session expired. Please sign in again.",
       "unknown": "Something went wrong. Please try again."
+    },
+    "device": {
+      "label": "Device",
+      "garminConnected": "Garmin connected",
+      "since": "Since {date}",
+      "lastSync": "last run received {when}",
+      "noSyncYet": "no runs received yet",
+      "permissionsLabel": "What Garmin shares with W3Runn3rs",
+      "activitySharingOn": "Activity sharing is on — your runs sync automatically.",
+      "activitySharingOff": "Activity sharing is off, so your runs aren’t syncing. Turn on “Activity Export” in Garmin Connect, or connect again and allow it.",
+      "permissionsHint": "Garmin permissions are managed in Garmin Connect.",
+      "manageInGarmin": "Manage in Garmin Connect",
+      "reconnect": "Connect again",
+      "disconnect": "Disconnect Garmin",
+      "disconnectConfirm": "Disconnect Garmin? Your past runs stay on W3Runn3rs; new runs stop syncing. You can connect again anytime.",
+      "disconnectYes": "Yes, disconnect",
+      "disconnecting": "Disconnecting…",
+      "cancel": "Cancel",
+      "disconnectError": "We couldn’t disconnect Garmin. Please try again."
     }
   },
   "profile": {

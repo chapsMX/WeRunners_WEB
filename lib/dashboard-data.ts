@@ -83,6 +83,8 @@ export type DashboardData = {
   /** true cuando se muestran datos de demostración (el usuario aún no tiene actividades). */
   isSample: boolean
   deviceConnected: boolean
+  /** Connected, but the user didn't share activities (Garmin ACTIVITY_EXPORT off). */
+  activitySharingOff: boolean
   club: ClubSummary | null
   hero: HeroSummary
   contribution: ContributionSummary
@@ -117,6 +119,7 @@ function sampleData(): DashboardData {
   return {
     isSample: true,
     deviceConnected: false,
+    activitySharingOff: false,
     club: {
       name: "Pacers CDMX",
       slug: "pacers-cdmx",
@@ -180,7 +183,10 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
     await Promise.all([
       prisma.user.findUnique({
         where: { id: userId },
-        select: { connectedProvider: true },
+        select: {
+          connectedProvider: true,
+          garminConnection: { select: { isActive: true, permissions: true } },
+        },
       }),
       prisma.clubMembership.findFirst({
         where: { userId, isActive: true },
@@ -216,13 +222,17 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
       }),
     ])
 
-  // Sin actividades todavía → mostramos el dataset de muestra.
   // El estado del dispositivo es siempre real, aunque el resto sea de muestra.
-  if (recentActivities.length === 0) {
-    return { ...sampleData(), deviceConnected: Boolean(user?.connectedProvider) }
-  }
-
   const deviceConnected = Boolean(user?.connectedProvider)
+  const garmin = user?.garminConnection
+  const activitySharingOff = Boolean(
+    garmin?.isActive && !garmin.permissions.includes("ACTIVITY_EXPORT")
+  )
+
+  // Sin actividades todavía → mostramos el dataset de muestra.
+  if (recentActivities.length === 0) {
+    return { ...sampleData(), deviceConnected, activitySharingOff }
+  }
 
   // ── Aporte al club (semana en curso) ──
   const weekDistance = weekAgg._sum.distanceMeters ?? 0
@@ -356,6 +366,7 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
   return {
     isSample: false,
     deviceConnected,
+    activitySharingOff,
     club,
     hero,
     contribution,

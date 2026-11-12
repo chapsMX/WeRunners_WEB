@@ -36,6 +36,19 @@ export default async function SettingsPage() {
   })
   if (!user) redirect("/auth/sign-in")
 
+  const garmin = await prisma.deviceConnectionGarmin.findFirst({
+    where: { userId: session.user.id, isActive: true },
+    select: { connectedAt: true, lastSyncAt: true, permissions: true },
+  })
+  const device = garmin
+    ? {
+        provider: "garmin" as const,
+        connectedAt: garmin.connectedAt.toISOString(),
+        lastSyncAt: garmin.lastSyncAt?.toISOString() ?? null,
+        activitySharing: garmin.permissions.includes("ACTIVITY_EXPORT"),
+      }
+    : null
+
   return (
     <SettingsForm
       initial={{
@@ -50,6 +63,7 @@ export default async function SettingsPage() {
         facebook: stripPrefix(user.facebookProfileUrl, "facebook.com/"),
         strava: stripPrefix(user.stravaProfileUrl, "strava.com/athletes/"),
       }}
+      device={device}
     />
   )
 }
