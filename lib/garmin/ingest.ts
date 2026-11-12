@@ -100,6 +100,29 @@ async function findDuplicate(
   })
 }
 
+/**
+ * Keep the run summary exactly as Garmin sent it (garmin_activities), linked to
+ * its canonical activity. Only runs are kept. Upsert: Garmin can resend a summaryId.
+ */
+async function storeRawGarminActivity(tx: Tx, s: GarminActivitySummary, activityId: string) {
+  const data = {
+    garminUserId: s.userId,
+    garminActivityId: s.activityId != null ? String(s.activityId) : null,
+    activityType: s.activityType,
+    startTime: new Date(s.startTimeInSeconds * 1000),
+    manual: Boolean(s.manual),
+    isWebUpload: Boolean(s.isWebUpload),
+    deviceName: s.deviceName?.trim() || null,
+    raw: s as unknown as Prisma.InputJsonValue,
+    activityId,
+  }
+  await tx.garminActivity.upsert({
+    where: { summaryId: String(s.summaryId) },
+    create: { summaryId: String(s.summaryId), ...data },
+    update: data,
+  })
+}
+
 /** Store (or update) one Garmin activity summary applying the fairness rules. */
 export async function ingestGarminActivity(
   tx: Tx,
@@ -108,7 +131,9 @@ export async function ingestGarminActivity(
   if (!s?.summaryId || !s.userId || typeof s.startTimeInSeconds !== "number") {
     return { status: "skipped", why: "invalid" }
   }
-  if (s.isParent) return { status: "skipped", why: "multisport_parent" } // children carry the run
+  // Multisport (e.g. triathlon): the run leg arrives as its own RUNNING child
+  // and counts like any run; the parent and the other legs are not kept.
+  if (s.isParent) return { status: "skipped", why: "multisport_parent" }
   const activityType = RUN_TYPES[s.activityType]
   if (!activityType) return { status: "skipped", why: "not_running" }
 
@@ -175,11 +200,13 @@ export async function ingestGarminActivity(
   }
 
   // Garmin can resend an updated summary for the same summaryId → upsert.
-  await tx.activity.upsert({
+  const activity = await tx.activity.upsert({
     where: { userId_source_externalId: { userId, source: "GARMIN", externalId } },
     create: { userId, source: "GARMIN", externalId, ...data },
     update: data,
+    select: { id: true },
   })
+  await storeRawGarminActivity(tx, s, activity.id)
   await tx.deviceConnectionGarmin.update({ where: { id: conn.id }, data: { lastSyncAt: new Date() } })
 
   return { status: "stored", counts: countsForLeaderboard, reason }

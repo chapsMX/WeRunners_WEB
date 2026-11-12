@@ -407,6 +407,7 @@ model Activity {
   user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   club    Club?            @relation(fields: [clubId], references: [id])
   records PersonalRecord[]
+  garmin  GarminActivity? // payload crudo cuando source = GARMIN
 
   @@unique([userId, source, externalId])
   @@index([userId, activityDate])
@@ -571,6 +572,34 @@ model DeviceConnectionGarmin {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("device_connections_garmin")
+}
+
+// Resumen crudo de cada carrera de Garmin (uno por summaryId; otros deportes no se guardan).
+// `activities` sigue siendo la tabla canónica que leen los leaderboards (solo
+// campos que todos los proveedores dan igual). Aquí se guarda el JSON completo
+// para auditar, volver a derivar la fila canónica y usar extras de la marca en
+// el dashboard personal. Polar/Suunto tendrán su propia tabla.
+model GarminActivity {
+  id               String   @id @default(cuid())
+  summaryId        String   @unique
+  garminUserId     String
+  garminActivityId String? // activityId de Garmin
+  activityType     String // crudo, p. ej. "TREADMILL_RUNNING"
+  startTime        DateTime
+  manual           Boolean  @default(false)
+  isWebUpload      Boolean  @default(false)
+  deviceName       String?
+  raw              Json // resumen tal como llegó en el push
+  receivedAt       DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Fila canónica. Solo se guardan carreras: cada crudo tiene su actividad, y
+  // borrar la actividad (o la cuenta) borra el crudo.
+  activityId String   @unique
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@index([garminUserId, startTime])
+  @@map("garmin_activities")
 }
 
 // Payload crudo de cada push de Garmin. El webhook lo guarda y responde 200
