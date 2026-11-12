@@ -316,6 +316,7 @@
       "permissionsLabel": "What Garmin shares with W3Runn3rs",
       "activitySharingOn": "Activity sharing is on — your runs sync automatically.",
       "activitySharingOff": "Activity sharing is off, so your runs aren’t syncing. Turn on “Activity Export” in Garmin Connect, or connect again and allow it.",
+      "activitySharingUnknown": "We’re still confirming activity sharing with Garmin. Refresh in a minute.",
       "permissionsHint": "Garmin permissions are managed in Garmin Connect.",
       "manageInGarmin": "Manage in Garmin Connect",
       "reconnect": "Connect again",

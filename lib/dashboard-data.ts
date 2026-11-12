@@ -1,5 +1,10 @@
 import { prisma } from "@/lib/prisma"
 import { startOfMonth, startOfWeek } from "@/lib/format"
+import {
+  needsPermissionsRecheck,
+  recheckGarminPermissions,
+  sharingState,
+} from "@/lib/garmin/permissions"
 
 // ─────────────────────────────────────────────────────────────
 // Tipos que consume la UI del dashboard
@@ -185,7 +190,9 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
         where: { id: userId },
         select: {
           connectedProvider: true,
-          garminConnection: { select: { isActive: true, permissions: true } },
+          garminConnection: {
+            select: { isActive: true, permissions: true, permissionsUpdatedAt: true },
+          },
         },
       }),
       prisma.clubMembership.findFirst({
@@ -224,10 +231,12 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
 
   // El estado del dispositivo es siempre real, aunque el resto sea de muestra.
   const deviceConnected = Boolean(user?.connectedProvider)
-  const garmin = user?.garminConnection
-  const activitySharingOff = Boolean(
-    garmin?.isActive && !garmin.permissions.includes("ACTIVITY_EXPORT")
-  )
+  // Sharing off/unknown → ask Garmin again (rate-limited) before warning.
+  let garmin = user?.garminConnection
+  if (needsPermissionsRecheck(garmin)) {
+    garmin = (await recheckGarminPermissions(userId)) ?? garmin
+  }
+  const activitySharingOff = Boolean(garmin?.isActive && sharingState(garmin) === "off")
 
   // Sin actividades todavía → mostramos el dataset de muestra.
   if (recentActivities.length === 0) {

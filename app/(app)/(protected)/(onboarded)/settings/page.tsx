@@ -2,6 +2,11 @@ import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import {
+  needsPermissionsRecheck,
+  recheckGarminPermissions,
+  sharingState,
+} from "@/lib/garmin/permissions"
 import { SettingsForm } from "./SettingsForm"
 
 // Deriva el segmento editable a partir del valor almacenado y su prefijo
@@ -38,14 +43,25 @@ export default async function SettingsPage() {
 
   const garmin = await prisma.deviceConnectionGarmin.findFirst({
     where: { userId: session.user.id, isActive: true },
-    select: { connectedAt: true, lastSyncAt: true, permissions: true },
+    select: {
+      connectedAt: true,
+      lastSyncAt: true,
+      isActive: true,
+      permissions: true,
+      permissionsUpdatedAt: true,
+    },
   })
+  // Sharing off/unknown → ask Garmin again (rate-limited) before showing it.
+  const fresh = needsPermissionsRecheck(garmin)
+    ? await recheckGarminPermissions(session.user.id)
+    : null
+  const sharing = garmin ? sharingState(fresh ?? garmin) : null
   const device = garmin
     ? {
         provider: "garmin" as const,
         connectedAt: garmin.connectedAt.toISOString(),
         lastSyncAt: garmin.lastSyncAt?.toISOString() ?? null,
-        activitySharing: garmin.permissions.includes("ACTIVITY_EXPORT"),
+        activitySharing: sharing === "unknown" ? null : sharing === "on",
       }
     : null
 

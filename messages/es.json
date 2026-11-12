@@ -316,6 +316,7 @@
       "permissionsLabel": "Lo que Garmin comparte con W3Runn3rs",
       "activitySharingOn": "Compartir actividades está activado: tus carreras se sincronizan solas.",
       "activitySharingOff": "Compartir actividades está desactivado, así que tus carreras no se sincronizan. Activa “Activity Export” en Garmin Connect, o vuelve a conectar y permítelo.",
+      "activitySharingUnknown": "Todavía estamos confirmando con Garmin si compartes tus actividades. Recarga en un minuto.",
       "permissionsHint": "Los permisos de Garmin se administran en Garmin Connect.",
       "manageInGarmin": "Administrar en Garmin Connect",
       "reconnect": "Volver a conectar",

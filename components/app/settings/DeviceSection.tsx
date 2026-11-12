@@ -13,7 +13,7 @@ export type DeviceStatus = {
   provider: "garmin"
   connectedAt: string // ISO
   lastSyncAt: string | null // ISO — last activity received
-  activitySharing: boolean // ACTIVITY_EXPORT granted
+  activitySharing: boolean | null // ACTIVITY_EXPORT granted; null = not confirmed yet
 } | null
 
 function relative(iso: string, locale: string): string {
@@ -81,6 +81,8 @@ export function DeviceSection({ device }: { device: DeviceStatus }) {
             <p className="text-sm font-semibold text-foreground">{t("permissionsLabel")}</p>
             {device.activitySharing ? (
               <p className="mt-1 text-sm text-brand-green">✓ {t("activitySharingOn")}</p>
+            ) : device.activitySharing === null ? (
+              <p className="mt-1 text-sm text-muted">{t("activitySharingUnknown")}</p>
             ) : (
               <div className="mt-2 border border-yellow-400/40 bg-yellow-400/10 px-4 py-3 text-sm text-yellow-200">
                 {t("activitySharingOff")}
@@ -96,7 +98,7 @@ export function DeviceSection({ device }: { device: DeviceStatus }) {
               >
                 {t("manageInGarmin")} ↗
               </a>
-              {!device.activitySharing && (
+              {device.activitySharing === false && (
                 <a
                   href={GARMIN_CONNECT_PATH}
                   className="border border-brand-green bg-brand-green px-4 py-2 text-sm font-semibold text-brand-navy transition-colors hover:bg-brand-green/90"

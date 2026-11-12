@@ -152,3 +152,10 @@ export async function deleteGarminRegistration(accessToken: string): Promise<voi
 }
 
 export const ACTIVITY_EXPORT = "ACTIVITY_EXPORT"
+
+/** Log-safe error summary (never includes tokens or response bodies). */
+export function describeGarminError(e: unknown) {
+  if (e instanceof GarminApiError) return { message: e.message, status: e.status }
+  if (e instanceof Error) return { message: e.message }
+  return { message: String(e) }
+}
