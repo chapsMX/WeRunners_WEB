@@ -84,9 +84,46 @@ export type ClubFeedRow = {
   date: Date
 }
 
+/** The runner's active club membership (hero: "Running with … · Since …"). */
+export type DashboardMembership = {
+  clubName: string
+  clubSlug: string
+  logoUrl: string | null
+  joinedAt: Date
+} | null
+
+/** One leaderboard position: competition ranking (ties share a place: 1, 1, 3). */
+export type RankPosition = {
+  /** null = no counted km in the period yet. */
+  rank: number | null
+  /** Runners with counted km in the period. */
+  runners: number
+  distanceMeters: number
+}
+
+/** Dashboard ranking grid. Months are UTC (one calendar for the global leaderboard). */
+export type RankingSummary = {
+  /** Every W3Runn3rs runner (runs that count for a club), month to date. */
+  globalMonthly: RankPosition
+  /** Members of the runner's club, month to date. null = no club. */
+  clubMonthly: RankPosition | null
+  /** Km the runner has added to their current club (all time). */
+  contributionMeters: number
+  /** contributionMeters as % of everything the club has added (all time). */
+  productivityPct: number
+}
+
 export type DashboardData = {
-  /** true cuando se muestran datos de demostración (el usuario aún no tiene actividades). */
+  /**
+   * true cuando el usuario aún no tiene actividades: club/hero/contribution/personal/
+   * clubFeed son datos de muestra (perfil público y secciones de abajo del dashboard).
+   * membership, ranking, recent y bannerUrl son siempre reales.
+   */
   isSample: boolean
+  membership: DashboardMembership
+  ranking: RankingSummary
+  /** Custom dashboard banner (Vercel Blob). null = default image. */
+  bannerUrl: string | null
   deviceConnected: boolean
   /** Connected, but the user didn't share activities (Garmin ACTIVITY_EXPORT off). */
   activitySharingOff: boolean
@@ -118,11 +155,21 @@ function simulatedClubFeed(now = new Date()): ClubFeedRow[] {
 // Marcado con isSample: true para mostrar el badge "Datos de muestra".
 // ─────────────────────────────────────────────────────────────
 
+const EMPTY_RANKING: RankingSummary = {
+  globalMonthly: { rank: null, runners: 0, distanceMeters: 0 },
+  clubMonthly: null,
+  contributionMeters: 0,
+  productivityPct: 0,
+}
+
 function sampleData(): DashboardData {
   const now = new Date()
   const daysAgo = (n: number) => new Date(now.getTime() - n * 86_400_000)
   return {
     isSample: true,
+    membership: null,
+    ranking: EMPTY_RANKING,
+    bannerUrl: null,
     deviceConnected: false,
     activitySharingOff: false,
     club: {
@@ -189,20 +236,22 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
       prisma.user.findUnique({
         where: { id: userId },
         select: {
+          bannerUrl: true,
           connectedProvider: true,
           garminConnection: {
             select: { isActive: true, permissions: true, permissionsUpdatedAt: true },
           },
         },
       }),
-      prisma.clubMembership.findFirst({
-        where: { userId, isActive: true },
+      // activeUserId is the one-active-club guarantee (unique while active).
+      prisma.clubMembership.findUnique({
+        where: { activeUserId: userId },
         include: { club: true },
       }),
       prisma.activity.findMany({
         where: { userId },
         orderBy: { activityDate: "desc" },
-        take: 6,
+        take: 5,
         select: {
           id: true,
           title: true,
@@ -238,9 +287,25 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
   }
   const activitySharingOff = Boolean(garmin?.isActive && sharingState(garmin) === "off")
 
-  // Sin actividades todavía → mostramos el dataset de muestra.
+  // Siempre reales, aunque el resto sea de muestra.
+  const real = {
+    deviceConnected,
+    activitySharingOff,
+    bannerUrl: user?.bannerUrl ?? null,
+    membership: membership?.club
+      ? {
+          clubName: membership.club.name,
+          clubSlug: membership.club.slug,
+          logoUrl: membership.club.logoUrl,
+          joinedAt: membership.joinedAt,
+        }
+      : null,
+    ranking: await getRankingSummary(userId, membership?.clubId ?? null),
+  }
+
+  // Sin actividades todavía → dataset de muestra para las secciones de abajo.
   if (recentActivities.length === 0) {
-    return { ...sampleData(), deviceConnected, activitySharingOff }
+    return { ...sampleData(), ...real, recent: [] }
   }
 
   // ── Aporte al club (semana en curso) ──
@@ -374,14 +439,76 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
 
   return {
     isSample: false,
-    deviceConnected,
-    activitySharingOff,
+    ...real,
     club,
     hero,
     contribution,
     personal,
     recent,
     clubFeed: simulatedClubFeed(),
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Ranking: live aggregates over runs that count for a club
+// (countsForLeaderboard = only device-recorded, plausible, non-duplicate runs
+// of a club member after joining). Fine at today's scale; move to
+// ClubStats / snapshots when it isn't.
+// ─────────────────────────────────────────────────────────────
+
+/** First instant of the current month in UTC. */
+export function startOfMonthUtc(now = new Date()): Date {
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1))
+}
+
+/** Competition ranking of `userId` among per-runner totals (ties share a place). */
+export function rankPosition(
+  totals: { userId: string; meters: number }[],
+  userId: string
+): RankPosition {
+  const ranked = totals.filter((t) => t.meters > 0)
+  const mine = ranked.find((t) => t.userId === userId)?.meters ?? 0
+  return {
+    rank: mine > 0 ? ranked.filter((t) => t.meters > mine).length + 1 : null,
+    runners: ranked.length,
+    distanceMeters: mine,
+  }
+}
+
+async function monthlyTotals(clubId?: string) {
+  const rows = await prisma.activity.groupBy({
+    by: ["userId"],
+    where: {
+      countsForLeaderboard: true,
+      activityDate: { gte: startOfMonthUtc() },
+      ...(clubId ? { clubId } : {}),
+    },
+    _sum: { distanceMeters: true },
+  })
+  return rows.map((r) => ({ userId: r.userId, meters: r._sum.distanceMeters ?? 0 }))
+}
+
+export async function getRankingSummary(
+  userId: string,
+  clubId: string | null
+): Promise<RankingSummary> {
+  if (!clubId) {
+    return { ...EMPTY_RANKING, globalMonthly: rankPosition(await monthlyTotals(), userId) }
+  }
+  // Only counting runs carry a clubId, so these are plain sums by club.
+  const [global, club, mine, clubTotal] = await Promise.all([
+    monthlyTotals(),
+    monthlyTotals(clubId),
+    prisma.activity.aggregate({ where: { userId, clubId }, _sum: { distanceMeters: true } }),
+    prisma.activity.aggregate({ where: { clubId }, _sum: { distanceMeters: true } }),
+  ])
+  const contributionMeters = mine._sum.distanceMeters ?? 0
+  const clubMeters = clubTotal._sum.distanceMeters ?? 0
+  return {
+    globalMonthly: rankPosition(global, userId),
+    clubMonthly: rankPosition(club, userId),
+    contributionMeters,
+    productivityPct: clubMeters > 0 ? (contributionMeters / clubMeters) * 100 : 0,
   }
 }
 

@@ -197,6 +197,7 @@ model User {
   emailVerified Boolean  @default(false)
   name          String
   image         String? // URL foto de perfil, viene de Google OAuth
+  bannerUrl     String? // imagen del banner del dashboard (Vercel Blob); null = imagen por defecto
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
