@@ -149,3 +149,22 @@ export function DeviceIcon({ size = 20, className }: IconProps) {
     </svg>
   )
 }
+
+export function ImageIcon({ size = 18, className }: IconProps) {
+  return (
+    <svg {...base(size, className)}>
+      <rect x="3" y="4" width="18" height="16" rx="1" />
+      <circle cx="9" cy="10" r="1.8" />
+      <path d="m21 16-5-5-9 9" />
+    </svg>
+  )
+}
+
+export function ResetIcon({ size = 18, className }: IconProps) {
+  return (
+    <svg {...base(size, className)}>
+      <path d="M3 12a9 9 0 1 0 3-6.7" />
+      <path d="M3 4v5h5" />
+    </svg>
+  )
+}

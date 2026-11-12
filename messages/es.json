@@ -121,21 +121,29 @@
   "dashboard": {
     "greeting": "Hola, {name}",
     "subtitle": "Tu semana en W3Runn3rs",
-    "heroClub": "Corriendo con {club}",
-    "rankGridTitle": "Tu ranking",
+    "heroClub": {
+      "runningWith": "Corriendo con:",
+      "since": "Desde:",
+      "none": "Todavía no estás en un club"
+    },
+    "banner": {
+      "change": "Cambiar banner",
+      "reset": "Usar el banner por defecto",
+      "saving": "Guardando…",
+      "error": "No pudimos actualizar tu banner. Usa un JPG, PNG o WebP de menos de 8 MB."
+    },
     "sampleBadge": "Datos de muestra",
     "cards": {
-      "rankWeekly": "Ranking Global Semanal",
-      "rankMonthly": "Ranking Global Mensual",
-      "contribution": "Tu Aporte",
+      "title": "Tu ranking",
+      "globalMonthly": "Ranking Mensual We Runners",
+      "clubMonthly": "Ranking Mensual del Club",
+      "contribution": "Aporte al Club",
       "productivity": "Productividad",
-      "thisWeek": "esta semana",
-      "thisMonth": "este mes",
+      "rankSub": "de {runners} · {dist} este mes",
       "toYourClub": "sumados a tu club",
-      "ofClubTotal": "del total del club",
-      "noClub": "Únete a un club",
-      "noRankWeek": "Sin actividad esta semana",
-      "noRankMonth": "Sin actividad este mes"
+      "ofClubTotal": "del total de tu club",
+      "noClub": "Únete a un club para entrar al ranking",
+      "noRankMonth": "Corre este mes para entrar al ranking"
     },
     "hero": {
       "eyebrow": "Tu aporte · esta semana",

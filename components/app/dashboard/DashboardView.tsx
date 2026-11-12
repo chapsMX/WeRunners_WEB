@@ -11,9 +11,6 @@ import { RecordsCard } from "./RecordsCard"
 import { ClubFeedCard } from "./ClubFeedCard"
 import { RecentActivities } from "./RecentActivities"
 
-// Nombre de club simulado mientras no exista una membresía real.
-const SIMULATED_CLUB = "Pacers CDMX"
-
 export function DashboardView({
   data,
   firstName,
@@ -24,23 +21,14 @@ export function DashboardView({
   garminResult?: GarminResult | null
 }) {
   const t = useTranslations("dashboard")
-  const clubName = data.club?.name ?? SIMULATED_CLUB
 
   return (
     <div>
-      {/* Hero full-bleed: imagen + saludo + club */}
-      <DashboardHero name={firstName} clubName={clubName} />
+      {/* Hero full-bleed: banner editable + saludo + club real */}
+      <DashboardHero name={firstName} membership={data.membership} bannerUrl={data.bannerUrl} />
 
       {/* Contenido con margen interior */}
       <div className="space-y-8 px-6 py-8 lg:px-8">
-        {data.isSample && (
-          <div className="flex justify-end">
-            <span className="border border-brand-green/40 bg-brand-green/10 px-3 py-1 text-xs font-medium text-brand-green">
-              {t("sampleBadge")}
-            </span>
-          </div>
-        )}
-
         {/* Resultado al volver de Garmin (?garmin=…) */}
         {garminResult && <GarminResultNotice result={garminResult} />}
 
@@ -50,11 +38,20 @@ export function DashboardView({
         {/* Conectado, pero sin permiso de actividades: sus km nunca llegarían */}
         {data.activitySharingOff && <ActivitySharingWarning />}
 
-        {/* Sección 50/50: actividad reciente · ranking */}
+        {/* Sección 50/50: últimas carreras · ranking (siempre datos reales) */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <RecentActivities activities={data.recent} />
-          <RankGrid hero={data.hero} hasClub={data.club !== null} />
+          <RankGrid ranking={data.ranking} />
         </div>
+
+        {/* Lo de abajo sigue con datos de muestra mientras no haya actividades */}
+        {data.isSample && (
+          <div className="flex justify-end">
+            <span className="border border-brand-green/40 bg-brand-green/10 px-3 py-1 text-xs font-medium text-brand-green">
+              {t("sampleBadge")}
+            </span>
+          </div>
+        )}
 
         {/* Personal records — contenedor de 3 columnas (estilo home) */}
         <RecordsCard records={data.personal.records} />
