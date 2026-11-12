@@ -7,10 +7,11 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { APP_LOCALE_COOKIE } from "@/lib/app-i18n"
 import { cleanHandle, cleanUrl, validateUsername } from "@/lib/profile-validation"
+import { joinClubFromRegistration } from "@/lib/clubs"
 
 export type OnboardingState = {
   error?: {
-    field: "username" | "facebook" | "strava" | "form"
+    field: "username" | "club" | "facebook" | "strava" | "form"
     code: string // clave i18n bajo onboarding.errors
   }
 }
@@ -32,6 +33,13 @@ export async function completeOnboarding(
     return { error: { field: "username", code: usernameError } }
   }
 
+  // ── Club (obligatorio): id de ClubRegistration habilitado, o "none" =
+  // "mi club no está en la lista" (termina el onboarding sin club).
+  const clubChoice = String(formData.get("club") ?? "")
+  if (!clubChoice) {
+    return { error: { field: "club", code: "clubRequired" } }
+  }
+
   const preferredUnit = unit === "MILES" ? "MILES" : "KM"
   const safeLocale = locale === "es" ? "es" : "en"
 
@@ -45,25 +53,58 @@ export async function completeOnboarding(
   const strava = cleanUrl(String(formData.get("stravaProfileUrl") ?? ""))
   if (strava.invalid) return { error: { field: "strava", code: "invalidUrl" } }
 
-  try {
-    await prisma.user.update({
-      where: { id: session.user.id },
-      data: {
-        username: rawUsername,
-        preferredUnit,
-        locale: safeLocale,
-        twitterHandle,
-        instagramHandle,
-        facebookProfileUrl: facebook.url,
-        stravaProfileUrl: strava.url,
-        onboardingCompletedAt: new Date(),
-      },
+  // Username tomado por otra persona → error de campo (antes de la transacción).
+  const takenBy = await prisma.user.findUnique({
+    where: { username: rawUsername },
+    select: { id: true },
+  })
+  if (takenBy && takenBy.id !== session.user.id) {
+    return { error: { field: "username", code: "taken" } }
+  }
+
+  const profile = {
+    username: rawUsername,
+    preferredUnit,
+    locale: safeLocale,
+    twitterHandle,
+    instagramHandle,
+    facebookProfileUrl: facebook.url,
+    stravaProfileUrl: strava.url,
+    onboardingCompletedAt: new Date(),
+  } as const
+
+  // Perfil + membresía en una sola transacción: o se guarda todo o nada.
+  const save = () =>
+    prisma.$transaction(async (tx) => {
+      if (clubChoice !== "none") {
+        const joined = await joinClubFromRegistration(tx, session.user.id, clubChoice)
+        if (!joined) return "clubUnavailable" as const
+      }
+      await tx.user.update({ where: { id: session.user.id }, data: profile })
+      return "ok" as const
     })
+
+  try {
+    let result: Awaited<ReturnType<typeof save>>
+    try {
+      result = await save()
+    } catch (e) {
+      // Dos runners creando el mismo club a la vez (unique de registrationId/slug):
+      // el segundo reintenta y ya encuentra el club creado.
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+        result = await save()
+      } else {
+        throw e
+      }
+    }
+    if (result === "clubUnavailable") {
+      return { error: { field: "club", code: "clubUnavailable" } }
+    }
   } catch (e) {
-    // P2002 = violación de unique (username ya tomado)
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
       return { error: { field: "username", code: "taken" } }
     }
+    console.error("[onboarding] save failed:", e)
     return { error: { field: "form", code: "unknown" } }
   }
 

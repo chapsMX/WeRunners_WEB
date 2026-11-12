@@ -1,8 +1,12 @@
+import Image from "next/image"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { getAppLocale } from "@/lib/app-i18n"
+import { getSelectableClubs } from "@/lib/clubs"
+import AppHeader from "@/components/layout/AppHeader"
+import AppFooter from "@/components/layout/AppFooter"
 import { OnboardingForm } from "./OnboardingForm"
 
 /** Sugiere un username a partir del nombre/email (solo como valor inicial editable). */
@@ -16,29 +20,49 @@ export default async function OnboardingPage() {
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session) redirect("/auth/sign-in")
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { onboardingCompletedAt: true, username: true, preferredUnit: true },
-  })
+  const [user, clubs, locale] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { onboardingCompletedAt: true, username: true, preferredUnit: true },
+    }),
+    getSelectableClubs(),
+    getAppLocale(),
+  ])
 
   // Ya completó onboarding → directo al dashboard.
   if (user?.onboardingCompletedAt) {
     redirect("/dashboard")
   }
 
-  const locale = await getAppLocale()
   const suggested = user?.username ?? suggestUsername(session.user.name, session.user.email)
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-4 py-10">
-        <OnboardingForm
-          name={session.user.name ?? null}
-          suggestedUsername={suggested}
-          defaultUnit={user?.preferredUnit === "MILES" ? "MILES" : "KM"}
-          defaultLocale={locale}
+    <>
+      <AppHeader />
+
+      {/* Same look as the sign-in / waiting screens */}
+      <main className="relative min-h-screen overflow-hidden">
+        <Image
+          src="/images/fondoHero.webp"
+          alt="W3Runn3rs runners"
+          fill
+          priority
+          className="object-cover object-center"
         />
-      </div>
-    </div>
+        <div className="absolute inset-0 bg-brand-navy/70" />
+
+        <div className="relative z-10 mx-auto w-full max-w-xl px-4 pt-28 pb-16">
+          <OnboardingForm
+            name={session.user.name ?? null}
+            suggestedUsername={suggested}
+            defaultUnit={user?.preferredUnit === "MILES" ? "MILES" : "KM"}
+            defaultLocale={locale}
+            clubs={clubs}
+          />
+        </div>
+      </main>
+
+      <AppFooter />
+    </>
   )
 }
