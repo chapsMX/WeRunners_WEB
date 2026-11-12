@@ -101,20 +101,14 @@ async function findDuplicate(
 }
 
 /**
- * Keep the summary exactly as Garmin sent it (garmin_activities), linked to the
- * canonical activity when there is one. Upsert: Garmin can resend a summaryId.
+ * Keep the run summary exactly as Garmin sent it (garmin_activities), linked to
+ * its canonical activity. Only runs are kept. Upsert: Garmin can resend a summaryId.
  */
-async function storeRawGarminActivity(
-  tx: Tx,
-  s: GarminActivitySummary,
-  userId: string,
-  activityId: string | null
-) {
+async function storeRawGarminActivity(tx: Tx, s: GarminActivitySummary, activityId: string) {
   const data = {
     garminUserId: s.userId,
-    userId,
     garminActivityId: s.activityId != null ? String(s.activityId) : null,
-    activityType: String(s.activityType ?? ""),
+    activityType: s.activityType,
     startTime: new Date(s.startTimeInSeconds * 1000),
     manual: Boolean(s.manual),
     isWebUpload: Boolean(s.isWebUpload),
@@ -137,22 +131,17 @@ export async function ingestGarminActivity(
   if (!s?.summaryId || !s.userId || typeof s.startTimeInSeconds !== "number") {
     return { status: "skipped", why: "invalid" }
   }
+  // Multisport (e.g. triathlon): the run leg arrives as its own RUNNING child
+  // and counts like any run; the parent and the other legs are not kept.
+  if (s.isParent) return { status: "skipped", why: "multisport_parent" }
+  const activityType = RUN_TYPES[s.activityType]
+  if (!activityType) return { status: "skipped", why: "not_running" }
+
   const conn = await tx.deviceConnectionGarmin.findFirst({
     where: { garminUserId: s.userId, isActive: true },
     select: { id: true, userId: true },
   })
-  // Not one of our runners: keep nothing (the webhook event still holds the payload).
   if (!conn) return { status: "skipped", why: "unknown_user" }
-
-  if (s.isParent) {
-    await storeRawGarminActivity(tx, s, conn.userId, null)
-    return { status: "skipped", why: "multisport_parent" } // children carry the run
-  }
-  const activityType = RUN_TYPES[s.activityType]
-  if (!activityType) {
-    await storeRawGarminActivity(tx, s, conn.userId, null)
-    return { status: "skipped", why: "not_running" }
-  }
 
   const userId = conn.userId
   const externalId = String(s.summaryId)
@@ -217,7 +206,7 @@ export async function ingestGarminActivity(
     update: data,
     select: { id: true },
   })
-  await storeRawGarminActivity(tx, s, userId, activity.id)
+  await storeRawGarminActivity(tx, s, activity.id)
   await tx.deviceConnectionGarmin.update({ where: { id: conn.id }, data: { lastSyncAt: new Date() } })
 
   return { status: "stored", counts: countsForLeaderboard, reason }

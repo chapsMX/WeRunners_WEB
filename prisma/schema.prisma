@@ -236,7 +236,6 @@ model User {
   records          PersonalRecord[]
   snapshots        WeeklySnapshot[]
   garminConnection DeviceConnectionGarmin?
-  garminActivities GarminActivity[]
   polarConnection  DeviceConnectionPolar?
   stravaConnection DeviceConnectionStrava?
 
@@ -575,7 +574,7 @@ model DeviceConnectionGarmin {
   @@map("device_connections_garmin")
 }
 
-// Resumen crudo de cada actividad de Garmin (uno por summaryId).
+// Resumen crudo de cada carrera de Garmin (uno por summaryId; otros deportes no se guardan).
 // `activities` sigue siendo la tabla canónica que leen los leaderboards (solo
 // campos que todos los proveedores dan igual). Aquí se guarda el JSON completo
 // para auditar, volver a derivar la fila canónica y usar extras de la marca en
@@ -584,7 +583,6 @@ model GarminActivity {
   id               String   @id @default(cuid())
   summaryId        String   @unique
   garminUserId     String
-  userId           String? // dueño en W3Runn3rs; borrar la cuenta borra el crudo
   garminActivityId String? // activityId de Garmin
   activityType     String // crudo, p. ej. "TREADMILL_RUNNING"
   startTime        DateTime
@@ -595,13 +593,12 @@ model GarminActivity {
   receivedAt       DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  // Fila canónica; null si no se guardó como actividad (no es carrera, padre multisport).
-  activityId String?   @unique
-  activity   Activity? @relation(fields: [activityId], references: [id], onDelete: SetNull)
-  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Fila canónica. Solo se guardan carreras: cada crudo tiene su actividad, y
+  // borrar la actividad (o la cuenta) borra el crudo.
+  activityId String   @unique
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
 
   @@index([garminUserId, startTime])
-  @@index([userId, startTime])
   @@map("garmin_activities")
 }
 
