@@ -5,12 +5,12 @@ import { prisma } from "@/lib/prisma"
 import {
   ACTIVITY_EXPORT,
   deleteGarminRegistration,
+  describeGarminError as describe,
   exchangeCode,
-  GarminApiError,
-  getGarminPermissions,
   getGarminUserId,
 } from "@/lib/garmin/client"
 import { encryptedTokenFields } from "@/lib/garmin/connection"
+import { fetchPermissionsOnConnect, recentWebhookPermissions } from "@/lib/garmin/permissions"
 import type { GarminResult } from "@/lib/garmin/results"
 import {
   GARMIN_OAUTH_COOKIE,
@@ -47,12 +47,12 @@ export async function GET(request: NextRequest) {
     const tokens = await exchangeCode(code, stored.verifier)
     const garminUserId = await getGarminUserId(tokens.accessToken)
 
-    let permissions: string[] = []
-    try {
-      permissions = await getGarminPermissions(tokens.accessToken)
-    } catch (e) {
-      console.error("[garmin/callback] permissions lookup failed", describe(e))
-    }
+    // Garmin may push userPermissionsChange before this row exists; fall back to
+    // it. null = still unknown → stored as permissionsUpdatedAt null, never "off".
+    const permissions =
+      (await fetchPermissionsOnConnect(tokens.accessToken)) ??
+      (await recentWebhookPermissions(garminUserId))
+    if (!permissions) console.warn("[garmin/callback] permissions unknown after connect")
 
     const [existing, user] = await Promise.all([
       prisma.deviceConnectionGarmin.findUnique({
@@ -83,8 +83,9 @@ export async function GET(request: NextRequest) {
     const connectionData = {
       garminUserId,
       ...encryptedTokenFields(tokens),
-      permissions,
-      permissionsUpdatedAt: now,
+      ...(permissions
+        ? { permissions, permissionsUpdatedAt: now }
+        : { permissionsUpdatedAt: null }), // keep any previous list, mark it unconfirmed
       isActive: true,
       deregisteredAt: null,
     }
@@ -105,19 +106,13 @@ export async function GET(request: NextRequest) {
       }),
     ])
 
+    // Only claim sharing is off when Garmin positively said so.
     return finish(
       request,
-      permissions.includes(ACTIVITY_EXPORT) ? "connected" : "connected_no_activity"
+      permissions && !permissions.includes(ACTIVITY_EXPORT) ? "connected_no_activity" : "connected"
     )
   } catch (e) {
     console.error("[garmin/callback] failed", describe(e))
     return finish(request, "failed")
   }
-}
-
-/** Log-safe error summary (never includes tokens or response bodies). */
-function describe(e: unknown) {
-  if (e instanceof GarminApiError) return { message: e.message, status: e.status }
-  if (e instanceof Error) return { message: e.message }
-  return { message: String(e) }
 }
