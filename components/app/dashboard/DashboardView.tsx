@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl"
 import type { DashboardData } from "@/lib/dashboard-data"
 import { DashboardHero } from "./DashboardHero"
 import type { GarminResult } from "@/lib/garmin/results"
-import { ConnectDeviceBanner, GarminResultNotice } from "./DeviceConnect"
+import { ActivitySharingWarning, ConnectDeviceBanner, GarminResultNotice } from "./DeviceConnect"
 import { RankGrid } from "./RankGrid"
 import { PersonalStats } from "./PersonalStats"
 import { RecordsCard } from "./RecordsCard"
@@ -46,6 +46,9 @@ export function DashboardView({
 
         {/* Sin dispositivo: un botón por proveedor que lleva directo a su conexión */}
         {!data.deviceConnected && <ConnectDeviceBanner />}
+
+        {/* Conectado, pero sin permiso de actividades: sus km nunca llegarían */}
+        {data.activitySharingOff && <ActivitySharingWarning />}
 
         {/* Sección 50/50: actividad reciente · ranking */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

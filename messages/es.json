@@ -216,7 +216,10 @@
         "in_use": "Esa cuenta de Garmin ya está ligada a otra cuenta de W3Runn3rs.",
         "other_provider": "Ya tienes otro dispositivo conectado. Desconéctalo primero.",
         "failed": "No pudimos conectar Garmin. Intenta de nuevo."
-      }
+      },
+      "sharingOff": "Garmin está conectado, pero compartir actividades está desactivado: tus carreras no se sincronizan ni cuentan para tu club.",
+      "sharingManage": "Administrar en Garmin Connect",
+      "sharingReconnect": "Volver a conectar"
     }
   },
   "onboarding": {
@@ -303,6 +306,25 @@
       "invalidUrl": "Eso no parece un enlace válido.",
       "unauthorized": "Tu sesión expiró. Inicia sesión de nuevo.",
       "unknown": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "device": {
+      "label": "Dispositivo",
+      "garminConnected": "Garmin conectado",
+      "since": "Desde el {date}",
+      "lastSync": "última carrera recibida {when}",
+      "noSyncYet": "todavía no llega ninguna carrera",
+      "permissionsLabel": "Lo que Garmin comparte con W3Runn3rs",
+      "activitySharingOn": "Compartir actividades está activado: tus carreras se sincronizan solas.",
+      "activitySharingOff": "Compartir actividades está desactivado, así que tus carreras no se sincronizan. Activa “Activity Export” en Garmin Connect, o vuelve a conectar y permítelo.",
+      "permissionsHint": "Los permisos de Garmin se administran en Garmin Connect.",
+      "manageInGarmin": "Administrar en Garmin Connect",
+      "reconnect": "Volver a conectar",
+      "disconnect": "Desconectar Garmin",
+      "disconnectConfirm": "¿Desconectar Garmin? Tus carreras pasadas se quedan en W3Runn3rs; las nuevas dejan de sincronizarse. Puedes volver a conectar cuando quieras.",
+      "disconnectYes": "Sí, desconectar",
+      "disconnecting": "Desconectando…",
+      "cancel": "Cancelar",
+      "disconnectError": "No pudimos desconectar Garmin. Intenta de nuevo."
     }
   },
   "profile": {
