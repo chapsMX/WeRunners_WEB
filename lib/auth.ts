@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
 import { prisma } from "./prisma"
+import { sendVerificationEmail, sendWelcomeEmails } from "./auth-emails"
  
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -20,8 +21,35 @@ export const auth = betterAuth({
   },
  
   emailAndPassword: {
-    enabled: true,         // fallback para usuarios sin Google
-    requireEmailVerification: false, // simplificado para beta
+    enabled: true, // alternativa para quien no usa Google
+    // Sin verificar no hay sesión: evita registros con correos ajenos.
+    requireEmailVerification: true,
+  },
+
+  // Verificación de correo (solo cuentas email/password; Google ya llega verificado).
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendVerificationEmail(user, url)
+    },
+    sendOnSignUp: true,
+    sendOnSignIn: true, // reenvía el link si intenta entrar sin verificar
+    autoSignInAfterVerification: true,
+    expiresIn: 60 * 60 * 24, // 24 h
+    // Bienvenida para email/password: solo después de verificar.
+    afterEmailVerification: async (user) => {
+      await sendWelcomeEmails(user, "email")
+    },
+  },
+
+  // Bienvenida para Google: la cuenta nace con el correo ya verificado.
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          if (user.emailVerified) await sendWelcomeEmails(user, "google")
+        },
+      },
+    },
   },
  
   // Campos extra que Better Auth debe guardar en el modelo User

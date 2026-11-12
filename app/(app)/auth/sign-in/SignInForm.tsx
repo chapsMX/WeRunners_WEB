@@ -17,6 +17,8 @@ export default function SignInForm() {
   const [name, setName] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  // "sent": account created, verification link emailed (no session until verified).
+  const [verifySent, setVerifySent] = useState(false)
 
   async function handleGoogle() {
     setLoading(true)
@@ -42,7 +44,9 @@ export default function SignInForm() {
         setError(err.message ?? "Failed to create account")
         setLoading(false)
       } else {
-        router.push(callbackUrl)
+        // Email verification is required: no session yet, the link was emailed.
+        setVerifySent(true)
+        setLoading(false)
       }
     } else {
       const { error: err } = await authClient.signIn.email({
@@ -51,7 +55,11 @@ export default function SignInForm() {
         callbackURL: callbackUrl,
       })
       if (err) {
-        setError(err.message ?? "Invalid email or password")
+        setError(
+          err.code === "EMAIL_NOT_VERIFIED"
+            ? "Please verify your email first. We just sent you a new link."
+            : err.message ?? "Invalid email or password"
+        )
         setLoading(false)
       } else {
         router.push(callbackUrl)
@@ -69,6 +77,25 @@ export default function SignInForm() {
       </div>
 
       {/* Card */}
+      {verifySent ? (
+        <div role="status" className="bg-slate-900/90 backdrop-blur-sm border border-slate-700 p-8 space-y-4 text-center">
+          <p className="text-4xl">✉️</p>
+          <h1 className="text-white text-2xl font-bold">Check your email</h1>
+          <p className="text-slate-400 text-sm leading-relaxed">
+            We sent a verification link to <span className="text-white font-medium">{email}</span>.
+            Open it to finish creating your account. The link expires in 24 hours.
+          </p>
+          <p className="text-slate-500 text-xs">
+            Can&apos;t find it? Check your spam folder, or sign in again to get a new link.
+          </p>
+          <button
+            onClick={() => { setVerifySent(false); setMode("signin"); setPassword("") }}
+            className="text-brand-green hover:text-brand-emerald text-sm font-medium transition-colors"
+          >
+            Back to sign in
+          </button>
+        </div>
+      ) : (
       <div className="bg-slate-900/90 backdrop-blur-sm border border-slate-700 p-8 space-y-6">
 
         <h1 className="text-white text-2xl font-bold text-center">
@@ -174,6 +201,7 @@ export default function SignInForm() {
           </a>
         </p>
       </div>
+      )}
     </div>
   )
 }
