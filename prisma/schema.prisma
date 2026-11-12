@@ -167,6 +167,7 @@ model ClubRegistration {
   facebook        String?
   createdAt       DateTime        @default(now())
   waitlistEntries WaitlistEntry[]
+  club            Club? // platform club, once a runner joins
 }
 
 model AmbassadorApplication {
@@ -311,6 +312,12 @@ model Club {
   verified           Boolean @default(false)
   active             Boolean @default(true)
 
+  // Club created from a landing registration ("for clubs" form). Enabling the
+  // registration (ClubRegistration.enabled) is what makes it selectable; the
+  // Club row is created from it the first time a runner joins.
+  registrationId String?           @unique
+  registration   ClubRegistration? @relation(fields: [registrationId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -335,12 +342,18 @@ model ClubMembership {
   joinedAt      DateTime  @default(now())
   leftAt        DateTime?
   isActive      Boolean   @default(true)
-  lockExpiresAt DateTime
+  lockExpiresAt DateTime // no puede cambiarse de club antes de esta fecha (6 meses)
+
+  // One runner, one club: = userId while the membership is active, NULL once it
+  // ends. Unique → at most one active membership per user; Postgres allows many
+  // NULLs, so any number of past memberships. (The old @@unique([userId,
+  // isActive]) also blocked a second *inactive* row.) Always set together
+  // with isActive.
+  activeUserId String? @unique
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, isActive], name: "one_active_membership")
   @@index([clubId])
   @@index([userId])
   @@map("club_memberships")
