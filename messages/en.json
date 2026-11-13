@@ -268,7 +268,8 @@
     "clubOnApp": "{count} on W3Runn3rs",
     "clubNone": "My club isn’t listed",
     "clubNoneHint": "Finish now and join a club later. You can also register your club.",
-    "clubRegister": "Register your club"
+    "clubRegister": "Register your club",
+    "clubAssigned": "You're this club's owner — picked by the W3Runn3rs team. You can manage it from your dashboard."
   },
   "settings": {
     "back": "Back to dashboard",
@@ -388,9 +389,9 @@
     "managedByW3": "Managed by W3Runn3rs",
     "inactive": "Inactive",
     "manage": "Manage",
-    "pendingTitle": "Pending registrations ({count})",
+    "pendingTitle": "Clubs waiting for approval ({count})",
     "pendingEmpty": "No registrations waiting.",
-    "pendingHint": "Approving creates the club and makes it selectable. Whoever registered it becomes the owner when they join with that same verified email.",
+    "pendingHint": "From the form on the home page. Approving creates the club, makes it selectable and emails the club's address.",
     "approve": "Approve",
     "approving": "Approving…",
     "createTitle": "Create a club",
@@ -449,6 +450,43 @@
       "noBanner": "No banner yet",
       "uploadBanner": "Upload banner",
       "bannerHint": "Wide image (4:1), JPG/PNG/WebP up to 8 MB. Shown on the club's page."
+    },
+    "emailFailed": "Done, but the email couldn't be sent.",
+    "grantBeta": "Give access",
+    "granting": "Giving access…",
+    "waitlistTitle": "Waitlist without access ({count})",
+    "waitlistEmpty": "Everyone on the waitlist has access.",
+    "waitlistHint": "Giving access emails them: they must sign in with that same email (Google or password).",
+    "hasAccount": "Has account",
+    "owner": {
+      "title": "Choose owner",
+      "hint": "Search any account or waitlist email. The owner gets beta access, joins this club and is emailed. Without an account, they become owner when they sign up with that email.",
+      "placeholder": "Name, @username or email",
+      "searching": "Searching…",
+      "noResults": "No accounts or waitlist emails match.",
+      "makeOwner": "Make owner",
+      "invite": "Invite as owner",
+      "pendingInvite": "Pending owner invitation: {email}",
+      "confirmUser": "Make {name} the owner of {club}? They'll get beta access and join the club if they aren't in it.",
+      "confirmInvite": "Invite {email} as owner of {club}? They'll get beta access and become owner when they sign up with that email.",
+      "doneAssigned": "Done: {email} is now the owner and was emailed.",
+      "doneInvited": "Invitation sent to {email}. They become owner when they sign up with that email.",
+      "emailFailed": "(the email couldn't be sent)",
+      "status": {
+        "waiting": "Has account · no beta access",
+        "onboarding": "Has account · onboarding pending",
+        "no_club": "No club",
+        "this_club": "Already in this club",
+        "otherClub": "In another club: {club}",
+        "waitlist": "Waitlist · no account yet",
+        "invitedTo": "Already invited as owner of {club}"
+      },
+      "errors": {
+        "forbidden": "Only the superadmin can choose owners.",
+        "not_found": "That person or club wasn't found.",
+        "in_other_club": "They're already in {club}. An owner can't belong to another club.",
+        "invited_elsewhere": "They already have a pending owner invitation for {club}."
+      }
     }
   }
 }

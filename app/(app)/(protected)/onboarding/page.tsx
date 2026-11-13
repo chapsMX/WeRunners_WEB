@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { getAppLocale } from "@/lib/app-i18n"
 import { getSelectableClubs } from "@/lib/clubs"
+import { applyOwnerInvite } from "@/lib/club-owners"
 import AppHeader from "@/components/layout/AppHeader"
 import AppFooter from "@/components/layout/AppFooter"
 import { OnboardingForm } from "./OnboardingForm"
@@ -20,13 +21,20 @@ export default async function OnboardingPage() {
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session) redirect("/auth/sign-in")
 
-  const [user, clubs, locale] = await Promise.all([
+  // Picked as a club owner before signing up → join that club now.
+  await prisma.$transaction((tx) => applyOwnerInvite(tx, session.user.id, session.user.email))
+
+  const [user, clubs, locale, membership] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
       select: { onboardingCompletedAt: true, username: true, preferredUnit: true },
     }),
     getSelectableClubs(),
     getAppLocale(),
+    prisma.clubMembership.findUnique({
+      where: { activeUserId: session.user.id },
+      select: { club: { select: { name: true, city: true, country: true, logoUrl: true } } },
+    }),
   ])
 
   // Ya completó onboarding → directo al dashboard.
@@ -58,6 +66,7 @@ export default async function OnboardingPage() {
             defaultUnit={user?.preferredUnit === "MILES" ? "MILES" : "KM"}
             defaultLocale={locale}
             clubs={clubs}
+            assignedClub={membership?.club ?? null}
           />
         </div>
       </main>

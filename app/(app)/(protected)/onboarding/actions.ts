@@ -35,7 +35,12 @@ export async function completeOnboarding(
 
   // ── Club (obligatorio): "club:<id>" / "reg:<id>" (lib/clubs), o "none" =
   // "mi club no está en la lista" (termina el onboarding sin club).
-  const clubChoice = String(formData.get("club") ?? "")
+  // Already in a club (picked as its owner by the superadmin) → no club step.
+  const assigned = await prisma.clubMembership.findUnique({
+    where: { activeUserId: session.user.id },
+    select: { id: true },
+  })
+  const clubChoice = assigned ? "assigned" : String(formData.get("club") ?? "")
   if (!clubChoice) {
     return { error: { field: "club", code: "clubRequired" } }
   }
@@ -76,7 +81,7 @@ export async function completeOnboarding(
   // Perfil + membresía en una sola transacción: o se guarda todo o nada.
   const save = () =>
     prisma.$transaction(async (tx) => {
-      if (clubChoice !== "none") {
+      if (clubChoice !== "none" && clubChoice !== "assigned") {
         const joined = await joinSelectedClub(tx, session.user.id, clubChoice)
         if (!joined) return "clubUnavailable" as const
       }

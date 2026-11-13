@@ -338,13 +338,30 @@ model Club {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  memberships ClubMembership[]
-  activities  Activity[]
-  stats       ClubStats[]
-  leaderboard LeaderboardEntry[]
-  snapshots   WeeklySnapshot[]
+  memberships  ClubMembership[]
+  ownerInvites ClubOwnerInvite[]
+  activities   Activity[]
+  stats        ClubStats[]
+  leaderboard  LeaderboardEntry[]
+  snapshots    WeeklySnapshot[]
 
   @@map("clubs")
+}
+
+// Superadmin eligió como dueño a alguien que aún no tiene cuenta (solo está en
+// la waitlist). Al registrarse con ese correo se une al club y queda como dueño;
+// la invitación se borra al aplicarse. Una invitación pendiente por correo.
+model ClubOwnerInvite {
+  id          String   @id @default(cuid())
+  email       String   @unique // en minúsculas
+  clubId      String
+  invitedById String?
+  createdAt   DateTime @default(now())
+
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@index([clubId])
+  @@map("club_owner_invites")
 }
 
 // ─────────────────────────────────────────────
