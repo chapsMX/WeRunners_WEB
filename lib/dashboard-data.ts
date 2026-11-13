@@ -89,6 +89,8 @@ export type DashboardMembership = {
   clubName: string
   clubSlug: string
   logoUrl: string | null
+  city: string | null
+  country: string
   joinedAt: Date
 } | null
 
@@ -122,6 +124,8 @@ export type DashboardData = {
   isSample: boolean
   membership: DashboardMembership
   ranking: RankingSummary
+  /** The runner's real personal records (time-based). Empty = none yet. */
+  records: PersonalRecordRow[]
   /** The runner's own dashboard banner (Vercel Blob). */
   bannerUrl: string | null
   /** Their club's banner — shown when the runner hasn't set their own. */
@@ -171,6 +175,7 @@ function sampleData(): DashboardData {
     isSample: true,
     membership: null,
     ranking: EMPTY_RANKING,
+    records: [],
     bannerUrl: null,
     clubBannerUrl: null,
     deviceConnected: false,
@@ -301,10 +306,13 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
           clubName: membership.club.name,
           clubSlug: membership.club.slug,
           logoUrl: membership.club.logoUrl,
+          city: membership.club.city,
+          country: membership.club.country,
           joinedAt: membership.joinedAt,
         }
       : null,
     ranking: await getRankingSummary(userId, membership?.clubId ?? null),
+    records: realRecords(prRecords),
   }
 
   // Sin actividades todavía → dataset de muestra para las secciones de abajo.
@@ -424,10 +432,7 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
     streakDays: computeStreak(recentActivities.map((a) => a.activityDate)),
     avgPaceSecPerKm: avgPace,
     // Solo récords de tiempo; LONGEST_RUN (distancia) se mostrará aparte.
-    records: prRecords
-      .filter((r): r is typeof r & { durationSeconds: number } => r.durationSeconds != null)
-      .map((r) => ({ key: r.distance, durationSeconds: r.durationSeconds }))
-      .slice(0, 4),
+    records: real.records,
   }
 
   const recent: ActivityRow[] = recentActivities.map((a) => ({
@@ -514,6 +519,14 @@ export async function getRankingSummary(
     contributionMeters,
     productivityPct: clubMeters > 0 ? (contributionMeters / clubMeters) * 100 : 0,
   }
+}
+
+/** Time-based records only; LONGEST_RUN (a distance) will be shown separately. */
+function realRecords(rows: { distance: string; durationSeconds: number | null }[]): PersonalRecordRow[] {
+  return rows
+    .filter((r): r is typeof r & { durationSeconds: number } => r.durationSeconds != null)
+    .map((r) => ({ key: r.distance, durationSeconds: r.durationSeconds }))
+    .slice(0, 4)
 }
 
 /** Días consecutivos (incluyendo hoy o ayer) con al menos una actividad. */

@@ -341,23 +341,20 @@
     }
   },
   "profile": {
-    "sampleBadge": "Sample data",
     "club": {
       "label": "Running club",
       "none": "Not in a running club yet"
     },
     "clubStats": {
-      "title": "In the club",
-      "rankWeekly": "Club rank · week",
-      "rankMonthly": "Club rank · month",
-      "contribution": "Total contribution",
-      "share": "Share of club",
-      "thisWeek": "this week",
-      "thisMonth": "this month",
+      "title": "Ranking",
+      "globalMonthly": "We Runners · month",
+      "clubMonthly": "Club · month",
+      "rankSub": "of {runners} · {dist} this month",
+      "noRankMonth": "No runs this month",
+      "contribution": "Club contribution",
       "toClub": "added to {club}",
-      "ofClubTotal": "of the club’s total km",
-      "noRankWeek": "No runs this week",
-      "noRankMonth": "No runs this month"
+      "share": "Share of club",
+      "ofClubTotal": "of the club’s total km"
     },
     "records": {
       "title": "Personal records",
