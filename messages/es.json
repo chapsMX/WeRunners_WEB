@@ -108,6 +108,7 @@
     },
     "soon": "Pronto",
     "signOut": "Cerrar sesión",
+    "signingOut": "Cerrando sesión…",
     "language": "Idioma",
     "collapse": "Ocultar menú",
     "expand": "Abrir menú",
@@ -359,5 +360,18 @@
       "title": "Récords personales",
       "subtitle": "Mejores tiempos en las distancias clave."
     }
+  },
+  "follow": {
+    "follow": "Seguir",
+    "following": "Siguiendo",
+    "unfollow": "Dejar de seguir",
+    "editProfile": "Editar perfil",
+    "error": "Algo salió mal. Intenta de nuevo."
+  },
+  "followList": {
+    "followers": "Seguidores",
+    "following": "Siguiendo",
+    "emptyFollowers": "Todavía no tiene seguidores.",
+    "emptyFollowing": "Todavía no sigue a nadie."
   }
 }
