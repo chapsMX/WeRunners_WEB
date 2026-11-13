@@ -15,6 +15,7 @@ export type ClubFormInitial = {
   country: string
   description: string
   logoUrl: string | null
+  bannerUrl: string | null
   instagram: string
   twitter: string
   tiktok: string
@@ -28,6 +29,7 @@ export const EMPTY_CLUB_FORM: ClubFormInitial = {
   country: "MX",
   description: "",
   logoUrl: null,
+  bannerUrl: null,
   instagram: "",
   twitter: "",
   tiktok: "",
@@ -56,9 +58,11 @@ export function ClubProfileForm({
   const locale = useLocale()
   const countries = useMemo(() => countryOptions(locale), [locale])
   const formRef = useRef<HTMLFormElement>(null)
-  const fileRef = useRef<HTMLInputElement>(null)
+  const logoFile = useRef<HTMLInputElement>(null)
+  const bannerFile = useRef<HTMLInputElement>(null)
   const [logoUrl, setLogoUrl] = useState(initial.logoUrl)
-  const [uploading, setUploading] = useState(false)
+  const [bannerUrl, setBannerUrl] = useState(initial.bannerUrl)
+  const [uploading, setUploading] = useState<"logo" | "banner" | null>(null)
   const [uploadError, setUploadError] = useState(false)
 
   const [state, formAction, pending] = useActionState(async (prev: ClubFormState, form: FormData) => {
@@ -66,25 +70,34 @@ export function ClubProfileForm({
     if (result.ok && resetOnSuccess) {
       formRef.current?.reset()
       setLogoUrl(null)
+      setBannerUrl(null)
     }
     return result
   }, {})
 
-  async function handleLogo(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleImage(kind: "logo" | "banner", e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
     setUploadError(false)
-    setUploading(true)
+    setUploading(kind)
     try {
-      const blob = await upload(`clubs/${file.name}`, file, { access: "public", handleUploadUrl: "/api/clubs/logo" })
-      setLogoUrl(blob.url)
+      const blob = await upload(`clubs/${kind}-${file.name}`, file, {
+        access: "public",
+        handleUploadUrl: "/api/clubs/image",
+      })
+      if (kind === "logo") setLogoUrl(blob.url)
+      else setBannerUrl(blob.url)
     } catch {
       setUploadError(true)
     } finally {
-      setUploading(false)
-      if (fileRef.current) fileRef.current.value = ""
+      setUploading(null)
+      e.target.value = ""
     }
   }
+
+  const smallBtn =
+    "border border-line px-3 py-1.5 text-sm font-semibold text-foreground transition-colors hover:border-brand-green hover:text-brand-green disabled:opacity-50"
+  const accept = "image/jpeg,image/png,image/webp"
 
   const field = (name: keyof ClubFormInitial, label: string, opts: { placeholder?: string; type?: string } = {}) => (
     <div>
@@ -104,6 +117,31 @@ export function ClubProfileForm({
 
   return (
     <form ref={formRef} action={formAction} className="space-y-5">
+      {/* Banner */}
+      <div>
+        <p className="block text-sm font-semibold text-foreground">{t("banner")}</p>
+        <div className="relative mt-2 aspect-[4/1] w-full overflow-hidden border border-line bg-surface-alt">
+          {bannerUrl ? (
+            <Image src={bannerUrl} alt="" fill sizes="(min-width: 1024px) 800px, 100vw" className="object-cover" />
+          ) : (
+            <span className="flex h-full w-full items-center justify-center text-xs text-muted">{t("noBanner")}</span>
+          )}
+        </div>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <button type="button" onClick={() => bannerFile.current?.click()} disabled={uploading !== null} className={smallBtn}>
+            {uploading === "banner" ? t("uploading") : t("uploadBanner")}
+          </button>
+          {bannerUrl && (
+            <button type="button" onClick={() => setBannerUrl(null)} className="text-sm text-muted hover:text-red-400">
+              {t("removeLogo")}
+            </button>
+          )}
+          <span className="text-xs text-muted">{t("bannerHint")}</span>
+        </div>
+        <input ref={bannerFile} type="file" accept={accept} className="hidden" onChange={(e) => handleImage("banner", e)} />
+        <input type="hidden" name="bannerUrl" value={bannerUrl ?? ""} />
+      </div>
+
       {/* Logo */}
       <div className="flex items-center gap-4">
         <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-surface-alt ring-2 ring-line">
@@ -114,24 +152,19 @@ export function ClubProfileForm({
           )}
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            disabled={uploading}
-            className="border border-line px-3 py-1.5 text-sm font-semibold text-foreground transition-colors hover:border-brand-green hover:text-brand-green disabled:opacity-50"
-          >
-            {uploading ? t("uploading") : t("uploadLogo")}
+          <button type="button" onClick={() => logoFile.current?.click()} disabled={uploading !== null} className={smallBtn}>
+            {uploading === "logo" ? t("uploading") : t("uploadLogo")}
           </button>
           {logoUrl && (
             <button type="button" onClick={() => setLogoUrl(null)} className="text-sm text-muted hover:text-red-400">
               {t("removeLogo")}
             </button>
           )}
-          {uploadError && <span className="text-xs text-red-400">{t("uploadError")}</span>}
         </div>
-        <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleLogo} />
+        <input ref={logoFile} type="file" accept={accept} className="hidden" onChange={(e) => handleImage("logo", e)} />
         <input type="hidden" name="logoUrl" value={logoUrl ?? ""} />
       </div>
+      {uploadError && <p className="text-xs text-red-400">{t("uploadError")}</p>}
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="sm:col-span-2">
@@ -184,7 +217,7 @@ export function ClubProfileForm({
       <div className="flex items-center gap-3">
         <button
           type="submit"
-          disabled={pending || uploading}
+          disabled={pending || uploading !== null}
           className="border border-brand-green bg-brand-green px-5 py-2 text-sm font-semibold text-brand-navy transition-colors hover:bg-brand-green/90 disabled:opacity-50"
         >
           {pending ? t("saving") : submitLabel}

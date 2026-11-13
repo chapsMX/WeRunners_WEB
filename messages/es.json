@@ -432,7 +432,7 @@
       "uploadLogo": "Subir logo",
       "removeLogo": "Quitar",
       "uploading": "Subiendo…",
-      "uploadError": "No se pudo subir. Usa un JPG, PNG o WebP de menos de 5 MB.",
+      "uploadError": "No se pudo subir. Usa un JPG, PNG o WebP de menos de 8 MB.",
       "saving": "Guardando…",
       "saved": "Guardado",
       "errors": {
@@ -443,7 +443,11 @@
         "invalid": "Revisa los campos: nombre (2+ caracteres), país y correo válidos.",
         "slug_taken": "Ese club ya existe.",
         "unknown": "Algo salió mal. Intenta de nuevo."
-      }
+      },
+      "banner": "Banner",
+      "noBanner": "Sin banner todavía",
+      "uploadBanner": "Subir banner",
+      "bannerHint": "Imagen horizontal (4:1), JPG/PNG/WebP de hasta 8 MB. Los miembros sin banner propio ven este en su dashboard."
     }
   }
 }

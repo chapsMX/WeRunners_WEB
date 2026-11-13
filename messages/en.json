@@ -432,7 +432,7 @@
       "uploadLogo": "Upload logo",
       "removeLogo": "Remove",
       "uploading": "Uploading…",
-      "uploadError": "Upload failed. Use a JPG, PNG or WebP under 5 MB.",
+      "uploadError": "Upload failed. Use a JPG, PNG or WebP under 8 MB.",
       "saving": "Saving…",
       "saved": "Saved",
       "errors": {
@@ -443,7 +443,11 @@
         "invalid": "Check the fields: name (2+ characters), a valid country and email.",
         "slug_taken": "That club already exists.",
         "unknown": "Something went wrong. Try again."
-      }
+      },
+      "banner": "Banner",
+      "noBanner": "No banner yet",
+      "uploadBanner": "Upload banner",
+      "bannerHint": "Wide image (4:1), JPG/PNG/WebP up to 8 MB. Members without their own banner see this one on their dashboard."
     }
   }
 }

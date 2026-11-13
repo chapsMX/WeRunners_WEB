@@ -122,8 +122,10 @@ export type DashboardData = {
   isSample: boolean
   membership: DashboardMembership
   ranking: RankingSummary
-  /** Custom dashboard banner (Vercel Blob). null = default image. */
+  /** The runner's own dashboard banner (Vercel Blob). */
   bannerUrl: string | null
+  /** Their club's banner — shown when the runner hasn't set their own. */
+  clubBannerUrl: string | null
   deviceConnected: boolean
   /** Connected, but the user didn't share activities (Garmin ACTIVITY_EXPORT off). */
   activitySharingOff: boolean
@@ -170,6 +172,7 @@ function sampleData(): DashboardData {
     membership: null,
     ranking: EMPTY_RANKING,
     bannerUrl: null,
+    clubBannerUrl: null,
     deviceConnected: false,
     activitySharingOff: false,
     club: {
@@ -292,6 +295,7 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
     deviceConnected,
     activitySharingOff,
     bannerUrl: user?.bannerUrl ?? null,
+    clubBannerUrl: membership?.club?.bannerUrl ?? null,
     membership: membership?.club
       ? {
           clubName: membership.club.name,

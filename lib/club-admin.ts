@@ -187,6 +187,7 @@ export type ClubProfileInput = {
   city?: string | null
   country?: string
   logoUrl?: string | null
+  bannerUrl?: string | null
   instagram?: string | null
   twitter?: string | null
   tiktok?: string | null
@@ -206,6 +207,7 @@ type CleanClubProfile = {
   description?: string | null
   city?: string | null
   logoUrl?: string | null
+  bannerUrl?: string | null
   instagram?: string | null
   twitter?: string | null
   tiktok?: string | null
@@ -226,9 +228,11 @@ export function cleanClubProfile(input: ClubProfileInput): CleanClubProfile | nu
     if (!isCountryCode(c)) return null
     out.country = c
   }
-  if (input.logoUrl !== undefined) {
-    if (input.logoUrl !== null && !isBlobImageUrl(input.logoUrl)) return null
-    out.logoUrl = input.logoUrl
+  for (const k of ["logoUrl", "bannerUrl"] as const) {
+    const url = input[k]
+    if (url === undefined) continue
+    if (url !== null && !isBlobImageUrl(url)) return null
+    out[k] = url
   }
   if (input.contactEmail !== undefined) {
     const e = trimOrNull(input.contactEmail, 200)
@@ -259,6 +263,7 @@ export function clubProfileFromForm(form: FormData): ClubProfileInput {
     city: nullable("city"),
     description: nullable("description"),
     logoUrl: nullable("logoUrl"),
+    bannerUrl: nullable("bannerUrl"),
     instagram: nullable("instagram"),
     twitter: nullable("twitter"),
     tiktok: nullable("tiktok"),

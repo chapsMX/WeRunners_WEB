@@ -25,7 +25,12 @@ export function DashboardView({
   return (
     <div>
       {/* Hero full-bleed: banner editable + saludo + club real */}
-      <DashboardHero name={firstName} membership={data.membership} bannerUrl={data.bannerUrl} />
+      <DashboardHero
+        name={firstName}
+        membership={data.membership}
+        bannerUrl={data.bannerUrl}
+        clubBannerUrl={data.clubBannerUrl}
+      />
 
       {/* Contenido con margen interior */}
       <div className="space-y-8 px-6 py-8 lg:px-8">
