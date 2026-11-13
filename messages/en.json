@@ -448,7 +448,7 @@
       "banner": "Banner",
       "noBanner": "No banner yet",
       "uploadBanner": "Upload banner",
-      "bannerHint": "Wide image (4:1), JPG/PNG/WebP up to 8 MB. Members without their own banner see this one on their dashboard."
+      "bannerHint": "Wide image (4:1), JPG/PNG/WebP up to 8 MB. Shown on the club's page."
     }
   }
 }

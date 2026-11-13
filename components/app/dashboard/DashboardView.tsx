@@ -29,7 +29,6 @@ export function DashboardView({
         name={firstName}
         membership={data.membership}
         bannerUrl={data.bannerUrl}
-        clubBannerUrl={data.clubBannerUrl}
       />
 
       {/* Contenido con margen interior */}

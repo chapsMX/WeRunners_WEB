@@ -118,18 +118,16 @@ export type RankingSummary = {
 export type DashboardData = {
   /**
    * true cuando el usuario aún no tiene actividades: club/hero/contribution/personal/
-   * clubFeed son datos de muestra (perfil público y secciones de abajo del dashboard).
-   * membership, ranking, recent y bannerUrl son siempre reales.
+   * clubFeed son datos de muestra (solo secciones de abajo del dashboard).
+   * membership, ranking, records, recent y bannerUrl son siempre reales.
    */
   isSample: boolean
   membership: DashboardMembership
   ranking: RankingSummary
   /** The runner's real personal records (time-based). Empty = none yet. */
   records: PersonalRecordRow[]
-  /** The runner's own dashboard banner (Vercel Blob). */
+  /** The runner's own dashboard banner (Vercel Blob). null = default image. Independent of the club banner. */
   bannerUrl: string | null
-  /** Their club's banner — shown when the runner hasn't set their own. */
-  clubBannerUrl: string | null
   deviceConnected: boolean
   /** Connected, but the user didn't share activities (Garmin ACTIVITY_EXPORT off). */
   activitySharingOff: boolean
@@ -177,7 +175,6 @@ function sampleData(): DashboardData {
     ranking: EMPTY_RANKING,
     records: [],
     bannerUrl: null,
-    clubBannerUrl: null,
     deviceConnected: false,
     activitySharingOff: false,
     club: {
@@ -300,7 +297,6 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
     deviceConnected,
     activitySharingOff,
     bannerUrl: user?.bannerUrl ?? null,
-    clubBannerUrl: membership?.club?.bannerUrl ?? null,
     membership: membership?.club
       ? {
           clubName: membership.club.name,
