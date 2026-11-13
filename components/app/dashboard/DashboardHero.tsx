@@ -16,14 +16,11 @@ export function DashboardHero({
   name,
   membership,
   bannerUrl,
-  clubBannerUrl,
 }: {
   name: string
   membership: DashboardMembership
-  /** The runner's own banner; reset only applies to this one. */
+  /** The runner's own banner (independent of the club banner). */
   bannerUrl: string | null
-  /** Club banner, used when the runner has none. */
-  clubBannerUrl: string | null
 }) {
   const t = useTranslations("dashboard")
   const locale = useLocale()
@@ -68,7 +65,7 @@ export function DashboardHero({
     <section className="relative overflow-hidden">
       {/* Banner */}
       <Image
-        src={bannerUrl ?? clubBannerUrl ?? DEFAULT_BANNER}
+        src={bannerUrl ?? DEFAULT_BANNER}
         alt=""
         fill
         priority

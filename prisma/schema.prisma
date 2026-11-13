@@ -308,7 +308,7 @@ model Club {
   slug        String   @unique
   description String?
   logoUrl     String?
-  bannerUrl   String? // banner del club (Vercel Blob): página del club y dashboard de sus miembros
+  bannerUrl   String? // banner del club (Vercel Blob): página del club. Independiente del banner de cada corredor
   city        String?
   country     String   @default("MX")
   clubType    ClubType @default(RECREATIONAL)
