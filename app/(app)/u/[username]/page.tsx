@@ -85,7 +85,7 @@ export default async function PublicProfilePage({
   const socials = buildSocialLinks(user)
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="text-foreground">
       <div className="mx-auto max-w-3xl space-y-8 px-4 py-12 sm:px-6">
         {isSample && (
           <div className="flex justify-end">

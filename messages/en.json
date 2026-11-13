@@ -99,6 +99,7 @@
   },
   "app": {
     "nav": {
+      "dashboard": "Dashboard",
       "home": "Home",
       "activities": "Activities",
       "club": "My club",
@@ -361,6 +362,9 @@
     "records": {
       "title": "Personal records",
       "subtitle": "Best times across key distances."
+    },
+    "publicHeader": {
+      "signIn": "Sign in"
     }
   },
   "follow": {
