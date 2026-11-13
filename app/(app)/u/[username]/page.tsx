@@ -8,12 +8,7 @@ import { getFollowCounts, getFollowViewer, isFollowing } from "@/lib/follows"
 import { FollowButton } from "@/components/app/profile/FollowButton"
 import { getDashboardData } from "@/lib/dashboard-data"
 import { ProfileStats } from "@/components/app/ProfileStats"
-import {
-  ProfileClub,
-  ProfileClubStats,
-  ProfileRecords,
-  ProfileSampleBadge,
-} from "@/components/app/profile/PublicProfileClub"
+import { ProfileClub, ProfileClubStats, ProfileRecords } from "@/components/app/profile/PublicProfileClub"
 import { FacebookIcon, InstagramIcon, StravaIcon, XIcon } from "@/components/ui/SocialIcons"
 import { buildSocialLinks, type SocialNetwork } from "@/lib/social-links"
 
@@ -77,22 +72,16 @@ export default async function PublicProfilePage({
   ])
   const viewerRole = !viewer ? "guest" : viewer.id === user.id ? "self" : "member"
   const viewerFollows = viewerRole === "member" ? await isFollowing(viewer!.id, user.id) : false
-  const { isSample, club, hero } = stats
-  const records = stats.personal.records
+  // Real data only on a shareable page (no sample fallback).
+  const { membership, ranking, records } = stats
 
   const name = user.name || "Runner"
   const initial = name.charAt(0).toUpperCase()
   const socials = buildSocialLinks(user)
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="text-foreground">
       <div className="mx-auto max-w-3xl space-y-8 px-4 py-12 sm:px-6">
-        {isSample && (
-          <div className="flex justify-end">
-            <ProfileSampleBadge />
-          </div>
-        )}
-
         <header className="flex flex-col items-center border border-line bg-surface-alt/40 p-8 text-center">
           <div className="relative h-28 w-28 overflow-hidden rounded-full bg-surface-alt ring-2 ring-line">
             {user.image ? (
@@ -107,7 +96,7 @@ export default async function PublicProfilePage({
           <h1 className="mt-5 text-2xl font-bold text-foreground">{name}</h1>
           <p className="text-sm text-muted">@{user.username}</p>
 
-          <ProfileClub club={club} />
+          <ProfileClub club={membership} />
 
           {user.bio && <p className="mt-4 max-w-sm text-sm text-muted">{user.bio}</p>}
 
@@ -148,7 +137,7 @@ export default async function PublicProfilePage({
           </div>
         </header>
 
-        {club && <ProfileClubStats club={club} hero={hero} />}
+        {membership && <ProfileClubStats clubName={membership.clubName} ranking={ranking} />}
 
         <ProfileRecords records={records} />
       </div>

@@ -2,10 +2,8 @@ import type { ReactNode } from "react"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
 import { AppShell } from "@/components/app/AppShell"
-import { getFollowCounts } from "@/lib/follows"
-import { getManagedClubSlug, isSuperadmin } from "@/lib/club-admin"
+import { getShellProps } from "@/lib/app-shell"
 
 // Capa 2 del área protegida: gate de onboarding.
 // Si el perfil está incompleto (onboardingCompletedAt = null) → /onboarding.
@@ -18,33 +16,10 @@ export default async function OnboardedLayout({ children }: { children: ReactNod
     redirect("/auth/sign-in")
   }
 
-  const [user, activities, follows, manageClubSlug, superadmin] = await Promise.all([
-    prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { onboardingCompletedAt: true, username: true },
-    }),
-    prisma.activity.count({ where: { userId: session.user.id } }),
-    getFollowCounts(session.user.id),
-    getManagedClubSlug(session.user.id),
-    isSuperadmin(session.user.id),
-  ])
-
-  if (!user?.onboardingCompletedAt) {
+  const shell = await getShellProps(session.user)
+  if (!shell) {
     redirect("/onboarding")
   }
 
-  return (
-    <AppShell
-      user={{
-        name: session.user.name,
-        email: session.user.email,
-        image: session.user.image,
-        username: user.username,
-      }}
-      stats={{ ...follows, activities }}
-      links={{ manageClubSlug, superadmin }}
-    >
-      {children}
-    </AppShell>
-  )
+  return <AppShell {...shell}>{children}</AppShell>
 }

@@ -22,7 +22,7 @@ export type ActivityRow = {
 }
 
 export type PersonalRecordRow = {
-  /** Enum PRDistance (ONE_K, FIVE_K, ...) — la UI lo traduce vía namespace. */
+  /** Enum PRDistance (K5, K10, HALF_MARATHON, ...). */
   key: string
   durationSeconds: number
 }
@@ -89,6 +89,8 @@ export type DashboardMembership = {
   clubName: string
   clubSlug: string
   logoUrl: string | null
+  city: string | null
+  country: string
   joinedAt: Date
 } | null
 
@@ -116,12 +118,14 @@ export type RankingSummary = {
 export type DashboardData = {
   /**
    * true cuando el usuario aún no tiene actividades: club/hero/contribution/personal/
-   * clubFeed son datos de muestra (perfil público y secciones de abajo del dashboard).
-   * membership, ranking, recent y bannerUrl son siempre reales.
+   * clubFeed son datos de muestra (solo secciones de abajo del dashboard).
+   * membership, ranking, records, recent y bannerUrl son siempre reales.
    */
   isSample: boolean
   membership: DashboardMembership
   ranking: RankingSummary
+  /** The runner's real personal records (time-based). Empty = none yet. */
+  records: PersonalRecordRow[]
   /** The runner's own dashboard banner (Vercel Blob). null = default image. Independent of the club banner. */
   bannerUrl: string | null
   deviceConnected: boolean
@@ -169,6 +173,7 @@ function sampleData(): DashboardData {
     isSample: true,
     membership: null,
     ranking: EMPTY_RANKING,
+    records: [],
     bannerUrl: null,
     deviceConnected: false,
     activitySharingOff: false,
@@ -206,8 +211,8 @@ function sampleData(): DashboardData {
       streakDays: 12,
       avgPaceSecPerKm: 312, // 5:12 /km
       records: [
-        { key: "FIVE_K", durationSeconds: 1_290 },
-        { key: "TEN_K", durationSeconds: 2_760 },
+        { key: "K5", durationSeconds: 1_290 },
+        { key: "K10", durationSeconds: 2_760 },
         { key: "HALF_MARATHON", durationSeconds: 6_240 },
       ],
     },
@@ -297,10 +302,13 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
           clubName: membership.club.name,
           clubSlug: membership.club.slug,
           logoUrl: membership.club.logoUrl,
+          city: membership.club.city,
+          country: membership.club.country,
           joinedAt: membership.joinedAt,
         }
       : null,
     ranking: await getRankingSummary(userId, membership?.clubId ?? null),
+    records: realRecords(prRecords),
   }
 
   // Sin actividades todavía → dataset de muestra para las secciones de abajo.
@@ -420,10 +428,7 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
     streakDays: computeStreak(recentActivities.map((a) => a.activityDate)),
     avgPaceSecPerKm: avgPace,
     // Solo récords de tiempo; LONGEST_RUN (distancia) se mostrará aparte.
-    records: prRecords
-      .filter((r): r is typeof r & { durationSeconds: number } => r.durationSeconds != null)
-      .map((r) => ({ key: r.distance, durationSeconds: r.durationSeconds }))
-      .slice(0, 4),
+    records: real.records,
   }
 
   const recent: ActivityRow[] = recentActivities.map((a) => ({
@@ -510,6 +515,14 @@ export async function getRankingSummary(
     contributionMeters,
     productivityPct: clubMeters > 0 ? (contributionMeters / clubMeters) * 100 : 0,
   }
+}
+
+/** Time-based records only; LONGEST_RUN (a distance) will be shown separately. */
+function realRecords(rows: { distance: string; durationSeconds: number | null }[]): PersonalRecordRow[] {
+  return rows
+    .filter((r): r is typeof r & { durationSeconds: number } => r.durationSeconds != null)
+    .map((r) => ({ key: r.distance, durationSeconds: r.durationSeconds }))
+    .slice(0, 4)
 }
 
 /** Días consecutivos (incluyendo hoy o ayer) con al menos una actividad. */

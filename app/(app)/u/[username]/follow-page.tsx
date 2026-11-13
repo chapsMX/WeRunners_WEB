@@ -22,7 +22,7 @@ export async function FollowListPage({ username, kind }: { username: string; kin
   const items = await listFollows(owner.id, kind, viewer?.id ?? null)
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="text-foreground">
       <FollowList
         owner={{ name: owner.name || "Runner", username: owner.username }}
         kind={kind}

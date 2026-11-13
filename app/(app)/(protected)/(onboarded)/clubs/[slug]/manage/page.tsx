@@ -75,12 +75,16 @@ export default async function ManageClubPage({ params }: { params: Promise<{ slu
 
   return (
     <div className="mx-auto max-w-4xl space-y-8 px-6 py-8 lg:px-8">
-      <Link
-        href={access.superadmin ? "/admin/clubs" : "/dashboard"}
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-muted transition-colors hover:text-brand-green"
-      >
-        ← {access.superadmin ? t("backToAdmin") : t("backToDashboard")}
-      </Link>
+      <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-medium">
+        <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-muted transition-colors hover:text-brand-green">
+          ← {t("backToDashboard")}
+        </Link>
+        {access.superadmin && (
+          <Link href="/admin/clubs" className="text-muted transition-colors hover:text-brand-green">
+            {t("backToAdmin")}
+          </Link>
+        )}
+      </nav>
 
       <header className="flex items-center gap-4">
         <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-surface-alt ring-2 ring-line">

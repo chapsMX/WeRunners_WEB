@@ -99,6 +99,7 @@
   },
   "app": {
     "nav": {
+      "dashboard": "Dashboard",
       "home": "Inicio",
       "activities": "Actividades",
       "club": "Mi club",
@@ -182,9 +183,9 @@
       "km": "km",
       "records": "Récords",
       "pr": {
-        "ONE_K": "1K",
-        "FIVE_K": "5K",
-        "TEN_K": "10K",
+        "K1": "1K",
+        "K5": "5K",
+        "K10": "10K",
         "HALF_MARATHON": "Media",
         "MARATHON": "Maratón"
       }
@@ -340,27 +341,27 @@
     }
   },
   "profile": {
-    "sampleBadge": "Datos de muestra",
     "club": {
       "label": "Club de corredores",
       "none": "Todavía no está en un club de corredores"
     },
     "clubStats": {
-      "title": "En el club",
-      "rankWeekly": "Ranking en el club · semana",
-      "rankMonthly": "Ranking en el club · mes",
-      "contribution": "Aporte total",
+      "title": "Ranking",
+      "globalMonthly": "We Runners · mes",
+      "clubMonthly": "Club · mes",
+      "rankSub": "de {runners} · {dist} este mes",
+      "noRankMonth": "Sin carreras este mes",
+      "contribution": "Aporte al club",
+      "toClub": "sumados a {club}",
       "share": "Parte del club",
-      "thisWeek": "esta semana",
-      "thisMonth": "este mes",
-      "toClub": "aportados a {club}",
-      "ofClubTotal": "del total de km del club",
-      "noRankWeek": "Sin carreras esta semana",
-      "noRankMonth": "Sin carreras este mes"
+      "ofClubTotal": "del total de km del club"
     },
     "records": {
       "title": "Récords personales",
       "subtitle": "Mejores tiempos en las distancias clave."
+    },
+    "publicHeader": {
+      "signIn": "Iniciar sesión"
     }
   },
   "follow": {
