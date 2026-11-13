@@ -4,6 +4,7 @@ import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { AppShell } from "@/components/app/AppShell"
+import { getFollowCounts } from "@/lib/follows"
 
 // Capa 2 del área protegida: gate de onboarding.
 // Si el perfil está incompleto (onboardingCompletedAt = null) → /onboarding.
@@ -16,12 +17,13 @@ export default async function OnboardedLayout({ children }: { children: ReactNod
     redirect("/auth/sign-in")
   }
 
-  const [user, activities] = await Promise.all([
+  const [user, activities, follows] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
       select: { onboardingCompletedAt: true, username: true },
     }),
     prisma.activity.count({ where: { userId: session.user.id } }),
+    getFollowCounts(session.user.id),
   ])
 
   if (!user?.onboardingCompletedAt) {
@@ -36,8 +38,7 @@ export default async function OnboardedLayout({ children }: { children: ReactNod
         image: session.user.image,
         username: user.username,
       }}
-      // Following/Followers requieren un grafo social (tabla Follow) aún no creado.
-      stats={{ following: 0, followers: 0, activities }}
+      stats={{ ...follows, activities }}
     >
       {children}
     </AppShell>

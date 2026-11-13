@@ -1,7 +1,11 @@
 import Image from "next/image"
+import { headers } from "next/headers"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { prisma } from "@/lib/prisma"
+import { auth } from "@/lib/auth"
+import { getFollowCounts, getFollowViewer, isFollowing } from "@/lib/follows"
+import { FollowButton } from "@/components/app/profile/FollowButton"
 import { getDashboardData } from "@/lib/dashboard-data"
 import { ProfileStats } from "@/components/app/ProfileStats"
 import {
@@ -64,10 +68,15 @@ export default async function PublicProfilePage({
 
   // Same source as the dashboard; only the public subset reaches the page
   // (no recent activities, device status or streak).
-  const [stats, activities] = await Promise.all([
+  const session = await auth.api.getSession({ headers: await headers() })
+  const [stats, activities, follows, viewer] = await Promise.all([
     getDashboardData(user.id),
     prisma.activity.count({ where: { userId: user.id } }),
+    getFollowCounts(user.id),
+    getFollowViewer(session?.user.id),
   ])
+  const viewerRole = !viewer ? "guest" : viewer.id === user.id ? "self" : "member"
+  const viewerFollows = viewerRole === "member" ? await isFollowing(viewer!.id, user.id) : false
   const { isSample, club, hero } = stats
   const records = stats.personal.records
 
@@ -125,9 +134,18 @@ export default async function PublicProfilePage({
           )}
 
           <ProfileStats
-            stats={{ following: 0, followers: 0, activities }}
+            stats={{ ...follows, activities }}
+            username={user.username}
             className="mt-6 w-full max-w-sm border-t border-line pt-6"
           />
+
+          <div className="mt-6">
+            <FollowButton
+              username={user.username!}
+              initialFollowing={viewerFollows}
+              viewer={viewerRole}
+            />
+          </div>
         </header>
 
         {club && <ProfileClubStats club={club} hero={hero} />}

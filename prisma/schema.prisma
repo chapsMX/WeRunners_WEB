@@ -237,6 +237,8 @@ model User {
   records          PersonalRecord[]
   snapshots        WeeklySnapshot[]
   garminConnection DeviceConnectionGarmin?
+  following        Follow[]                @relation("following") // a quién sigue
+  followers        Follow[]                @relation("followers") // quién lo sigue
   polarConnection  DeviceConnectionPolar?
   stravaConnection DeviceConnectionStrava?
 
@@ -414,6 +416,26 @@ model Activity {
   @@index([userId, activityDate])
   @@index([clubId, activityDate])
   @@map("activities")
+}
+
+// ─────────────────────────────────────────────
+// FOLLOWS (seguir en un solo sentido, sin aprobación: los perfiles son públicos)
+// ─────────────────────────────────────────────
+
+model Follow {
+  followerId  String // quien sigue
+  followingId String // a quien sigue
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("following", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  // PK = no se puede seguir dos veces. Seguirse a sí mismo lo bloquea un CHECK
+  // en la migración (Prisma no modela CHECKs).
+  @@id([followerId, followingId])
+  @@index([followingId, createdAt])
+  @@index([followerId, createdAt])
+  @@map("follows")
 }
 
 // ─────────────────────────────────────────────

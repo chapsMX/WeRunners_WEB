@@ -106,7 +106,12 @@ function SidebarContent({
         {user.username && (
           <span className="text-xs text-muted">@{user.username}</span>
         )}
-        <ProfileStats stats={stats} className="mt-4 w-full" />
+        <ProfileStats
+          stats={stats}
+          username={user.username}
+          onNavigate={onNavigate}
+          className="mt-4 w-full"
+        />
       </div>
 
       {/* ── Navegación ── */}
@@ -169,16 +174,17 @@ function SidebarContent({
         </Link>
       </nav>
 
-      {/* ── Footer ── */}
-      <div className="mt-4 flex items-center justify-between gap-2 border-t border-line pt-4">
+      {/* ── Footer: idioma + cerrar sesión ── */}
+      <div className="mt-4 space-y-3 border-t border-line pt-4">
         <LanguageToggle />
         <button
+          type="button"
           onClick={handleSignOut}
           disabled={signingOut}
-          title={t("signOut")}
-          className="inline-flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-muted transition-colors hover:bg-foreground/5 hover:text-brand-green disabled:opacity-50"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
         >
-          <LogoutIcon size={18} />
+          <LogoutIcon size={20} className="shrink-0" />
+          <span>{signingOut ? t("signingOut") : t("signOut")}</span>
         </button>
       </div>
     </div>

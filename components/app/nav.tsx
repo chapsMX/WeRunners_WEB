@@ -1,5 +1,5 @@
 import type { ComponentType } from "react"
-import { ActivityIcon, SettingsIcon, TrophyIcon } from "./icons"
+import { SettingsIcon } from "./icons"
 
 export type NavItem = {
   /** Clave dentro del namespace "app.nav" para traducir el label. */
@@ -11,9 +11,8 @@ export type NavItem = {
 }
 
 // Profile se renderiza aparte en el AppShell porque su href es dinámico
-// (/u/[username] — perfil público). My club vive en la columna de contenido.
+// (/u/[username] — perfil público). Activities / Leaderboard vuelven aquí
+// cuando existan sus pantallas (soon: true muestra el badge "Soon").
 export const NAV_ITEMS: NavItem[] = [
-  { key: "activities", href: "/activities", icon: ActivityIcon, soon: true },
-  { key: "leaderboard", href: "/leaderboard", icon: TrophyIcon, soon: true },
   { key: "settings", href: "/settings", icon: SettingsIcon },
 ]

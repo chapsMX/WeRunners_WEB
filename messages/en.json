@@ -107,7 +107,8 @@
       "settings": "Edit profile"
     },
     "soon": "Soon",
-    "signOut": "Sign out",
+    "signOut": "Log out",
+    "signingOut": "Logging out…",
     "language": "Language",
     "collapse": "Collapse menu",
     "expand": "Open menu",
@@ -359,5 +360,18 @@
       "title": "Personal records",
       "subtitle": "Best times across key distances."
     }
+  },
+  "follow": {
+    "follow": "Follow",
+    "following": "Following",
+    "unfollow": "Unfollow",
+    "editProfile": "Edit profile",
+    "error": "Something went wrong. Try again."
+  },
+  "followList": {
+    "followers": "Followers",
+    "following": "Following",
+    "emptyFollowers": "No followers yet.",
+    "emptyFollowing": "Not following anyone yet."
   }
 }
