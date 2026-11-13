@@ -145,17 +145,7 @@ export function OnboardingForm({
                 />
                 <span className="min-w-0 flex-1">
                   <span className="block font-semibold text-foreground">{t("clubNone")}</span>
-                  <span className="block text-xs text-muted">
-                    {t("clubNoneHint")}{" "}
-                    <a
-                      href="https://www.w3runn3rs.com/en/for-clubs"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-medium text-brand-green hover:underline"
-                    >
-                      {t("clubRegister")} →
-                    </a>
-                  </span>
+                  <span className="block text-xs text-muted">{t("clubNoneHint")}</span>
                 </span>
                 <RadioDot checked={club === "none"} />
               </label>

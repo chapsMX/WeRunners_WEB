@@ -175,6 +175,11 @@ model ClubRegistration {
   createdAt       DateTime        @default(now())
   waitlistEntries WaitlistEntry[]
   club            Club? // platform club, once a runner joins
+
+  // Runner who asked for the club from inside the app. On approval they join
+  // it as owner (also matched by verified email for landing-form registrations).
+  requestedById String?
+  requestedBy   User?   @relation("ClubRequests", fields: [requestedById], references: [id], onDelete: SetNull)
 }
 
 model AmbassadorApplication {
@@ -246,6 +251,7 @@ model User {
   following        Follow[]                @relation("following") // a quién sigue
   followers        Follow[]                @relation("followers") // quién lo sigue
   ownedClub        Club?                   @relation("ClubOwner")
+  clubRequests     ClubRegistration[]      @relation("ClubRequests")
   polarConnection  DeviceConnectionPolar?
   stravaConnection DeviceConnectionStrava?
 
