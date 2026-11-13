@@ -10,6 +10,7 @@ import { PersonalStats } from "./PersonalStats"
 import { RecordsCard } from "./RecordsCard"
 import { ClubFeedCard } from "./ClubFeedCard"
 import { RecentActivities } from "./RecentActivities"
+import { NoClubBanner } from "./NoClubBanner"
 
 export function DashboardView({
   data,
@@ -41,6 +42,9 @@ export function DashboardView({
 
         {/* Conectado, pero sin permiso de actividades: sus km nunca llegarían */}
         {data.activitySharingOff && <ActivitySharingWarning />}
+
+        {/* Sin club: su solicitud en revisión, o registrar su club */}
+        {!data.membership && <NoClubBanner pendingClubName={data.pendingClubRequest?.clubName ?? null} />}
 
         {/* Sección 50/50: últimas carreras · ranking (siempre datos reales) */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
