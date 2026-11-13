@@ -9,6 +9,8 @@ import { getAppTranslator } from "@/lib/app-i18n"
 import { getClubAccess } from "@/lib/club-admin"
 import { ClubProfileForm } from "@/components/app/clubs/ClubProfileForm"
 import { ClubMembers, type ClubMemberRow } from "@/components/app/clubs/ClubMembers"
+import { OwnerPicker } from "@/components/app/clubs/OwnerPicker"
+import { getPendingOwnerInvite } from "@/lib/club-owners"
 import { updateClubProfileAction } from "./actions"
 
 export const metadata: Metadata = { robots: { index: false, follow: false } }
@@ -21,7 +23,7 @@ export default async function ManageClubPage({ params }: { params: Promise<{ slu
   if (!access?.canManage) notFound()
 
   const { t, locale } = await getAppTranslator("clubAdmin")
-  const [club, memberships] = await Promise.all([
+  const [club, memberships, pendingInvite] = await Promise.all([
     prisma.club.findUniqueOrThrow({
       where: { id: access.club.id },
       select: {
@@ -51,6 +53,7 @@ export default async function ManageClubPage({ params }: { params: Promise<{ slu
         user: { select: { id: true, name: true, username: true, image: true } },
       },
     }),
+    access.superadmin ? getPendingOwnerInvite(prisma, access.club.id) : Promise.resolve(null),
   ])
 
   const rank = (m: ClubMemberRow) => (m.isOwner ? 0 : m.isCollaborator ? 1 : 2)
@@ -105,6 +108,13 @@ export default async function ManageClubPage({ params }: { params: Promise<{ slu
           </p>
         </div>
       </header>
+
+      {access.superadmin && (
+        <section className="border border-line bg-surface-alt/40 p-6">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">{t("owner.title")}</h2>
+          <OwnerPicker clubId={club.id} clubName={club.name} pendingInvite={pendingInvite?.email ?? null} />
+        </section>
+      )}
 
       <section>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">{t("membersTitle")}</h2>

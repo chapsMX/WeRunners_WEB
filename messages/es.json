@@ -268,7 +268,8 @@
     "clubOnApp": "{count} en W3Runn3rs",
     "clubNone": "Mi club no está en la lista",
     "clubNoneHint": "Termina ahora y únete a un club después. También puedes registrar tu club.",
-    "clubRegister": "Registra tu club"
+    "clubRegister": "Registra tu club",
+    "clubAssigned": "Eres el dueño de este club: te eligió el equipo de W3Runn3rs. Lo administras desde tu dashboard."
   },
   "settings": {
     "back": "Volver al dashboard",
@@ -388,9 +389,9 @@
     "managedByW3": "Administrado por W3Runn3rs",
     "inactive": "Inactivo",
     "manage": "Administrar",
-    "pendingTitle": "Registros pendientes ({count})",
+    "pendingTitle": "Clubes por validar ({count})",
     "pendingEmpty": "No hay registros esperando.",
-    "pendingHint": "Al aprobar se crea el club y aparece en la lista. Quien lo registró queda como dueño cuando entra con ese mismo correo verificado.",
+    "pendingHint": "Vienen del formulario del home. Al aprobar se crea el club, aparece en la lista y le llega un correo al club.",
     "approve": "Aprobar",
     "approving": "Aprobando…",
     "createTitle": "Crear un club",
@@ -449,6 +450,43 @@
       "noBanner": "Sin banner todavía",
       "uploadBanner": "Subir banner",
       "bannerHint": "Imagen horizontal (4:1), JPG/PNG/WebP de hasta 8 MB. Se muestra en la página del club."
+    },
+    "emailFailed": "Listo, pero no se pudo enviar el correo.",
+    "grantBeta": "Dar acceso",
+    "granting": "Dando acceso…",
+    "waitlistTitle": "Waitlist sin acceso ({count})",
+    "waitlistEmpty": "Todos en la waitlist ya tienen acceso.",
+    "waitlistHint": "Al dar acceso le llega un correo: debe entrar con ese mismo correo (Google o contraseña).",
+    "hasAccount": "Tiene cuenta",
+    "owner": {
+      "title": "Elegir dueño",
+      "hint": "Busca cualquier cuenta o correo de la waitlist. El dueño recibe acceso beta, se une a este club y le llega un correo. Si no tiene cuenta, queda como dueño al registrarse con ese correo.",
+      "placeholder": "Nombre, @usuario o correo",
+      "searching": "Buscando…",
+      "noResults": "No hay cuentas ni correos de la waitlist que coincidan.",
+      "makeOwner": "Hacer dueño",
+      "invite": "Invitar como dueño",
+      "pendingInvite": "Invitación de dueño pendiente: {email}",
+      "confirmUser": "¿Hacer a {name} dueño de {club}? Recibe acceso beta y se une al club si no está.",
+      "confirmInvite": "¿Invitar a {email} como dueño de {club}? Recibe acceso beta y queda como dueño al registrarse con ese correo.",
+      "doneAssigned": "Listo: {email} ya es el dueño y le llegó un correo.",
+      "doneInvited": "Invitación enviada a {email}. Queda como dueño al registrarse con ese correo.",
+      "emailFailed": "(no se pudo enviar el correo)",
+      "status": {
+        "waiting": "Tiene cuenta · sin acceso beta",
+        "onboarding": "Tiene cuenta · onboarding pendiente",
+        "no_club": "Sin club",
+        "this_club": "Ya está en este club",
+        "otherClub": "En otro club: {club}",
+        "waitlist": "Waitlist · todavía sin cuenta",
+        "invitedTo": "Ya invitado como dueño de {club}"
+      },
+      "errors": {
+        "forbidden": "Solo el superadmin puede elegir dueños.",
+        "not_found": "No encontramos a esa persona o club.",
+        "in_other_club": "Ya está en {club}. Un dueño no puede estar en otro club.",
+        "invited_elsewhere": "Ya tiene una invitación de dueño pendiente para {club}."
+      }
     }
   }
 }

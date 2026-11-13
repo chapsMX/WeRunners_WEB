@@ -19,12 +19,15 @@ export function OnboardingForm({
   defaultUnit,
   defaultLocale,
   clubs,
+  assignedClub,
 }: {
   name: string | null
   suggestedUsername: string
   defaultUnit: Unit
   defaultLocale: Locale
   clubs: SelectableClub[]
+  /** Club the runner was already placed in (picked as its owner). Replaces the picker. */
+  assignedClub: { name: string; city: string | null; country: string; logoUrl: string | null } | null
 }) {
   const t = useTranslations("onboarding")
   const [state, formAction, isPending] = useActionState<OnboardingState, FormData>(
@@ -92,57 +95,76 @@ export function OnboardingForm({
           </p>
         </div>
 
-        {/* Club (obligatorio) */}
-        <fieldset>
-          <legend className="block text-sm font-semibold text-foreground">{t("clubLabel")}</legend>
-          <p className="mt-1 text-xs text-muted">{t("clubHint")}</p>
-          <div className="mt-3 space-y-2" role="radiogroup">
-            {clubs.map((c) => (
-              <ClubOption
-                key={c.id}
-                club={c}
-                checked={club === c.id}
-                onSelect={() => setClub(c.id)}
-              />
-            ))}
-            <label
-              className={cn(
-                "flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition-colors",
-                club === "none"
-                  ? "border-brand-green bg-brand-green/10"
-                  : "border-line bg-surface-alt/40 hover:border-brand-green/50"
-              )}
-            >
-              <input
-                type="radio"
-                name="club"
-                value="none"
-                checked={club === "none"}
-                onChange={() => setClub("none")}
-                required
-                className="sr-only"
-              />
-              <span className="min-w-0 flex-1">
-                <span className="block font-semibold text-foreground">{t("clubNone")}</span>
-                <span className="block text-xs text-muted">
-                  {t("clubNoneHint")}{" "}
-                  <a
-                    href="https://www.w3runn3rs.com/en/for-clubs"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-medium text-brand-green hover:underline"
-                  >
-                    {t("clubRegister")} →
-                  </a>
-                </span>
+        {/* Club (obligatorio) — o el club ya asignado por el superadmin */}
+        {assignedClub ? (
+          <div>
+            <p className="block text-sm font-semibold text-foreground">{t("clubLabel")}</p>
+            <div className="mt-3 flex items-center gap-3 rounded-xl border border-brand-green bg-brand-green/10 px-4 py-3">
+              <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-alt ring-1 ring-line">
+                {assignedClub.logoUrl ? (
+                  <Image src={assignedClub.logoUrl} alt="" fill sizes="40px" className="object-cover" />
+                ) : (
+                  <span className="text-sm font-bold text-brand-green">{assignedClub.name.charAt(0).toUpperCase()}</span>
+                )}
               </span>
-              <RadioDot checked={club === "none"} />
-            </label>
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold text-foreground">{assignedClub.name}</span>
+                <span className="block text-xs text-muted">{t("clubAssigned")}</span>
+              </span>
+            </div>
           </div>
-          <p className={cn("mt-2 text-xs", clubError ? "text-red-400" : "text-muted")}>
-            {clubError ? t(`errors.${clubError}`) : t("clubLock")}
-          </p>
-        </fieldset>
+        ) : (
+          <fieldset>
+            <legend className="block text-sm font-semibold text-foreground">{t("clubLabel")}</legend>
+            <p className="mt-1 text-xs text-muted">{t("clubHint")}</p>
+            <div className="mt-3 space-y-2" role="radiogroup">
+              {clubs.map((c) => (
+                <ClubOption
+                  key={c.id}
+                  club={c}
+                  checked={club === c.id}
+                  onSelect={() => setClub(c.id)}
+                />
+              ))}
+              <label
+                className={cn(
+                  "flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition-colors",
+                  club === "none"
+                    ? "border-brand-green bg-brand-green/10"
+                    : "border-line bg-surface-alt/40 hover:border-brand-green/50"
+                )}
+              >
+                <input
+                  type="radio"
+                  name="club"
+                  value="none"
+                  checked={club === "none"}
+                  onChange={() => setClub("none")}
+                  required
+                  className="sr-only"
+                />
+                <span className="min-w-0 flex-1">
+                  <span className="block font-semibold text-foreground">{t("clubNone")}</span>
+                  <span className="block text-xs text-muted">
+                    {t("clubNoneHint")}{" "}
+                    <a
+                      href="https://www.w3runn3rs.com/en/for-clubs"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-brand-green hover:underline"
+                    >
+                      {t("clubRegister")} →
+                    </a>
+                  </span>
+                </span>
+                <RadioDot checked={club === "none"} />
+              </label>
+            </div>
+            <p className={cn("mt-2 text-xs", clubError ? "text-red-400" : "text-muted")}>
+              {clubError ? t(`errors.${clubError}`) : t("clubLock")}
+            </p>
+          </fieldset>
+        )}
 
         {/* Unidad */}
         <div>

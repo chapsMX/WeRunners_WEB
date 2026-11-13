@@ -138,6 +138,13 @@ export async function joinSelectedClub(
   })
   if (active) return true
 
+  await createMembership(tx, userId, clubId, now)
+  await claimRegistrantOwnership(tx, userId, clubId)
+  return true
+}
+
+/** New active membership (6-month lock) + memberCount. Caller checks there's no active one. */
+export async function createMembership(tx: Tx, userId: string, clubId: string, now = new Date()) {
   await tx.clubMembership.create({
     data: {
       userId,
@@ -149,8 +156,6 @@ export async function joinSelectedClub(
     },
   })
   await tx.club.update({ where: { id: clubId }, data: { memberCount: { increment: 1 } } })
-  await claimRegistrantOwnership(tx, userId, clubId)
-  return true
 }
 
 /**

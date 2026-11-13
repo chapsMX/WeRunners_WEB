@@ -4,7 +4,10 @@ import { headers } from "next/headers"
 import { revalidatePath } from "next/cache"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { assignOwner, searchOwnerCandidates, type OwnerCandidate } from "@/lib/club-owners"
+import { sendClubOwnerEmail } from "@/lib/admin-emails"
 import {
+  isSuperadmin,
   clearOwner,
   clubProfileFromForm,
   removeMember,
@@ -61,4 +64,38 @@ export async function memberAction(clubId: string, memberId: string, op: MemberO
   })
   if (result.ok) await revalidateClub(clubId)
   return result
+}
+
+// ── Superadmin: choose the owner ────────────────────────────
+
+export async function searchOwnersAction(clubId: string, query: string): Promise<OwnerCandidate[]> {
+  const actor = await actorId()
+  if (!(await isSuperadmin(actor))) return []
+  return searchOwnerCandidates(prisma, query, clubId)
+}
+
+export type AssignOwnerActionResult =
+  | { ok: true; kind: "assigned" | "invited"; email: string; emailed: boolean }
+  | { ok: false; error: string; clubName?: string }
+
+/** Make someone the owner (or invite them), then email them. */
+export async function assignOwnerAction(
+  clubId: string,
+  target: { userId: string } | { email: string }
+): Promise<AssignOwnerActionResult> {
+  const actor = await actorId()
+  if (!actor) return { ok: false, error: "forbidden" }
+  const result = await prisma.$transaction((tx) => assignOwner(tx, actor, clubId, target))
+  if (!result.ok) return { ok: false, error: result.error, clubName: result.clubName }
+
+  const club = await prisma.club.findUnique({ where: { id: clubId }, select: { slug: true } })
+  const emailed = await sendClubOwnerEmail({
+    email: result.email,
+    name: result.name,
+    clubName: result.clubName,
+    clubSlug: club?.slug ?? "",
+    hasAccount: result.kind === "assigned",
+  })
+  await revalidateClub(clubId)
+  return { ok: true, kind: result.kind, email: result.email, emailed }
 }
