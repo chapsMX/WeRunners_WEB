@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl"
 import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 import { NAV_ITEMS } from "./nav"
-import { LogoutIcon, UserIcon } from "./icons"
+import { ClubIcon, LogoutIcon, ShieldIcon, UserIcon } from "./icons"
 import { LanguageToggle } from "./LanguageToggle"
 import { ProfileStats, type ProfileStatsData } from "./ProfileStats"
 import { AppTopbar } from "./AppTopbar"
@@ -19,6 +19,13 @@ type SidebarUser = {
   email?: string | null
   image?: string | null
   username?: string | null
+}
+
+/** Extra sidebar links for club staff and the superadmin. */
+export type SidebarLinks = {
+  /** Slug of the club the runner owns or co-manages. */
+  manageClubSlug?: string | null
+  superadmin?: boolean
 }
 
 const STORAGE_KEY = "w3-sidebar-open"
@@ -51,13 +58,44 @@ function Avatar({
   )
 }
 
+function NavLink({
+  href,
+  active,
+  onNavigate,
+  icon,
+  label,
+}: {
+  href: string
+  active: boolean
+  onNavigate: () => void
+  icon: ReactNode
+  label: string
+}) {
+  return (
+    <Link
+      href={href}
+      onClick={onNavigate}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+        active ? "bg-brand-green/10 text-brand-green" : "text-muted hover:bg-foreground/5 hover:text-foreground"
+      )}
+    >
+      {icon}
+      <span className="flex-1">{label}</span>
+    </Link>
+  )
+}
+
 function SidebarContent({
   user,
   stats,
+  links,
   onNavigate,
 }: {
   user: SidebarUser
   stats: ProfileStatsData
+  links: SidebarLinks
   onNavigate: () => void
 }) {
   const pathname = usePathname()
@@ -172,6 +210,25 @@ function SidebarContent({
           <UserIcon size={20} className="shrink-0" />
           <span className="flex-1">{t("nav.profile")}</span>
         </Link>
+
+        {links.manageClubSlug && (
+          <NavLink
+            href={`/clubs/${links.manageClubSlug}/manage`}
+            active={pathname.startsWith("/clubs/")}
+            onNavigate={onNavigate}
+            icon={<ClubIcon size={20} className="shrink-0" />}
+            label={t("nav.manageClub")}
+          />
+        )}
+        {links.superadmin && (
+          <NavLink
+            href="/admin/clubs"
+            active={pathname.startsWith("/admin")}
+            onNavigate={onNavigate}
+            icon={<ShieldIcon size={20} className="shrink-0" />}
+            label={t("nav.admin")}
+          />
+        )}
       </nav>
 
       {/* ── Footer: idioma + cerrar sesión ── */}
@@ -194,10 +251,12 @@ function SidebarContent({
 export function AppShell({
   user,
   stats,
+  links = {},
   children,
 }: {
   user: SidebarUser
   stats: ProfileStatsData
+  links?: SidebarLinks
   children: ReactNode
 }) {
   // SSR: abierto (desktop-first). En cliente ajustamos por viewport + preferencia.
@@ -242,6 +301,7 @@ export function AppShell({
         <SidebarContent
           user={user}
           stats={stats}
+          links={links}
           onNavigate={() => {
             // En móvil, navegar cierra el panel.
             if (window.matchMedia("(max-width: 1023px)").matches) toggle(false)

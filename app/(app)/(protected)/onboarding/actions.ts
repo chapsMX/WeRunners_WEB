@@ -7,7 +7,7 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { APP_LOCALE_COOKIE } from "@/lib/app-i18n"
 import { cleanHandle, cleanUrl, validateUsername } from "@/lib/profile-validation"
-import { joinClubFromRegistration } from "@/lib/clubs"
+import { joinSelectedClub } from "@/lib/clubs"
 
 export type OnboardingState = {
   error?: {
@@ -33,7 +33,7 @@ export async function completeOnboarding(
     return { error: { field: "username", code: usernameError } }
   }
 
-  // ── Club (obligatorio): id de ClubRegistration habilitado, o "none" =
+  // ── Club (obligatorio): "club:<id>" / "reg:<id>" (lib/clubs), o "none" =
   // "mi club no está en la lista" (termina el onboarding sin club).
   const clubChoice = String(formData.get("club") ?? "")
   if (!clubChoice) {
@@ -77,7 +77,7 @@ export async function completeOnboarding(
   const save = () =>
     prisma.$transaction(async (tx) => {
       if (clubChoice !== "none") {
-        const joined = await joinClubFromRegistration(tx, session.user.id, clubChoice)
+        const joined = await joinSelectedClub(tx, session.user.id, clubChoice)
         if (!joined) return "clubUnavailable" as const
       }
       await tx.user.update({ where: { id: session.user.id }, data: profile })

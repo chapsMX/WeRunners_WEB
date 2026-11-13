@@ -10,7 +10,9 @@ export const PROFILE_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"]
 
 export async function profileImageUploadToken(
   request: Request,
-  maximumSizeInBytes: number
+  maximumSizeInBytes: number,
+  /** Extra check on the signed-in user (e.g. club logos: only club managers). */
+  authorize?: (userId: string) => Promise<boolean>
 ): Promise<NextResponse> {
   const body = (await request.json()) as HandleUploadBody
   try {
@@ -20,6 +22,7 @@ export async function profileImageUploadToken(
       onBeforeGenerateToken: async () => {
         const session = await auth.api.getSession({ headers: await headers() })
         if (!session) throw new Error("Unauthorized")
+        if (authorize && !(await authorize(session.user.id))) throw new Error("Forbidden")
         return {
           allowedContentTypes: PROFILE_IMAGE_TYPES,
           maximumSizeInBytes,
