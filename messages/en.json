@@ -183,9 +183,9 @@
       "km": "km",
       "records": "Records",
       "pr": {
-        "ONE_K": "1K",
-        "FIVE_K": "5K",
-        "TEN_K": "10K",
+        "K1": "1K",
+        "K5": "5K",
+        "K10": "10K",
         "HALF_MARATHON": "Half",
         "MARATHON": "Marathon"
       }

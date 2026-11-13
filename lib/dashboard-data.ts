@@ -22,7 +22,7 @@ export type ActivityRow = {
 }
 
 export type PersonalRecordRow = {
-  /** Enum PRDistance (ONE_K, FIVE_K, ...) — la UI lo traduce vía namespace. */
+  /** Enum PRDistance (K5, K10, HALF_MARATHON, ...). */
   key: string
   durationSeconds: number
 }
@@ -211,8 +211,8 @@ function sampleData(): DashboardData {
       streakDays: 12,
       avgPaceSecPerKm: 312, // 5:12 /km
       records: [
-        { key: "FIVE_K", durationSeconds: 1_290 },
-        { key: "TEN_K", durationSeconds: 2_760 },
+        { key: "K5", durationSeconds: 1_290 },
+        { key: "K10", durationSeconds: 2_760 },
         { key: "HALF_MARATHON", durationSeconds: 6_240 },
       ],
     },

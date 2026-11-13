@@ -5,11 +5,11 @@ import { formatDuration } from "@/lib/format"
 import type { PersonalRecordRow } from "@/lib/dashboard-data"
 import { TrophyIcon } from "../icons"
 
-// Distancias destacadas (el enum HALF_MARATHON se muestra como 21K).
+// Distancias destacadas: keys = enum PRDistance (K5, K10, HALF_MARATHON → 21K).
 // Estilo de las tres columnas del home (WhatIs): verde / azul / navy.
 const TARGETS = [
   {
-    key: "FIVE_K",
+    key: "K5",
     label: "5K",
     bg: "bg-brand-green",
     iconColor: "text-brand-green",
@@ -18,7 +18,7 @@ const TARGETS = [
     captionCls: "text-brand-navy/70",
   },
   {
-    key: "TEN_K",
+    key: "K10",
     label: "10K",
     bg: "bg-surface-alt",
     iconColor: "text-brand-green",
