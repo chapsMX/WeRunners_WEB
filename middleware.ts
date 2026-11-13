@@ -24,6 +24,7 @@ const APP_PATH_PREFIXES = [
   "/clubs",
   "/leaderboard",
   "/settings",
+  "/admin",
 ]
 
 function isAppSubdomain(request: NextRequest): boolean {

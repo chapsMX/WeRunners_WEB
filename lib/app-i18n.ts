@@ -24,3 +24,11 @@ export async function getAppLocale(userLocale?: string | null): Promise<AppLocal
 export async function getAppMessages(locale: AppLocale) {
   return (await import(`../messages/${locale}.json`)).default
 }
+
+/** Server-side translator for app pages (same locale resolution as the app layout). */
+export async function getAppTranslator(namespace: string) {
+  const { createTranslator } = await import("next-intl")
+  const locale = await getAppLocale()
+  const messages = await getAppMessages(locale)
+  return { t: createTranslator({ locale, messages, namespace }), locale }
+}

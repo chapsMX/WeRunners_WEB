@@ -104,7 +104,9 @@
       "club": "My club",
       "leaderboard": "Leaderboard",
       "profile": "Profile",
-      "settings": "Edit profile"
+      "settings": "Edit profile",
+      "manageClub": "Manage club",
+      "admin": "Admin"
     },
     "soon": "Soon",
     "signOut": "Log out",
@@ -373,5 +375,75 @@
     "following": "Following",
     "emptyFollowers": "No followers yet.",
     "emptyFollowing": "Not following anyone yet."
+  },
+  "clubAdmin": {
+    "superadmin": "Superadmin",
+    "adminTitle": "Clubs",
+    "adminSubtitle": "Create clubs, approve registrations from the landing and hand clubs over to their owners.",
+    "clubsTitle": "{count, plural, one {# club} other {# clubs}}",
+    "members": "{count, plural, one {# member} other {# members}}",
+    "declared": "{count} runners declared",
+    "ownedBy": "Owner: @{username}",
+    "managedByW3": "Managed by W3Runn3rs",
+    "inactive": "Inactive",
+    "manage": "Manage",
+    "pendingTitle": "Pending registrations ({count})",
+    "pendingEmpty": "No registrations waiting.",
+    "pendingHint": "Approving creates the club and makes it selectable. Whoever registered it becomes the owner when they join with that same verified email.",
+    "approve": "Approve",
+    "approving": "Approving…",
+    "createTitle": "Create a club",
+    "createHint": "You'll manage it as superadmin until you hand it over to one of its members.",
+    "createSubmit": "Create club",
+    "backToAdmin": "All clubs",
+    "backToDashboard": "Dashboard",
+    "yourRole": "You: {role}",
+    "roles": {
+      "owner": "Owner",
+      "collaborator": "Collaborator"
+    },
+    "membersTitle": "Members",
+    "membersEmpty": "No members yet.",
+    "joined": "Joined {date}",
+    "profileTitle": "Club profile",
+    "profileSubmit": "Save changes",
+    "actions": {
+      "makeCollaborator": "Make collaborator",
+      "removeCollaborator": "Remove collaborator",
+      "transfer": "Transfer ownership",
+      "makeOwner": "Make owner",
+      "remove": "Remove from club",
+      "clearOwner": "Remove as owner"
+    },
+    "confirm": {
+      "transfer": "Make {name} the owner of this club? You'll stay on as a collaborator.",
+      "makeOwner": "Make {name} the owner of this club? The current owner, if any, stays on as a collaborator.",
+      "remove": "Remove {name} from the club? Their past kilometers stay with the club.",
+      "clearOwner": "Remove {name} as owner? They stay on as a collaborator and W3Runn3rs manages the club."
+    },
+    "form": {
+      "name": "Club name",
+      "nameLocked": "Only the owner can rename the club.",
+      "city": "City",
+      "country": "Country",
+      "description": "Description",
+      "contactEmail": "Contact email",
+      "noLogo": "Logo",
+      "uploadLogo": "Upload logo",
+      "removeLogo": "Remove",
+      "uploading": "Uploading…",
+      "uploadError": "Upload failed. Use a JPG, PNG or WebP under 5 MB.",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "errors": {
+        "forbidden": "You don't have permission to do that.",
+        "not_found": "Club not found.",
+        "not_member": "That runner isn't an active member of this club.",
+        "is_owner": "Transfer ownership first.",
+        "invalid": "Check the fields: name (2+ characters), a valid country and email.",
+        "slug_taken": "That club already exists.",
+        "unknown": "Something went wrong. Try again."
+      }
+    }
   }
 }

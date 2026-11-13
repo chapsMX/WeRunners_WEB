@@ -20,6 +20,12 @@ enum Role {
   ADMIN
 }
 
+// Rol dentro de un club. El dueño vive en Club.ownerId (uno solo por club).
+enum ClubRole {
+  MEMBER
+  ADMIN // colaborador: modera el club con el dueño
+}
+
 enum DistanceUnit {
   KM
   MILES
@@ -239,6 +245,7 @@ model User {
   garminConnection DeviceConnectionGarmin?
   following        Follow[]                @relation("following") // a quién sigue
   followers        Follow[]                @relation("followers") // quién lo sigue
+  ownedClub        Club?                   @relation("ClubOwner")
   polarConnection  DeviceConnectionPolar?
   stravaConnection DeviceConnectionStrava?
 
@@ -322,6 +329,11 @@ model Club {
   registrationId String?           @unique
   registration   ClubRegistration? @relation(fields: [registrationId], references: [id])
 
+  // Dueño del club (debe ser miembro activo). null = administrado por W3Runn3rs
+  // (superadmin). @unique: un corredor solo puede ser dueño de un club, el suyo.
+  ownerId String? @unique
+  owner   User?   @relation("ClubOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -347,6 +359,7 @@ model ClubMembership {
   leftAt        DateTime?
   isActive      Boolean   @default(true)
   lockExpiresAt DateTime // no puede cambiarse de club antes de esta fecha (6 meses)
+  role          ClubRole  @default(MEMBER)
 
   // One runner, one club: = userId while the membership is active, NULL once it
   // ends. Unique → at most one active membership per user; Postgres allows many

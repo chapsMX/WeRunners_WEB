@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { AppShell } from "@/components/app/AppShell"
 import { getFollowCounts } from "@/lib/follows"
+import { getManagedClubSlug, isSuperadmin } from "@/lib/club-admin"
 
 // Capa 2 del área protegida: gate de onboarding.
 // Si el perfil está incompleto (onboardingCompletedAt = null) → /onboarding.
@@ -17,13 +18,15 @@ export default async function OnboardedLayout({ children }: { children: ReactNod
     redirect("/auth/sign-in")
   }
 
-  const [user, activities, follows] = await Promise.all([
+  const [user, activities, follows, manageClubSlug, superadmin] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
       select: { onboardingCompletedAt: true, username: true },
     }),
     prisma.activity.count({ where: { userId: session.user.id } }),
     getFollowCounts(session.user.id),
+    getManagedClubSlug(session.user.id),
+    isSuperadmin(session.user.id),
   ])
 
   if (!user?.onboardingCompletedAt) {
@@ -39,6 +42,7 @@ export default async function OnboardedLayout({ children }: { children: ReactNod
         username: user.username,
       }}
       stats={{ ...follows, activities }}
+      links={{ manageClubSlug, superadmin }}
     >
       {children}
     </AppShell>

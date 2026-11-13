@@ -104,7 +104,9 @@
       "club": "Mi club",
       "leaderboard": "Leaderboard",
       "profile": "Perfil",
-      "settings": "Editar perfil"
+      "settings": "Editar perfil",
+      "manageClub": "Administrar club",
+      "admin": "Admin"
     },
     "soon": "Pronto",
     "signOut": "Cerrar sesión",
@@ -373,5 +375,75 @@
     "following": "Siguiendo",
     "emptyFollowers": "Todavía no tiene seguidores.",
     "emptyFollowing": "Todavía no sigue a nadie."
+  },
+  "clubAdmin": {
+    "superadmin": "Superadmin",
+    "adminTitle": "Clubes",
+    "adminSubtitle": "Crea clubes, aprueba los registros de la landing y entrega cada club a su dueño.",
+    "clubsTitle": "{count, plural, one {# club} other {# clubes}}",
+    "members": "{count, plural, one {# miembro} other {# miembros}}",
+    "declared": "{count} corredores declarados",
+    "ownedBy": "Dueño: @{username}",
+    "managedByW3": "Administrado por W3Runn3rs",
+    "inactive": "Inactivo",
+    "manage": "Administrar",
+    "pendingTitle": "Registros pendientes ({count})",
+    "pendingEmpty": "No hay registros esperando.",
+    "pendingHint": "Al aprobar se crea el club y aparece en la lista. Quien lo registró queda como dueño cuando entra con ese mismo correo verificado.",
+    "approve": "Aprobar",
+    "approving": "Aprobando…",
+    "createTitle": "Crear un club",
+    "createHint": "Lo administras como superadmin hasta que se lo entregues a uno de sus miembros.",
+    "createSubmit": "Crear club",
+    "backToAdmin": "Todos los clubes",
+    "backToDashboard": "Dashboard",
+    "yourRole": "Tú: {role}",
+    "roles": {
+      "owner": "Dueño",
+      "collaborator": "Colaborador"
+    },
+    "membersTitle": "Miembros",
+    "membersEmpty": "Todavía no hay miembros.",
+    "joined": "Se unió el {date}",
+    "profileTitle": "Perfil del club",
+    "profileSubmit": "Guardar cambios",
+    "actions": {
+      "makeCollaborator": "Hacer colaborador",
+      "removeCollaborator": "Quitar colaborador",
+      "transfer": "Transferir el club",
+      "makeOwner": "Hacer dueño",
+      "remove": "Sacar del club",
+      "clearOwner": "Quitar como dueño"
+    },
+    "confirm": {
+      "transfer": "¿Hacer a {name} dueño de este club? Tú te quedas como colaborador.",
+      "makeOwner": "¿Hacer a {name} dueño de este club? Si ya hay dueño, se queda como colaborador.",
+      "remove": "¿Sacar a {name} del club? Sus kilómetros pasados se quedan con el club.",
+      "clearOwner": "¿Quitar a {name} como dueño? Se queda como colaborador y W3Runn3rs administra el club."
+    },
+    "form": {
+      "name": "Nombre del club",
+      "nameLocked": "Solo el dueño puede cambiar el nombre del club.",
+      "city": "Ciudad",
+      "country": "País",
+      "description": "Descripción",
+      "contactEmail": "Correo de contacto",
+      "noLogo": "Logo",
+      "uploadLogo": "Subir logo",
+      "removeLogo": "Quitar",
+      "uploading": "Subiendo…",
+      "uploadError": "No se pudo subir. Usa un JPG, PNG o WebP de menos de 5 MB.",
+      "saving": "Guardando…",
+      "saved": "Guardado",
+      "errors": {
+        "forbidden": "No tienes permiso para hacer eso.",
+        "not_found": "No encontramos el club.",
+        "not_member": "Ese corredor no es miembro activo de este club.",
+        "is_owner": "Primero transfiere el club.",
+        "invalid": "Revisa los campos: nombre (2+ caracteres), país y correo válidos.",
+        "slug_taken": "Ese club ya existe.",
+        "unknown": "Algo salió mal. Intenta de nuevo."
+      }
+    }
   }
 }
