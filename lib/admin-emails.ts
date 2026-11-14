@@ -4,6 +4,8 @@ import { resend } from "@/lib/resend"
 import { betaAccessHtml, betaAccessSubject } from "@/emails/betaAccess"
 import { clubApprovedHtml, clubApprovedSubject } from "@/emails/clubApproved"
 import { clubOwnerHtml, clubOwnerSubject } from "@/emails/clubOwner"
+import { joinDecisionHtml, joinDecisionSubject, joinRequestHtml, joinRequestSubject } from "@/emails/joinRequest"
+import { prisma } from "@/lib/prisma"
 
 const FROM = "w3runn3rs <noreply@w3runn3rs.com>"
 
@@ -85,4 +87,39 @@ export async function sendClubRequestEmails(opts: {
     if (r.status === "rejected") console.error("[admin-emails] club request failed:", r.reason)
     else if (r.value.error) console.error("[admin-emails] club request failed:", r.value.error)
   }
+}
+
+// ── Join requests (approval clubs) ──────────────────────────
+
+
+/** Owner + collaborators of a club; the team inbox when nobody manages it yet. */
+async function clubStaffEmails(clubId: string): Promise<string[]> {
+  const club = await prisma.club.findUnique({
+    where: { id: clubId },
+    select: {
+      owner: { select: { email: true } },
+      memberships: { where: { activeUserId: { not: null }, role: "ADMIN" }, select: { user: { select: { email: true } } } },
+    },
+  })
+  const emails = new Set<string>()
+  if (club?.owner?.email) emails.add(club.owner.email)
+  club?.memberships.forEach((m) => emails.add(m.user.email))
+  return emails.size > 0 ? [...emails] : [TEAM_INBOX]
+}
+
+export async function sendJoinRequestEmails(opts: {
+  clubId: string
+  clubName: string
+  clubSlug: string
+  runnerName: string
+  username: string | null
+}) {
+  const to = await clubStaffEmails(opts.clubId)
+  const html = joinRequestHtml({ ...opts, manageUrl: `https://app.w3runn3rs.com/clubs/${opts.clubSlug}/manage` })
+  const sent = await Promise.all(to.map((email) => send(email, joinRequestSubject(opts.clubName), html, "join request")))
+  return sent.every(Boolean)
+}
+
+export function sendJoinDecisionEmail(opts: { email: string; name: string | null; clubName: string; approved: boolean }) {
+  return send(opts.email, joinDecisionSubject(opts.clubName, opts.approved), joinDecisionHtml(opts), "join decision")
 }

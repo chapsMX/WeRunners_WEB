@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma"
 import { APP_LOCALE_COOKIE } from "@/lib/app-i18n"
 import { cleanHandle, cleanUrl, validateUsername } from "@/lib/profile-validation"
 import { joinSelectedClub } from "@/lib/clubs"
+import { sendJoinRequestEmails } from "@/lib/admin-emails"
 
 export type OnboardingState = {
   error?: {
@@ -126,5 +127,20 @@ export async function completeOnboarding(
     where: { userId: session.user.id, providerId: "google" },
     select: { id: true },
   })
+  // Picked a club that requires approval → a join request was created: tell its admins.
+  const request = await prisma.clubJoinRequest.findUnique({
+    where: { pendingUserId: session.user.id },
+    select: { club: { select: { id: true, name: true, slug: true } } },
+  })
+  if (request) {
+    await sendJoinRequestEmails({
+      clubId: request.club.id,
+      clubName: request.club.name,
+      clubSlug: request.club.slug,
+      runnerName: session.user.name || "A runner",
+      username: rawUsername,
+    })
+  }
+
   redirect(`/dashboard?signup=${google ? "google" : "email"}`)
 }

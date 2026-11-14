@@ -11,6 +11,8 @@ import { ClubProfileForm } from "@/components/app/clubs/ClubProfileForm"
 import { ClubMembers, type ClubMemberRow } from "@/components/app/clubs/ClubMembers"
 import { OwnerPicker } from "@/components/app/clubs/OwnerPicker"
 import { getPendingOwnerInvite } from "@/lib/club-owners"
+import { listPendingJoinRequests } from "@/lib/clubs"
+import { JoinRequests } from "@/components/app/clubs/JoinRequests"
 import { updateClubProfileAction } from "./actions"
 
 export const metadata: Metadata = { robots: { index: false, follow: false } }
@@ -23,7 +25,7 @@ export default async function ManageClubPage({ params }: { params: Promise<{ slu
   if (!access?.canManage) notFound()
 
   const { t, locale } = await getAppTranslator("clubAdmin")
-  const [club, memberships, pendingInvite] = await Promise.all([
+  const [club, memberships, pendingInvite, joinRequests] = await Promise.all([
     prisma.club.findUniqueOrThrow({
       where: { id: access.club.id },
       select: {
@@ -34,6 +36,7 @@ export default async function ManageClubPage({ params }: { params: Promise<{ slu
         description: true,
         logoUrl: true,
         bannerUrl: true,
+        joinPolicy: true,
         instagram: true,
         twitter: true,
         tiktok: true,
@@ -54,6 +57,7 @@ export default async function ManageClubPage({ params }: { params: Promise<{ slu
       },
     }),
     access.superadmin ? getPendingOwnerInvite(prisma, access.club.id) : Promise.resolve(null),
+    listPendingJoinRequests(prisma, access.club.id),
   ])
 
   const rank = (m: ClubMemberRow) => (m.isOwner ? 0 : m.isCollaborator ? 1 : 2)
@@ -116,6 +120,23 @@ export default async function ManageClubPage({ params }: { params: Promise<{ slu
         </section>
       )}
 
+      {(club.joinPolicy === "APPROVAL" || joinRequests.length > 0) && (
+        <section>
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
+            {t("requests.title", { count: joinRequests.length })}
+          </h2>
+          <JoinRequests
+            requests={joinRequests.map((r) => ({
+              id: r.id,
+              name: r.user.name || "Runner",
+              username: r.user.username,
+              image: r.user.image,
+              requestedAt: r.createdAt.toLocaleDateString(locale, { dateStyle: "medium" }),
+            }))}
+          />
+        </section>
+      )}
+
       <section>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">{t("membersTitle")}</h2>
         <ClubMembers
@@ -137,6 +158,7 @@ export default async function ManageClubPage({ params }: { params: Promise<{ slu
             description: club.description ?? "",
             logoUrl: club.logoUrl,
             bannerUrl: club.bannerUrl,
+            joinPolicy: club.joinPolicy,
             instagram: club.instagram ?? "",
             twitter: club.twitter ?? "",
             tiktok: club.tiktok ?? "",

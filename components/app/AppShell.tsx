@@ -175,7 +175,7 @@ function SidebarContent({
             )
           }
 
-          const active = pathname.startsWith(item.href)
+          const active = item.href === "/clubs" ? pathname === "/clubs" : pathname.startsWith(item.href)
           return (
             <Link
               key={item.href}
@@ -214,7 +214,7 @@ function SidebarContent({
         {links.manageClubSlug && (
           <NavLink
             href={`/clubs/${links.manageClubSlug}/manage`}
-            active={pathname.startsWith("/clubs/")}
+            active={pathname.endsWith("/manage")}
             onNavigate={onNavigate}
             icon={<ClubIcon size={20} className="shrink-0" />}
             label={t("nav.manageClub")}

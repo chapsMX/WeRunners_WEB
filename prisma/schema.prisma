@@ -26,6 +26,20 @@ enum ClubRole {
   ADMIN // colaborador: modera el club con el dueño
 }
 
+// Cómo se entra a un club. Todos los clubes son visibles; APPROVAL = el dueño,
+// sus colaboradores o el superadmin autorizan cada ingreso.
+enum ClubJoinPolicy {
+  OPEN
+  APPROVAL
+}
+
+enum JoinRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
 enum DistanceUnit {
   KM
   MILES
@@ -252,6 +266,7 @@ model User {
   followers        Follow[]                @relation("followers") // quién lo sigue
   ownedClub        Club?                   @relation("ClubOwner")
   clubRequests     ClubRegistration[]      @relation("ClubRequests")
+  joinRequests     ClubJoinRequest[]       @relation("JoinRequests")
   polarConnection  DeviceConnectionPolar?
   stravaConnection DeviceConnectionStrava?
 
@@ -309,15 +324,16 @@ model Verification {
 // ─────────────────────────────────────────────
 
 model Club {
-  id          String   @id @default(cuid())
+  id          String         @id @default(cuid())
   name        String
-  slug        String   @unique
+  slug        String         @unique
   description String?
   logoUrl     String?
   bannerUrl   String? // banner del club (Vercel Blob): página del club. Independiente del banner de cada corredor
   city        String?
-  country     String   @default("MX")
-  clubType    ClubType @default(RECREATIONAL)
+  country     String         @default("MX")
+  clubType    ClubType       @default(RECREATIONAL)
+  joinPolicy  ClubJoinPolicy @default(OPEN)
 
   instagram    String?
   twitter      String?
@@ -346,6 +362,7 @@ model Club {
 
   memberships  ClubMembership[]
   ownerInvites ClubOwnerInvite[]
+  joinRequests ClubJoinRequest[]
   activities   Activity[]
   stats        ClubStats[]
   leaderboard  LeaderboardEntry[]
@@ -368,6 +385,28 @@ model ClubOwnerInvite {
 
   @@index([clubId])
   @@map("club_owner_invites")
+}
+
+// Solicitud para entrar a un club con joinPolicy = APPROVAL. Al aprobarse se
+// crea la membresía (joinedAt = aprobación: lo corrido antes no cuenta).
+model ClubJoinRequest {
+  id            String            @id @default(cuid())
+  userId        String
+  clubId        String
+  status        JoinRequestStatus @default(PENDING)
+  // = userId mientras está PENDING, NULL después: una sola solicitud pendiente
+  // por corredor (mismo truco que ClubMembership.activeUserId).
+  pendingUserId String?           @unique
+  createdAt     DateTime          @default(now())
+  decidedAt     DateTime?
+  decidedById   String?
+
+  user User @relation("JoinRequests", fields: [userId], references: [id], onDelete: Cascade)
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@index([clubId, status])
+  @@index([userId])
+  @@map("club_join_requests")
 }
 
 // ─────────────────────────────────────────────

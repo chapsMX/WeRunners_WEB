@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma"
-import { getPendingClubRequest } from "@/lib/clubs"
+import { getPendingClubRequest, getPendingJoinRequest } from "@/lib/clubs"
 import { startOfMonth, startOfWeek } from "@/lib/format"
 import {
   needsPermissionsRecheck,
@@ -126,6 +126,8 @@ export type DashboardData = {
   membership: DashboardMembership
   /** No club yet, but their club request is waiting for approval. */
   pendingClubRequest: { clubName: string } | null
+  /** No club yet, but they asked to join one that requires approval. */
+  pendingJoinRequest: { clubName: string } | null
   ranking: RankingSummary
   /** The runner's real personal records (time-based). Empty = none yet. */
   records: PersonalRecordRow[]
@@ -176,6 +178,7 @@ function sampleData(): DashboardData {
     isSample: true,
     membership: null,
     pendingClubRequest: null,
+    pendingJoinRequest: null,
     ranking: EMPTY_RANKING,
     records: [],
     bannerUrl: null,
@@ -316,6 +319,9 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
       !membership && user?.email
         ? await getPendingClubRequest(prisma, userId, user.email).then((r) => (r ? { clubName: r.clubName } : null))
         : null,
+    pendingJoinRequest: !membership
+      ? await getPendingJoinRequest(prisma, userId).then((r) => (r ? { clubName: r.club.name } : null))
+      : null,
     ranking: await getRankingSummary(userId, membership?.clubId ?? null),
     records: realRecords(prRecords),
   }

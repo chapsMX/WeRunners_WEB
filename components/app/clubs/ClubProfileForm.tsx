@@ -16,6 +16,7 @@ export type ClubFormInitial = {
   description: string
   logoUrl: string | null
   bannerUrl: string | null
+  joinPolicy: "OPEN" | "APPROVAL"
   instagram: string
   twitter: string
   tiktok: string
@@ -30,6 +31,7 @@ export const EMPTY_CLUB_FORM: ClubFormInitial = {
   description: "",
   logoUrl: null,
   bannerUrl: null,
+  joinPolicy: "OPEN",
   instagram: "",
   twitter: "",
   tiktok: "",
@@ -181,6 +183,22 @@ export function ClubProfileForm({
           />
           {!canRename && <p className="mt-1.5 text-xs text-muted">{t("nameLocked")}</p>}
         </div>
+        {canRename && (
+          <fieldset className="sm:col-span-2">
+            <legend className="block text-sm font-semibold text-foreground">{t("joinPolicy")}</legend>
+            <div className="mt-2 grid gap-2 sm:grid-cols-2">
+              {(["OPEN", "APPROVAL"] as const).map((p) => (
+                <label key={p} className="flex cursor-pointer items-start gap-3 border border-line bg-surface-alt/40 px-3 py-2.5 has-[:checked]:border-brand-green has-[:checked]:bg-brand-green/10">
+                  <input type="radio" name="joinPolicy" value={p} defaultChecked={initial.joinPolicy === p} className="mt-1 accent-[#a3e635]" />
+                  <span>
+                    <span className="block text-sm font-semibold text-foreground">{t(`joinPolicy${p}`)}</span>
+                    <span className="block text-xs text-muted">{t(`joinPolicy${p}Hint`)}</span>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        )}
         {field("city", t("city"))}
         <div>
           <label htmlFor="club-country" className="block text-sm font-semibold text-foreground">
