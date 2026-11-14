@@ -188,6 +188,7 @@ export type ClubProfileInput = {
   country?: string
   logoUrl?: string | null
   bannerUrl?: string | null
+  joinPolicy?: "OPEN" | "APPROVAL"
   instagram?: string | null
   twitter?: string | null
   tiktok?: string | null
@@ -208,6 +209,7 @@ type CleanClubProfile = {
   city?: string | null
   logoUrl?: string | null
   bannerUrl?: string | null
+  joinPolicy?: "OPEN" | "APPROVAL"
   instagram?: string | null
   twitter?: string | null
   tiktok?: string | null
@@ -239,6 +241,10 @@ export function cleanClubProfile(input: ClubProfileInput): CleanClubProfile | nu
     if (e && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) return null
     out.contactEmail = e
   }
+  if (input.joinPolicy !== undefined) {
+    if (input.joinPolicy !== "OPEN" && input.joinPolicy !== "APPROVAL") return null
+    out.joinPolicy = input.joinPolicy
+  }
   if (input.description !== undefined) out.description = trimOrNull(input.description, 600)
   if (input.city !== undefined) out.city = trimOrNull(input.city, 80)
   for (const k of ["instagram", "twitter", "tiktok", "facebook"] as const) {
@@ -264,6 +270,10 @@ export function clubProfileFromForm(form: FormData): ClubProfileInput {
     description: nullable("description"),
     logoUrl: nullable("logoUrl"),
     bannerUrl: nullable("bannerUrl"),
+    joinPolicy: (() => {
+      const v = str("joinPolicy")
+      return v === undefined ? undefined : (v as "OPEN" | "APPROVAL")
+    })(),
     instagram: nullable("instagram"),
     twitter: nullable("twitter"),
     tiktok: nullable("tiktok"),
@@ -272,7 +282,7 @@ export function clubProfileFromForm(form: FormData): ClubProfileInput {
   }
 }
 
-/** Owner, collaborators and superadmin edit the profile; only owner/superadmin rename. */
+/** Owner, collaborators and superadmin edit the profile; only owner/superadmin rename or change who can join. */
 export async function updateClubProfile(
   tx: Tx,
   actorId: string,
@@ -282,7 +292,7 @@ export async function updateClubProfile(
   const access = await getClubAccess(actorId, { id: clubId }, tx)
   if (!access) return fail("not_found")
   if (!access.canManage) return fail("forbidden")
-  if (input.name !== undefined && !access.canAdminister) return fail("forbidden")
+  if ((input.name !== undefined || input.joinPolicy !== undefined) && !access.canAdminister) return fail("forbidden")
   const data = cleanClubProfile(input)
   if (!data) return fail("invalid")
   await tx.club.update({ where: { id: clubId }, data })

@@ -107,7 +107,8 @@
       "profile": "Perfil",
       "settings": "Editar perfil",
       "manageClub": "Administrar club",
-      "admin": "Admin"
+      "admin": "Admin",
+      "clubs": "Clubes"
     },
     "soon": "Pronto",
     "signOut": "Cerrar sesión",
@@ -235,10 +236,14 @@
     },
     "noClub": {
       "title": "Todavía no estás en un club",
-      "body": "En W3Runn3rs cada kilómetro cuenta para un club. ¿No está el tuyo? Pídenos agregarlo y quedarás como su dueño.",
+      "body": "En W3Runn3rs cada kilómetro cuenta para un club. Busca el tuyo o, si no está, pídenos agregarlo y quedarás como su dueño.",
       "cta": "Registrar mi club",
       "pendingTitle": "{club} está esperando aprobación",
-      "pendingBody": "Te avisamos por correo cuando lo aprobemos. Te unirás automáticamente como su dueño."
+      "pendingBody": "Te avisamos por correo cuando lo aprobemos. Te unirás automáticamente como su dueño.",
+      "findClub": "Buscar mi club",
+      "joinPendingTitle": "Esperando que {club} te apruebe",
+      "joinPendingBody": "Sus administradores ya tienen tu solicitud. Tus kilómetros cuentan para el club desde que te aprueben.",
+      "manageRequest": "Ver solicitud"
     }
   },
   "onboarding": {
@@ -275,7 +280,8 @@
     "clubOnApp": "{count} en W3Runn3rs",
     "clubNone": "Mi club no está en la lista",
     "clubNoneHint": "Termina ahora: desde tu dashboard puedes pedir que agreguemos tu club.",
-    "clubAssigned": "Eres el dueño de este club: te eligió el equipo de W3Runn3rs. Lo administras desde tu dashboard."
+    "clubAssigned": "Eres el dueño de este club: te eligió el equipo de W3Runn3rs. Lo administras desde tu dashboard.",
+    "clubApproval": "Requiere aprobación"
   },
   "settings": {
     "back": "Volver al dashboard",
@@ -455,7 +461,12 @@
       "banner": "Banner",
       "noBanner": "Sin banner todavía",
       "uploadBanner": "Subir banner",
-      "bannerHint": "Imagen horizontal (4:1), JPG/PNG/WebP de hasta 8 MB. Se muestra en la página del club."
+      "bannerHint": "Imagen horizontal (4:1), JPG/PNG/WebP de hasta 8 MB. Se muestra en la página del club.",
+      "joinPolicy": "Quién puede entrar",
+      "joinPolicyOPEN": "Abierto",
+      "joinPolicyOPENHint": "Cualquier corredor se une de inmediato.",
+      "joinPolicyAPPROVAL": "Con autorización",
+      "joinPolicyAPPROVALHint": "Los corredores solicitan entrar; tú o un colaborador los aprueban."
     },
     "emailFailed": "Listo, pero no se pudo enviar el correo.",
     "grantBeta": "Dar acceso",
@@ -494,7 +505,21 @@
         "invited_elsewhere": "Ya tiene una invitación de dueño pendiente para {club}."
       }
     },
-    "requestedBy": "pedido por @{username}"
+    "requestedBy": "pedido por @{username}",
+    "requests": {
+      "title": "Solicitudes de ingreso ({count})",
+      "empty": "No hay solicitudes pendientes.",
+      "requested": "Solicitó el {date}",
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "confirmReject": "¿Rechazar la solicitud de {name}?",
+      "emailFailed": "Listo, pero no se pudo enviar el correo.",
+      "errors": {
+        "forbidden": "No tienes permiso para hacer eso.",
+        "not_found": "Esa solicitud ya no está pendiente.",
+        "has_club": "Mientras tanto se unió a otro club; la solicitud se cerró."
+      }
+    }
   },
   "clubRequest": {
     "back": "Dashboard",
@@ -515,6 +540,30 @@
       "has_pending": "Ya tienes una solicitud de club esperando aprobación.",
       "invalid": "Revisa los campos: nombre y ciudad (2+ caracteres), país y un correo válido.",
       "email_taken": "Ya hay un club registrado con ese correo. Usa otro o escríbenos."
+    }
+  },
+  "clubDirectory": {
+    "title": "Clubes",
+    "subtitle": "Todos los clubes de corredores en W3Runn3rs. Corres para un solo club: elige el tuyo y cada kilómetro cuenta para él.",
+    "search": "Busca por club, ciudad o país",
+    "empty": "No hay clubes que coincidan.",
+    "members": "{count, plural, one {# miembro} other {# miembros}}",
+    "approvalBadge": "Requiere aprobación",
+    "join": "Unirme",
+    "request": "Solicitar unirme",
+    "joining": "Enviando…",
+    "pending": "Solicitud pendiente",
+    "yourClub": "Tu club",
+    "inClub": "Corres para {club}. Cambiar de club todavía no está disponible.",
+    "pendingNote": "Tu solicitud para unirte a {club} está esperando aprobación. Puedes cancelarla para elegir otro club.",
+    "cancel": "Cancelar solicitud",
+    "cancelling": "Cancelando…",
+    "missing": "¿No está tu club?",
+    "register": "Registrar mi club",
+    "errors": {
+      "not_found": "Ese club no está disponible.",
+      "has_club": "Ya estás en {club}.",
+      "has_pending": "Ya pediste unirte a {club}. Primero cancela esa solicitud."
     }
   }
 }

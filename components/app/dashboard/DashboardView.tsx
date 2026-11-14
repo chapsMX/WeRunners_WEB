@@ -44,7 +44,12 @@ export function DashboardView({
         {data.activitySharingOff && <ActivitySharingWarning />}
 
         {/* Sin club: su solicitud en revisión, o registrar su club */}
-        {!data.membership && <NoClubBanner pendingClubName={data.pendingClubRequest?.clubName ?? null} />}
+        {!data.membership && (
+          <NoClubBanner
+            pendingClubName={data.pendingClubRequest?.clubName ?? null}
+            pendingJoinClubName={data.pendingJoinRequest?.clubName ?? null}
+          />
+        )}
 
         {/* Sección 50/50: últimas carreras · ranking (siempre datos reales) */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

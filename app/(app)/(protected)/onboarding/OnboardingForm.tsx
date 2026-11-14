@@ -283,7 +283,10 @@ function ClubOption({
         )}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate font-semibold text-foreground">{club.name}</span>
+        <span className="block truncate font-semibold text-foreground">
+          {club.name}
+          {club.requiresApproval && <span className="ml-2 text-[10px] font-normal uppercase tracking-wide text-muted">🔒 {t("clubApproval")}</span>}
+        </span>
         <span className="block text-xs text-muted">
           {club.city}, {countryName(club.country, locale)}
           {club.declaredRunners ? ` · ${t("clubRunners", { count: fmt(club.declaredRunners) })}` : ""}

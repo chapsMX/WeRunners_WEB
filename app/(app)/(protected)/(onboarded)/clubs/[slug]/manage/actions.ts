@@ -5,7 +5,8 @@ import { revalidatePath } from "next/cache"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { assignOwner, searchOwnerCandidates, type OwnerCandidate } from "@/lib/club-owners"
-import { sendClubOwnerEmail } from "@/lib/admin-emails"
+import { sendClubOwnerEmail, sendJoinDecisionEmail } from "@/lib/admin-emails"
+import { decideJoinRequest } from "@/lib/clubs"
 import {
   isSuperadmin,
   clearOwner,
@@ -98,4 +99,25 @@ export async function assignOwnerAction(
   })
   await revalidateClub(clubId)
   return { ok: true, kind: result.kind, email: result.email, emailed }
+}
+
+// ── Join requests (approval clubs) ──────────────────────────
+
+export type DecideActionResult = { ok: true; emailed: boolean } | { ok: false; error: string }
+
+/** Approve or reject a pending join request, then tell the runner. */
+export async function decideJoinRequestAction(requestId: string, approve: boolean): Promise<DecideActionResult> {
+  const actor = await actorId()
+  if (!actor) return { ok: false, error: "forbidden" }
+  const result = await prisma.$transaction((tx) => decideJoinRequest(tx, actor, requestId, approve))
+  if (!result.ok) return { ok: false, error: result.error }
+  const emailed = await sendJoinDecisionEmail({
+    email: result.user.email,
+    name: result.user.name,
+    clubName: result.clubName,
+    approved: result.status === "APPROVED",
+  })
+  revalidatePath(`/clubs/${result.clubSlug}/manage`)
+  revalidatePath("/clubs")
+  return { ok: true, emailed }
 }

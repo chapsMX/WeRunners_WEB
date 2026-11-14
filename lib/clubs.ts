@@ -8,7 +8,7 @@
 // The onboarding form submits "club:<id>" or "reg:<id>".
 import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
-import { claimRegistrantOwnership, isSuperadmin, uniqueClubSlug } from "@/lib/club-admin"
+import { claimRegistrantOwnership, getClubAccess, isSuperadmin, uniqueClubSlug } from "@/lib/club-admin"
 
 /** A runner can change clubs once per lock period. */
 export const CLUB_LOCK_MONTHS = 6
@@ -25,6 +25,8 @@ export type SelectableClub = {
   declaredRunners: number | null
   /** Runners already on W3Runn3rs. */
   members: number
+  /** joinPolicy = APPROVAL: joining sends a request to the club's admins. */
+  requiresApproval: boolean
 }
 
 export async function getSelectableClubs(): Promise<SelectableClub[]> {
@@ -39,6 +41,7 @@ export async function getSelectableClubs(): Promise<SelectableClub[]> {
         logoUrl: true,
         memberCount: true,
         initialMemberCount: true,
+        joinPolicy: true,
       },
     }),
     prisma.clubRegistration.findMany({
@@ -55,6 +58,7 @@ export async function getSelectableClubs(): Promise<SelectableClub[]> {
       logoUrl: c.logoUrl,
       declaredRunners: c.initialMemberCount,
       members: c.memberCount,
+      requiresApproval: c.joinPolicy === "APPROVAL",
     })),
     ...regs.map((r) => ({
       id: `reg:${r.id}`,
@@ -64,6 +68,7 @@ export async function getSelectableClubs(): Promise<SelectableClub[]> {
       logoUrl: r.logoUrl,
       declaredRunners: r.runners,
       members: 0,
+      requiresApproval: false,
     })),
   ].sort((a, b) => a.name.localeCompare(b.name))
 }
@@ -118,9 +123,10 @@ async function resolveSelectedClub(tx: Tx, value: string): Promise<string | null
 }
 
 /**
- * Inside a transaction: create the runner's active membership in the selected
- * club (6-month lock), bump memberCount, and make them owner if they're the
- * one who registered the club. Returns false if the club isn't selectable.
+ * Inside a transaction (onboarding): join the selected club — or, if it
+ * requires approval, send a join request. Joining creates the membership
+ * (6-month lock), bumps memberCount and makes the runner owner if they
+ * registered the club. Returns false if the club isn't selectable.
  * A runner who already has an active membership keeps it — returns true.
  */
 export async function joinSelectedClub(
@@ -138,13 +144,19 @@ export async function joinSelectedClub(
   })
   if (active) return true
 
-  await createMembership(tx, userId, clubId, now)
-  await claimRegistrantOwnership(tx, userId, clubId)
-  return true
+  const outcome = await joinOrRequestClub(tx, userId, clubId, now)
+  return outcome.ok || outcome.error === "has_pending"
 }
 
-/** New active membership (6-month lock) + memberCount. Caller checks there's no active one. */
+/**
+ * New active membership (6-month lock) + memberCount. Caller checks there's no
+ * active one. Any pending join request of the runner is closed.
+ */
 export async function createMembership(tx: Tx, userId: string, clubId: string, now = new Date()) {
+  await tx.clubJoinRequest.updateMany({
+    where: { pendingUserId: userId },
+    data: { status: "CANCELLED", pendingUserId: null, decidedAt: now },
+  })
   await tx.clubMembership.create({
     data: {
       userId,
@@ -270,4 +282,117 @@ export async function createClubRequest(
     },
   })
   return { ok: true }
+}
+
+// ── Joining from the app: open clubs vs. approval clubs ─────
+
+export type JoinOutcome =
+  | { ok: true; status: "joined" | "requested"; clubName: string }
+  | { ok: false; error: "not_found" | "has_club" | "has_pending"; clubName?: string }
+
+/**
+ * A runner without a club joins it (OPEN) or asks to join (APPROVAL).
+ * Only one pending request at a time — cancel it to pick another club.
+ */
+export async function joinOrRequestClub(tx: Tx, userId: string, clubId: string, now = new Date()): Promise<JoinOutcome> {
+  const club = await tx.club.findFirst({ where: { id: clubId, active: true }, select: { id: true, name: true, joinPolicy: true } })
+  if (!club) return { ok: false, error: "not_found" }
+  const active = await tx.clubMembership.findUnique({ where: { activeUserId: userId }, select: { club: { select: { name: true } } } })
+  if (active) return { ok: false, error: "has_club", clubName: active.club.name }
+  const pending = await tx.clubJoinRequest.findUnique({ where: { pendingUserId: userId }, select: { clubId: true, club: { select: { name: true } } } })
+  if (pending) {
+    return pending.clubId === club.id
+      ? { ok: true, status: "requested", clubName: club.name }
+      : { ok: false, error: "has_pending", clubName: pending.club.name }
+  }
+  if (club.joinPolicy === "APPROVAL") {
+    await tx.clubJoinRequest.create({ data: { userId, clubId: club.id, pendingUserId: userId } })
+    return { ok: true, status: "requested", clubName: club.name }
+  }
+  await createMembership(tx, userId, club.id, now)
+  await claimRegistrantOwnership(tx, userId, club.id)
+  return { ok: true, status: "joined", clubName: club.name }
+}
+
+/** The runner's pending join request, if any. */
+export async function getPendingJoinRequest(db: Tx | typeof prisma, userId: string) {
+  return db.clubJoinRequest.findUnique({
+    where: { pendingUserId: userId },
+    select: { id: true, createdAt: true, club: { select: { id: true, name: true, slug: true } } },
+  })
+}
+
+export async function cancelJoinRequest(tx: Tx, userId: string, now = new Date()): Promise<boolean> {
+  const r = await tx.clubJoinRequest.updateMany({
+    where: { pendingUserId: userId },
+    data: { status: "CANCELLED", pendingUserId: null, decidedAt: now },
+  })
+  return r.count > 0
+}
+
+/** Pending requests for a club, oldest first (manage page). */
+export async function listPendingJoinRequests(db: Tx | typeof prisma, clubId: string) {
+  return db.clubJoinRequest.findMany({
+    where: { clubId, status: "PENDING" },
+    orderBy: { createdAt: "asc" },
+    select: { id: true, createdAt: true, user: { select: { id: true, name: true, username: true, image: true } } },
+  })
+}
+
+export type DecideOutcome =
+  | { ok: true; status: "APPROVED" | "REJECTED"; user: { email: string; name: string | null }; clubName: string; clubSlug: string }
+  | { ok: false; error: "forbidden" | "not_found" | "has_club" }
+
+/**
+ * Owner, collaborators or superadmin approve/reject a pending request. On
+ * approval the membership starts now (earlier runs don't count for the club).
+ * If the runner joined another club meanwhile, the request is closed.
+ */
+export async function decideJoinRequest(
+  tx: Tx,
+  actorId: string,
+  requestId: string,
+  approve: boolean,
+  now = new Date()
+): Promise<DecideOutcome> {
+  const req = await tx.clubJoinRequest.findUnique({
+    where: { id: requestId },
+    select: { id: true, status: true, clubId: true, userId: true, user: { select: { email: true, name: true } } },
+  })
+  if (!req || req.status !== "PENDING") return { ok: false, error: "not_found" }
+  const access = await getClubAccess(actorId, { id: req.clubId }, tx)
+  if (!access?.canManage) return { ok: false, error: "forbidden" }
+
+  const close = (status: "APPROVED" | "REJECTED" | "CANCELLED") =>
+    tx.clubJoinRequest.update({ where: { id: req.id }, data: { status, pendingUserId: null, decidedAt: now, decidedById: actorId } })
+
+  if (!approve) {
+    await close("REJECTED")
+    return { ok: true, status: "REJECTED", user: req.user, clubName: access.club.name, clubSlug: access.club.slug }
+  }
+  if (await tx.clubMembership.findUnique({ where: { activeUserId: req.userId }, select: { id: true } })) {
+    await close("CANCELLED")
+    return { ok: false, error: "has_club" }
+  }
+  await close("APPROVED")
+  await createMembership(tx, req.userId, req.clubId, now)
+  return { ok: true, status: "APPROVED", user: req.user, clubName: access.club.name, clubSlug: access.club.slug }
+}
+
+/** Club directory: every active club with what the viewer can do. */
+export async function getClubDirectory(db: Tx | typeof prisma, userId: string) {
+  const [clubs, active, pending] = await Promise.all([
+    db.club.findMany({
+      where: { active: true },
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, slug: true, city: true, country: true, logoUrl: true, memberCount: true, joinPolicy: true },
+    }),
+    db.clubMembership.findUnique({ where: { activeUserId: userId }, select: { clubId: true } }),
+    db.clubJoinRequest.findUnique({ where: { pendingUserId: userId }, select: { clubId: true } }),
+  ])
+  return {
+    myClubId: active?.clubId ?? null,
+    pendingClubId: pending?.clubId ?? null,
+    clubs: clubs.map((c) => ({ ...c, requiresApproval: c.joinPolicy === "APPROVAL" })),
+  }
 }
