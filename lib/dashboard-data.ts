@@ -1,6 +1,7 @@
+// Server-only: everything the runner dashboard and the public profile show.
+// Real data only (no sample fallback): empty states when there's nothing yet.
 import { prisma } from "@/lib/prisma"
 import { getPendingClubRequest, getPendingJoinRequest } from "@/lib/clubs"
-import { startOfMonth, startOfWeek } from "@/lib/format"
 import {
   needsPermissionsRecheck,
   recheckGarminPermissions,
@@ -8,81 +9,26 @@ import {
 } from "@/lib/garmin/permissions"
 
 // ─────────────────────────────────────────────────────────────
-// Tipos que consume la UI del dashboard
+// Types the UI consumes
 // ─────────────────────────────────────────────────────────────
 
 export type ActivityRow = {
   id: string
   title: string
-  type: string // RUN, TRAIL_RUN, ...
+  type: string // RUN, TRAIL, TREADMILL, ...
   distanceMeters: number
   durationSeconds: number
   avgPaceSecPerKm: number | null
   date: Date
-  source: string // GARMIN, STRAVA, MANUAL, ...
+  source: string // GARMIN, POLAR, MANUAL, ...
+  /** Club the run counted for (snapshot at ingestion); null if it didn't count. */
+  clubName: string | null
 }
 
 export type PersonalRecordRow = {
   /** Enum PRDistance (K5, K10, HALF_MARATHON, ...). */
   key: string
   durationSeconds: number
-}
-
-export type ClubSummary = {
-  name: string
-  slug: string
-  city: string | null
-  country: string
-  memberCount: number
-  logoUrl: string | null
-  /** Posición del club en el leaderboard global. null = aún sin ranking calculado. */
-  rank: number | null
-  /** Cambio de posición vs el periodo anterior (+sube, -baja). */
-  rankDelta: number
-  totalDistanceMeters: number
-  /** Distancia que falta para alcanzar al club de arriba. null si ya es #1 o sin datos. */
-  gapToNextMeters: number | null
-  nextRivalName: string | null
-}
-
-export type ContributionSummary = {
-  /** km que el usuario aportó al club en el periodo (semana en curso). */
-  distanceMeters: number
-  activities: number
-  /** Posición del usuario entre los contribuidores del club. null = sin ranking. */
-  rankInClub: number | null
-  totalContributors: number
-  /** % del total del club que representa el aporte del usuario. */
-  sharePct: number
-}
-
-export type PersonalSummary = {
-  weekDistanceMeters: number
-  monthDistanceMeters: number
-  streakDays: number
-  avgPaceSecPerKm: number | null
-  records: PersonalRecordRow[]
-}
-
-export type HeroSummary = {
-  /** Posición del usuario dentro del club por km (semana en curso). null = sin ranking. */
-  weeklyRank: number | null
-  weeklyDistanceMeters: number
-  /** Posición del usuario dentro del club por km (mes en curso). */
-  monthlyRank: number | null
-  monthlyDistanceMeters: number
-  /** Km totales que el usuario ha aportado al club (histórico). */
-  contributionMeters: number
-  /** % del total histórico del club que representa el aporte del usuario. */
-  productivityPct: number
-}
-
-export type ClubFeedRow = {
-  id: string
-  name: string
-  distanceMeters: number
-  activityType: string
-  date: Date
 }
 
 /** The runner's active club membership (hero: "Running with … · Since …"). */
@@ -104,194 +50,106 @@ export type RankPosition = {
   distanceMeters: number
 }
 
-/** Dashboard ranking grid. Months are UTC (one calendar for the global leaderboard). */
-export type RankingSummary = {
-  /** Every W3Runn3rs runner (runs that count for a club), month to date. */
-  globalMonthly: RankPosition
-  /** Members of the runner's club, month to date. null = no club. */
-  clubMonthly: RankPosition | null
-  /** Km the runner has added to their current club (all time). */
+/**
+ * "Your monthly ranking in <club>": everything month to date (UTC), counted
+ * runs only. null = the runner has no club.
+ */
+export type MonthlyClubStats = {
+  rank: RankPosition
+  /** Counted runs this month. */
+  activities: number
+  /** Km added to the club this month. */
   contributionMeters: number
-  /** contributionMeters as % of everything the club has added (all time). */
+  /** contributionMeters as % of the club's km this month. */
   productivityPct: number
+} | null
+
+/** "Your numbers": all of the runner's runs, all time. */
+export type PersonalTotals = {
+  totalDistanceMeters: number
+  totalActivities: number
+  longestRunMeters: number
+  /** Total time / total distance. null = no runs with distance. */
+  avgPaceSecPerKm: number | null
+}
+
+/** Latest counted runs of the runner's club. */
+export type ClubFeedRow = {
+  id: string
+  name: string
+  username: string | null
+  image: string | null
+  distanceMeters: number
+  date: Date
 }
 
 export type DashboardData = {
-  /**
-   * true cuando el usuario aún no tiene actividades: club/hero/contribution/personal/
-   * clubFeed son datos de muestra (solo secciones de abajo del dashboard).
-   * membership, ranking, records, recent y bannerUrl son siempre reales.
-   */
-  isSample: boolean
   membership: DashboardMembership
   /** No club yet, but their club request is waiting for approval. */
   pendingClubRequest: { clubName: string } | null
   /** No club yet, but they asked to join one that requires approval. */
   pendingJoinRequest: { clubName: string } | null
-  ranking: RankingSummary
-  /** The runner's real personal records (time-based). Empty = none yet. */
+  monthly: MonthlyClubStats
+  totals: PersonalTotals
+  /** The runner's personal records (time-based). Empty = none yet. */
   records: PersonalRecordRow[]
+  recent: ActivityRow[]
+  clubFeed: ClubFeedRow[]
   /** The runner's own dashboard banner (Vercel Blob). null = default image. Independent of the club banner. */
   bannerUrl: string | null
   deviceConnected: boolean
   /** Connected, but the user didn't share activities (Garmin ACTIVITY_EXPORT off). */
   activitySharingOff: boolean
-  club: ClubSummary | null
-  hero: HeroSummary
-  contribution: ContributionSummary
-  personal: PersonalSummary
-  recent: ActivityRow[]
-  /** Últimas actividades de los miembros del club. Simuladas hasta que existan datos reales. */
-  clubFeed: ClubFeedRow[]
 }
 
-// Feed simulado del club — placeholder hasta que haya actividades reales de miembros.
-function simulatedClubFeed(now = new Date()): ClubFeedRow[] {
-  const daysAgo = (n: number) => new Date(now.getTime() - n * 86_400_000)
-  return [
-    { id: "cf1", name: "Ana Torres", distanceMeters: 12_500, activityType: "RUN", date: daysAgo(0) },
-    { id: "cf2", name: "Luis Gómez", distanceMeters: 8_200, activityType: "RUN", date: daysAgo(0) },
-    { id: "cf3", name: "Sofía Ramírez", distanceMeters: 21_100, activityType: "RUN", date: daysAgo(1) },
-    { id: "cf4", name: "Diego Herrera", distanceMeters: 6_400, activityType: "TRAIL_RUN", date: daysAgo(2) },
-    { id: "cf5", name: "Mariana López", distanceMeters: 15_000, activityType: "RUN", date: daysAgo(3) },
-    { id: "cf6", name: "Carlos Mendoza", distanceMeters: 10_000, activityType: "RUN", date: daysAgo(4) },
-  ]
-}
+export const RECENT_LIMIT = 5
+export const CLUB_FEED_LIMIT = 10
 
 // ─────────────────────────────────────────────────────────────
-// Dataset de muestra — se usa cuando el usuario aún no registró
-// actividades, para que el diseño del dashboard se vea completo.
-// Marcado con isSample: true para mostrar el badge "Datos de muestra".
-// ─────────────────────────────────────────────────────────────
-
-const EMPTY_RANKING: RankingSummary = {
-  globalMonthly: { rank: null, runners: 0, distanceMeters: 0 },
-  clubMonthly: null,
-  contributionMeters: 0,
-  productivityPct: 0,
-}
-
-function sampleData(): DashboardData {
-  const now = new Date()
-  const daysAgo = (n: number) => new Date(now.getTime() - n * 86_400_000)
-  return {
-    isSample: true,
-    membership: null,
-    pendingClubRequest: null,
-    pendingJoinRequest: null,
-    ranking: EMPTY_RANKING,
-    records: [],
-    bannerUrl: null,
-    deviceConnected: false,
-    activitySharingOff: false,
-    club: {
-      name: "Pacers CDMX",
-      slug: "pacers-cdmx",
-      city: "Ciudad de México",
-      country: "MX",
-      memberCount: 128,
-      logoUrl: null,
-      rank: 4,
-      rankDelta: 2,
-      totalDistanceMeters: 1_098_000,
-      gapToNextMeters: 53_000,
-      nextRivalName: "NNC Berlin",
-    },
-    hero: {
-      weeklyRank: 7,
-      weeklyDistanceMeters: 42_300,
-      monthlyRank: 5,
-      monthlyDistanceMeters: 168_500,
-      contributionMeters: 1_240_000,
-      productivityPct: 8.4,
-    },
-    contribution: {
-      distanceMeters: 42_300,
-      activities: 4,
-      rankInClub: 7,
-      totalContributors: 96,
-      sharePct: 3.9,
-    },
-    personal: {
-      weekDistanceMeters: 42_300,
-      monthDistanceMeters: 168_500,
-      streakDays: 12,
-      avgPaceSecPerKm: 312, // 5:12 /km
-      records: [
-        { key: "K5", durationSeconds: 1_290 },
-        { key: "K10", durationSeconds: 2_760 },
-        { key: "HALF_MARATHON", durationSeconds: 6_240 },
-      ],
-    },
-    recent: [
-      { id: "s1", title: "Carrera matutina", type: "RUN", distanceMeters: 12_400, durationSeconds: 3_780, avgPaceSecPerKm: 305, date: daysAgo(0), source: "GARMIN" },
-      { id: "s2", title: "Intervalos en pista", type: "RUN", distanceMeters: 8_000, durationSeconds: 2_280, avgPaceSecPerKm: 285, date: daysAgo(2), source: "GARMIN" },
-      { id: "s3", title: "Tirada larga", type: "RUN", distanceMeters: 18_900, durationSeconds: 6_120, avgPaceSecPerKm: 324, date: daysAgo(4), source: "STRAVA" },
-      { id: "s4", title: "Trote de recuperación", type: "RUN", distanceMeters: 6_000, durationSeconds: 2_040, avgPaceSecPerKm: 340, date: daysAgo(6), source: "MANUAL" },
-    ],
-    clubFeed: simulatedClubFeed(),
-  }
-}
-
-// ─────────────────────────────────────────────────────────────
-// Carga real desde Prisma. Si el usuario no tiene actividades,
-// devuelve el dataset de muestra para que el dashboard sea legible.
+// Loader
 // ─────────────────────────────────────────────────────────────
 
 export async function getDashboardData(userId: string): Promise<DashboardData> {
-  const now = new Date()
-  const weekStart = startOfWeek(now)
-  const monthStart = startOfMonth(now)
-
-  const [user, membership, recentActivities, prRecords, weekAgg, monthAgg] =
-    await Promise.all([
-      prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-          email: true,
-          bannerUrl: true,
-          connectedProvider: true,
-          garminConnection: {
-            select: { isActive: true, permissions: true, permissionsUpdatedAt: true },
-          },
+  const [user, membership, recentActivities, prRecords, totals] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        email: true,
+        bannerUrl: true,
+        connectedProvider: true,
+        garminConnection: {
+          select: { isActive: true, permissions: true, permissionsUpdatedAt: true },
         },
-      }),
-      // activeUserId is the one-active-club guarantee (unique while active).
-      prisma.clubMembership.findUnique({
-        where: { activeUserId: userId },
-        include: { club: true },
-      }),
-      prisma.activity.findMany({
-        where: { userId },
-        orderBy: { activityDate: "desc" },
-        take: 5,
-        select: {
-          id: true,
-          title: true,
-          activityType: true,
-          distanceMeters: true,
-          durationSeconds: true,
-          avgPaceSecPerKm: true,
-          activityDate: true,
-          source: true,
-        },
-      }),
-      prisma.personalRecord.findMany({
-        where: { userId },
-        select: { distance: true, durationSeconds: true },
-      }),
-      prisma.activity.aggregate({
-        where: { userId, activityDate: { gte: weekStart } },
-        _sum: { distanceMeters: true },
-        _count: true,
-      }),
-      prisma.activity.aggregate({
-        where: { userId, activityDate: { gte: monthStart } },
-        _sum: { distanceMeters: true },
-      }),
-    ])
+      },
+    }),
+    // activeUserId is the one-active-club guarantee (unique while active).
+    prisma.clubMembership.findUnique({
+      where: { activeUserId: userId },
+      include: { club: true },
+    }),
+    prisma.activity.findMany({
+      where: { userId },
+      orderBy: { activityDate: "desc" },
+      take: RECENT_LIMIT,
+      select: {
+        id: true,
+        title: true,
+        activityType: true,
+        distanceMeters: true,
+        durationSeconds: true,
+        avgPaceSecPerKm: true,
+        activityDate: true,
+        source: true,
+        club: { select: { name: true } },
+      },
+    }),
+    prisma.personalRecord.findMany({
+      where: { userId },
+      select: { distance: true, durationSeconds: true },
+    }),
+    getPersonalTotals(userId),
+  ])
 
-  // El estado del dispositivo es siempre real, aunque el resto sea de muestra.
   const deviceConnected = Boolean(user?.connectedProvider)
   // Sharing off/unknown → ask Garmin again (rate-limited) before warning.
   let garmin = user?.garminConnection
@@ -300,11 +158,19 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
   }
   const activitySharingOff = Boolean(garmin?.isActive && sharingState(garmin) === "off")
 
-  // Siempre reales, aunque el resto sea de muestra.
-  const real = {
-    deviceConnected,
-    activitySharingOff,
-    bannerUrl: user?.bannerUrl ?? null,
+  const clubId = membership?.clubId ?? null
+  const [monthly, clubFeed, pendingClubRequest, pendingJoinRequest] = await Promise.all([
+    getMonthlyClubStats(userId, clubId),
+    clubId ? getClubFeed(clubId) : Promise.resolve([]),
+    !membership && user?.email
+      ? getPendingClubRequest(prisma, userId, user.email).then((r) => (r ? { clubName: r.clubName } : null))
+      : Promise.resolve(null),
+    !membership
+      ? getPendingJoinRequest(prisma, userId).then((r) => (r ? { clubName: r.club.name } : null))
+      : Promise.resolve(null),
+  ])
+
+  return {
     membership: membership?.club
       ? {
           clubName: membership.club.name,
@@ -315,165 +181,34 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
           joinedAt: membership.joinedAt,
         }
       : null,
-    pendingClubRequest:
-      !membership && user?.email
-        ? await getPendingClubRequest(prisma, userId, user.email).then((r) => (r ? { clubName: r.clubName } : null))
-        : null,
-    pendingJoinRequest: !membership
-      ? await getPendingJoinRequest(prisma, userId).then((r) => (r ? { clubName: r.club.name } : null))
-      : null,
-    ranking: await getRankingSummary(userId, membership?.clubId ?? null),
+    pendingClubRequest,
+    pendingJoinRequest,
+    monthly,
+    totals,
     records: realRecords(prRecords),
-  }
-
-  // Sin actividades todavía → dataset de muestra para las secciones de abajo.
-  if (recentActivities.length === 0) {
-    return { ...sampleData(), ...real, recent: [] }
-  }
-
-  // ── Aporte al club (semana en curso) ──
-  const weekDistance = weekAgg._sum.distanceMeters ?? 0
-  const weekCount = weekAgg._count ?? 0
-  const monthDistance = monthAgg._sum.distanceMeters ?? 0
-
-  let club: ClubSummary | null = null
-  let contribution: ContributionSummary = {
-    distanceMeters: weekDistance,
-    activities: weekCount,
-    rankInClub: null,
-    totalContributors: 0,
-    sharePct: 0,
-  }
-  const hero: HeroSummary = {
-    weeklyRank: null,
-    weeklyDistanceMeters: weekDistance,
-    monthlyRank: null,
-    monthlyDistanceMeters: monthDistance,
-    contributionMeters: 0,
-    productivityPct: 0,
-  }
-
-  if (membership?.club) {
-    const c = membership.club
-
-    // Distancia total del club esta semana (todas las actividades atribuidas).
-    const clubWeekAgg = await prisma.activity.aggregate({
-      where: { clubId: c.id, activityDate: { gte: weekStart } },
-      _sum: { distanceMeters: true },
-    })
-    const clubWeekDistance = clubWeekAgg._sum.distanceMeters ?? 0
-
-    // Aporte por miembro esta semana, para sacar ranking de contribuidores.
-    const perMember = await prisma.activity.groupBy({
-      by: ["userId"],
-      where: { clubId: c.id, activityDate: { gte: weekStart } },
-      _sum: { distanceMeters: true },
-    })
-    const ranked = perMember
-      .map((m) => ({ userId: m.userId, dist: m._sum.distanceMeters ?? 0 }))
-      .sort((a, b) => b.dist - a.dist)
-    const rankInClub = ranked.findIndex((m) => m.userId === userId)
-
-    contribution = {
-      distanceMeters: weekDistance,
-      activities: weekCount,
-      rankInClub: rankInClub >= 0 ? rankInClub + 1 : null,
-      totalContributors: ranked.length,
-      sharePct: clubWeekDistance > 0 ? (weekDistance / clubWeekDistance) * 100 : 0,
-    }
-
-    // Ranking mensual del usuario dentro del club.
-    const perMemberMonth = await prisma.activity.groupBy({
-      by: ["userId"],
-      where: { clubId: c.id, activityDate: { gte: monthStart } },
-      _sum: { distanceMeters: true },
-    })
-    const rankedMonth = perMemberMonth
-      .map((m) => ({ userId: m.userId, dist: m._sum.distanceMeters ?? 0 }))
-      .sort((a, b) => b.dist - a.dist)
-    const monthlyRankIdx = rankedMonth.findIndex((m) => m.userId === userId)
-
-    // Aporte histórico del usuario al club + productividad (% del total del club).
-    const [userClubAgg, clubAllTimeAgg] = await Promise.all([
-      prisma.activity.aggregate({
-        where: { userId, clubId: c.id },
-        _sum: { distanceMeters: true },
-      }),
-      prisma.activity.aggregate({
-        where: { clubId: c.id },
-        _sum: { distanceMeters: true },
-      }),
-    ])
-    const contributionMeters = userClubAgg._sum.distanceMeters ?? 0
-    const clubAllTime = clubAllTimeAgg._sum.distanceMeters ?? 0
-
-    hero.weeklyRank = contribution.rankInClub
-    hero.monthlyRank = monthlyRankIdx >= 0 ? monthlyRankIdx + 1 : null
-    hero.contributionMeters = contributionMeters
-    hero.productivityPct = clubAllTime > 0 ? (contributionMeters / clubAllTime) * 100 : 0
-
-    club = {
-      name: c.name,
-      slug: c.slug,
-      city: c.city,
-      country: c.country,
-      memberCount: c.memberCount,
-      logoUrl: c.logoUrl,
-      // El ranking global se calcula vía cron (ClubStats). Aún no implementado.
-      rank: null,
-      rankDelta: 0,
-      totalDistanceMeters: clubWeekDistance,
-      gapToNextMeters: null,
-      nextRivalName: null,
-    }
-  }
-
-  // ── Stats personales ──
-  const paceSamples = recentActivities
-    .map((a) => a.avgPaceSecPerKm)
-    .filter((p): p is number => typeof p === "number" && p > 0)
-  const avgPace =
-    paceSamples.length > 0
-      ? Math.round(paceSamples.reduce((s, p) => s + p, 0) / paceSamples.length)
-      : null
-
-  const personal: PersonalSummary = {
-    weekDistanceMeters: weekDistance,
-    monthDistanceMeters: monthAgg._sum.distanceMeters ?? 0,
-    streakDays: computeStreak(recentActivities.map((a) => a.activityDate)),
-    avgPaceSecPerKm: avgPace,
-    // Solo récords de tiempo; LONGEST_RUN (distancia) se mostrará aparte.
-    records: real.records,
-  }
-
-  const recent: ActivityRow[] = recentActivities.map((a) => ({
-    id: a.id,
-    title: a.title ?? "Actividad",
-    type: a.activityType,
-    distanceMeters: a.distanceMeters,
-    durationSeconds: a.durationSeconds,
-    avgPaceSecPerKm: a.avgPaceSecPerKm,
-    date: a.activityDate,
-    source: a.source,
-  }))
-
-  return {
-    isSample: false,
-    ...real,
-    club,
-    hero,
-    contribution,
-    personal,
-    recent,
-    clubFeed: simulatedClubFeed(),
+    recent: recentActivities.map((a) => ({
+      id: a.id,
+      title: a.title ?? "Run",
+      type: a.activityType,
+      distanceMeters: a.distanceMeters,
+      durationSeconds: a.durationSeconds,
+      avgPaceSecPerKm: a.avgPaceSecPerKm,
+      date: a.activityDate,
+      source: a.source,
+      clubName: a.club?.name ?? null,
+    })),
+    clubFeed,
+    bannerUrl: user?.bannerUrl ?? null,
+    deviceConnected,
+    activitySharingOff,
   }
 }
 
 // ─────────────────────────────────────────────────────────────
-// Ranking: live aggregates over runs that count for a club
-// (countsForLeaderboard = only device-recorded, plausible, non-duplicate runs
-// of a club member after joining). Fine at today's scale; move to
-// ClubStats / snapshots when it isn't.
+// Monthly club stats: live aggregates over runs that count for a club
+// (countsForLeaderboard = device-recorded, plausible, non-duplicate runs of a
+// club member after joining — only those carry a clubId). Fine at today's
+// scale; move to ClubStats / snapshots when it isn't.
 // ─────────────────────────────────────────────────────────────
 
 /** First instant of the current month in UTC. */
@@ -495,41 +230,66 @@ export function rankPosition(
   }
 }
 
-async function monthlyTotals(clubId?: string) {
-  const rows = await prisma.activity.groupBy({
-    by: ["userId"],
-    where: {
-      countsForLeaderboard: true,
-      activityDate: { gte: startOfMonthUtc() },
-      ...(clubId ? { clubId } : {}),
-    },
-    _sum: { distanceMeters: true },
-  })
-  return rows.map((r) => ({ userId: r.userId, meters: r._sum.distanceMeters ?? 0 }))
+export async function getMonthlyClubStats(userId: string, clubId: string | null): Promise<MonthlyClubStats> {
+  if (!clubId) return null
+  const where = { clubId, countsForLeaderboard: true, activityDate: { gte: startOfMonthUtc() } }
+  const [perRunner, mine] = await Promise.all([
+    prisma.activity.groupBy({ by: ["userId"], where, _sum: { distanceMeters: true } }),
+    prisma.activity.aggregate({ where: { ...where, userId }, _count: true }),
+  ])
+  const totals = perRunner.map((r) => ({ userId: r.userId, meters: r._sum.distanceMeters ?? 0 }))
+  const clubMeters = totals.reduce((sum, t) => sum + t.meters, 0)
+  const rank = rankPosition(totals, userId)
+  return {
+    rank,
+    activities: mine._count,
+    contributionMeters: rank.distanceMeters,
+    productivityPct: clubMeters > 0 ? (rank.distanceMeters / clubMeters) * 100 : 0,
+  }
 }
 
-export async function getRankingSummary(
-  userId: string,
-  clubId: string | null
-): Promise<RankingSummary> {
-  if (!clubId) {
-    return { ...EMPTY_RANKING, globalMonthly: rankPosition(await monthlyTotals(), userId) }
-  }
-  // Only counting runs carry a clubId, so these are plain sums by club.
-  const [global, club, mine, clubTotal] = await Promise.all([
-    monthlyTotals(),
-    monthlyTotals(clubId),
-    prisma.activity.aggregate({ where: { userId, clubId }, _sum: { distanceMeters: true } }),
-    prisma.activity.aggregate({ where: { clubId }, _sum: { distanceMeters: true } }),
-  ])
-  const contributionMeters = mine._sum.distanceMeters ?? 0
-  const clubMeters = clubTotal._sum.distanceMeters ?? 0
+// ─────────────────────────────────────────────────────────────
+// Personal totals (all of the runner's runs, any source) and club feed
+// ─────────────────────────────────────────────────────────────
+
+export async function getPersonalTotals(userId: string): Promise<PersonalTotals> {
+  const agg = await prisma.activity.aggregate({
+    where: { userId },
+    _sum: { distanceMeters: true, durationSeconds: true },
+    _max: { distanceMeters: true },
+    _count: true,
+  })
+  const distance = agg._sum.distanceMeters ?? 0
+  const duration = agg._sum.durationSeconds ?? 0
   return {
-    globalMonthly: rankPosition(global, userId),
-    clubMonthly: rankPosition(club, userId),
-    contributionMeters,
-    productivityPct: clubMeters > 0 ? (contributionMeters / clubMeters) * 100 : 0,
+    totalDistanceMeters: distance,
+    totalActivities: agg._count,
+    longestRunMeters: agg._max.distanceMeters ?? 0,
+    avgPaceSecPerKm: distance > 0 && duration > 0 ? Math.round(duration / (distance / 1000)) : null,
   }
+}
+
+/** Latest runs that counted for the club, newest first. */
+export async function getClubFeed(clubId: string): Promise<ClubFeedRow[]> {
+  const rows = await prisma.activity.findMany({
+    where: { clubId, countsForLeaderboard: true },
+    orderBy: { activityDate: "desc" },
+    take: CLUB_FEED_LIMIT,
+    select: {
+      id: true,
+      distanceMeters: true,
+      activityDate: true,
+      user: { select: { name: true, username: true, image: true } },
+    },
+  })
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.user.name || "Runner",
+    username: r.user.username,
+    image: r.user.image,
+    distanceMeters: r.distanceMeters,
+    date: r.activityDate,
+  }))
 }
 
 /** Time-based records only; LONGEST_RUN (a distance) will be shown separately. */
@@ -538,23 +298,4 @@ function realRecords(rows: { distance: string; durationSeconds: number | null }[
     .filter((r): r is typeof r & { durationSeconds: number } => r.durationSeconds != null)
     .map((r) => ({ key: r.distance, durationSeconds: r.durationSeconds }))
     .slice(0, 4)
-}
-
-/** Días consecutivos (incluyendo hoy o ayer) con al menos una actividad. */
-function computeStreak(dates: Date[]): number {
-  if (dates.length === 0) return 0
-  const days = new Set(
-    dates.map((d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime())
-  )
-  const oneDay = 86_400_000
-  const today = new Date()
-  let cursor = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime()
-  // Permite arrancar la racha desde ayer si aún no se corrió hoy.
-  if (!days.has(cursor)) cursor -= oneDay
-  let streak = 0
-  while (days.has(cursor)) {
-    streak++
-    cursor -= oneDay
-  }
-  return streak
 }

@@ -73,7 +73,7 @@ export default async function PublicProfilePage({
   const viewerRole = !viewer ? "guest" : viewer.id === user.id ? "self" : "member"
   const viewerFollows = viewerRole === "member" ? await isFollowing(viewer!.id, user.id) : false
   // Real data only on a shareable page (no sample fallback).
-  const { membership, ranking, records } = stats
+  const { membership, monthly, records } = stats
 
   const name = user.name || "Runner"
   const initial = name.charAt(0).toUpperCase()
@@ -137,7 +137,7 @@ export default async function PublicProfilePage({
           </div>
         </header>
 
-        {membership && <ProfileClubStats clubName={membership.clubName} ranking={ranking} />}
+        {membership && monthly && <ProfileClubStats clubName={membership.clubName} monthly={monthly} />}
 
         <ProfileRecords records={records} />
       </div>

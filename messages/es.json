@@ -137,18 +137,19 @@
       "saving": "Guardando…",
       "error": "No pudimos actualizar tu banner. Usa un JPG, PNG o WebP de menos de 8 MB."
     },
-    "sampleBadge": "Datos de muestra",
     "cards": {
-      "title": "Tu ranking",
-      "globalMonthly": "Ranking Mensual We Runners",
-      "clubMonthly": "Ranking Mensual del Club",
-      "contribution": "Aporte al Club",
-      "productivity": "Productividad",
+      "title": "Tu ranking mensual en {club}",
+      "titleNoClub": "Tu ranking mensual",
+      "rank": "Tu lugar",
       "rankSub": "de {runners} · {dist} este mes",
-      "toYourClub": "sumados a tu club",
-      "ofClubTotal": "del total de tu club",
-      "noClub": "Únete a un club para entrar al ranking",
-      "noRankMonth": "Corre este mes para entrar al ranking"
+      "noRankMonth": "Sin carreras este mes",
+      "activities": "Actividades",
+      "thisMonth": "este mes",
+      "contribution": "Aporte del mes",
+      "toClub": "sumados a {club}",
+      "productivity": "Productividad del mes",
+      "ofClub": "del total de {club}",
+      "noClub": "Únete a un club para entrar al ranking"
     },
     "hero": {
       "eyebrow": "Tu aporte · esta semana",
@@ -173,16 +174,13 @@
     },
     "personal": {
       "title": "Tus números",
-      "week": "Semana",
-      "month": "Mes",
-      "streak": "Racha",
-      "streakHint": "días seguidos",
-      "pace": "Ritmo prom.",
-      "thisWeek": "esta semana",
-      "thisMonth": "este mes",
-      "paceSub": "promedio",
-      "km": "km",
-      "records": "Récords",
+      "totalDistance": "Distancia total",
+      "allTime": "histórico",
+      "longest": "Carrera más larga",
+      "longestSub": "en una sola carrera",
+      "activities": "Actividades",
+      "pace": "Ritmo promedio",
+      "paceSub": "de todas tus carreras",
       "pr": {
         "K1": "1K",
         "K5": "5K",
@@ -201,7 +199,10 @@
       "today": "hoy",
       "yesterday": "ayer",
       "daysAgo": "hace {days} d",
-      "manual": "Manual"
+      "manual": "Manual",
+      "share": "Compartir en X",
+      "shareText": "Acabo de sumar {dist} a {club} con @w3runn3rs, el hub global de clubes de corredores.",
+      "shareTextNoClub": "Acabo de registrar {dist} con @w3runn3rs, el hub global de clubes de corredores."
     },
     "records": {
       "title": "Récords personales",
@@ -211,11 +212,11 @@
     },
     "clubFeed": {
       "fallbackName": "Tu club",
-      "subtitle": "Actividad reciente del club",
       "colRunner": "Corredor",
       "colDistance": "Distancia",
       "colWhen": "Cuándo",
-      "noClub": "Únete a un club para ver su actividad aquí."
+      "noClub": "Únete a un club para ver su actividad aquí.",
+      "empty": "Todavía no hay carreras en el club. ¡Sé el primero!"
     },
     "devices": {
       "title": "No tienes dispositivos conectados",
@@ -359,15 +360,16 @@
       "none": "Todavía no está en un club de corredores"
     },
     "clubStats": {
-      "title": "Ranking",
-      "globalMonthly": "We Runners · mes",
-      "clubMonthly": "Club · mes",
+      "title": "Ranking mensual en {club}",
+      "rank": "Lugar",
       "rankSub": "de {runners} · {dist} este mes",
       "noRankMonth": "Sin carreras este mes",
-      "contribution": "Aporte al club",
+      "activities": "Actividades",
+      "thisMonth": "este mes",
+      "contribution": "Aporte del mes",
       "toClub": "sumados a {club}",
-      "share": "Parte del club",
-      "ofClubTotal": "del total de km del club"
+      "productivity": "Productividad del mes",
+      "ofClub": "del total de {club}"
     },
     "records": {
       "title": "Récords personales",
