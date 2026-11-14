@@ -8,7 +8,13 @@ import { FollowList } from "@/components/app/profile/FollowList"
 
 // Shared by /u/[username]/followers and /u/[username]/following.
 
-export const followListMetadata: Metadata = { robots: { index: false, follow: true } }
+export function followListMetadata(kind: FollowListKind) {
+  return async function generateMetadata({ params }: { params: Promise<{ username: string }> }): Promise<Metadata> {
+    const { username } = await params
+    const label = kind === "followers" ? "Followers" : "Following"
+    return { title: `${label} · @${username.toLowerCase()} · W3Runn3rs`, robots: { index: false, follow: true } }
+  }
+}
 
 export async function FollowListPage({ username, kind }: { username: string; kind: FollowListKind }) {
   const owner = await prisma.user.findUnique({

@@ -201,9 +201,10 @@
       "yesterday": "yesterday",
       "daysAgo": "{days}d ago",
       "manual": "Manual",
-      "share": "Share on X",
       "shareText": "I just logged {dist} to {club} using @w3runn3rs, the global hub for running clubs.",
-      "shareTextNoClub": "I just logged {dist} using @w3runn3rs, the global hub for running clubs."
+      "shareTextNoClub": "I just logged {dist} using @w3runn3rs, the global hub for running clubs.",
+      "shareX": "Share on X",
+      "shareFarcaster": "Share on Farcaster"
     },
     "records": {
       "title": "Personal records",

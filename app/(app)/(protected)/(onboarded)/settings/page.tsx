@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
@@ -18,6 +19,10 @@ function stripPrefix(stored: string | null, prefix: string): string {
     v = v.slice(prefix.length)
   }
   return v
+}
+
+export const metadata: Metadata = {
+  title: "Edit profile · W3Runn3rs",
 }
 
 export default async function SettingsPage() {

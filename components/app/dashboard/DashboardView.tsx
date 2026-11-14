@@ -51,7 +51,11 @@ export function DashboardView({
 
         {/* Fila 1: últimas carreras · ranking mensual en el club */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <RecentActivities activities={data.recent} clubName={data.membership?.clubName ?? null} />
+          <RecentActivities
+            activities={data.recent}
+            clubName={data.membership?.clubName ?? null}
+            clubSlug={data.membership?.clubSlug ?? null}
+          />
           <RankGrid monthly={data.monthly} clubName={data.membership?.clubName ?? null} />
         </div>
 
