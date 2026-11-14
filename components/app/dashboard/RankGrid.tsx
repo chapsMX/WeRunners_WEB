@@ -1,42 +1,44 @@
 "use client"
 
 import { useLocale, useTranslations } from "next-intl"
-import type { RankingSummary, RankPosition } from "@/lib/dashboard-data"
-import { ActivityIcon, TargetIcon, TrophyIcon } from "../icons"
+import type { MonthlyClubStats } from "@/lib/dashboard-data"
+import { ActivityIcon, FlameIcon, TargetIcon, TrophyIcon } from "../icons"
 import { StatGrid, type StatGridCard } from "./StatGrid"
 
-/** Ranking 2×2: global monthly · club monthly / club contribution · productivity. */
-export function RankGrid({ ranking }: { ranking: RankingSummary }) {
+/** "Your monthly ranking in <club>": rank · activities / contribution · productivity (month to date). */
+export function RankGrid({ monthly, clubName }: { monthly: MonthlyClubStats; clubName: string | null }) {
   const t = useTranslations("dashboard.cards")
   const locale = useLocale()
-
   const km = (meters: number) => `${Math.round(meters / 1000).toLocaleString(locale)} km`
-  const hasClub = ranking.clubMonthly !== null
-
-  const rankCard = (title: string, pos: RankPosition | null): StatGridCard => ({
-    title,
-    value: pos?.rank ? `#${pos.rank}` : "—",
-    sub: !pos
-      ? t("noClub")
-      : pos.rank
-        ? t("rankSub", { runners: pos.runners, dist: km(pos.distanceMeters) })
-        : t("noRankMonth"),
-    icon: TrophyIcon,
-  })
+  const club = clubName ?? ""
 
   const cards: StatGridCard[] = [
-    rankCard(t("globalMonthly"), hasClub ? ranking.globalMonthly : null),
-    rankCard(t("clubMonthly"), ranking.clubMonthly),
+    {
+      title: t("rank"),
+      value: monthly?.rank.rank ? `#${monthly.rank.rank}` : "—",
+      sub: !monthly
+        ? t("noClub")
+        : monthly.rank.rank
+          ? t("rankSub", { runners: monthly.rank.runners, dist: km(monthly.rank.distanceMeters) })
+          : t("noRankMonth"),
+      icon: TrophyIcon,
+    },
+    {
+      title: t("activities"),
+      value: monthly ? monthly.activities.toLocaleString(locale) : "—",
+      sub: monthly ? t("thisMonth") : t("noClub"),
+      icon: FlameIcon,
+    },
     {
       title: t("contribution"),
-      value: hasClub ? km(ranking.contributionMeters) : "—",
-      sub: hasClub ? t("toYourClub") : t("noClub"),
+      value: monthly ? km(monthly.contributionMeters) : "—",
+      sub: monthly ? t("toClub", { club }) : t("noClub"),
       icon: ActivityIcon,
     },
     {
       title: t("productivity"),
-      value: hasClub ? `${ranking.productivityPct.toFixed(1)}%` : "—",
-      sub: hasClub ? t("ofClubTotal") : t("noClub"),
+      value: monthly ? `${monthly.productivityPct.toFixed(1)}%` : "—",
+      sub: monthly ? t("ofClub", { club }) : t("noClub"),
       icon: TargetIcon,
     },
   ]
@@ -44,7 +46,7 @@ export function RankGrid({ ranking }: { ranking: RankingSummary }) {
   return (
     <section className="flex h-full flex-col">
       <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
-        {t("title")}
+        {clubName ? t("title", { club: clubName }) : t("titleNoClub")}
       </h3>
       <StatGrid cards={cards} />
     </section>

@@ -11,7 +11,7 @@ type SessionUser = { id: string; name?: string | null; email?: string | null; im
 
 /** Sidebar props, or null when the runner hasn't finished onboarding. */
 export async function getShellProps(sessionUser: SessionUser): Promise<ShellProps | null> {
-  const [user, activities, follows, manageClubSlug, superadmin] = await Promise.all([
+  const [user, activities, follows, manageClubSlug, superadmin, membership] = await Promise.all([
     prisma.user.findUnique({
       where: { id: sessionUser.id },
       select: { onboardingCompletedAt: true, username: true },
@@ -20,6 +20,10 @@ export async function getShellProps(sessionUser: SessionUser): Promise<ShellProp
     getFollowCounts(sessionUser.id),
     getManagedClubSlug(sessionUser.id),
     isSuperadmin(sessionUser.id),
+    prisma.clubMembership.findUnique({
+      where: { activeUserId: sessionUser.id },
+      select: { club: { select: { slug: true } } },
+    }),
   ])
   if (!user?.onboardingCompletedAt) return null
   return {
@@ -30,6 +34,6 @@ export async function getShellProps(sessionUser: SessionUser): Promise<ShellProp
       username: user.username,
     },
     stats: { ...follows, activities },
-    links: { manageClubSlug, superadmin },
+    links: { myClubSlug: membership?.club.slug ?? null, manageClubSlug, superadmin },
   }
 }

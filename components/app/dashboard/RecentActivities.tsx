@@ -10,6 +10,7 @@ import {
 } from "@/lib/format"
 import type { ActivityRow } from "@/lib/dashboard-data"
 import { ActivityIcon } from "../icons"
+import { XIcon } from "@/components/ui/SocialIcons"
 
 // Plataformas de origen — marcas que no se traducen (MANUAL sí, vía i18n).
 const SOURCE_LABEL: Record<string, string> = {
@@ -22,7 +23,19 @@ const SOURCE_LABEL: Record<string, string> = {
   GOOGLE_FIT: "Google Fit",
 }
 
-export function RecentActivities({ activities }: { activities: ActivityRow[] }) {
+/** X (Twitter) share link for one run. */
+function shareUrl(text: string) {
+  return `https://x.com/intent/tweet?text=${encodeURIComponent(text)}`
+}
+
+export function RecentActivities({
+  activities,
+  clubName,
+}: {
+  activities: ActivityRow[]
+  /** Runner's current club — used in the share text when the run itself didn't count for one. */
+  clubName: string | null
+}) {
   const t = useTranslations("dashboard.recent")
   const locale = useLocale()
 
@@ -85,6 +98,21 @@ export function RecentActivities({ activities }: { activities: ActivityRow[] }) 
                   {formatDistance(a.distanceMeters)}
                 </p>
               </div>
+
+              <a
+                href={shareUrl(
+                  (a.clubName ?? clubName)
+                    ? t("shareText", { dist: formatDistance(a.distanceMeters), club: a.clubName ?? clubName ?? "" })
+                    : t("shareTextNoClub", { dist: formatDistance(a.distanceMeters) })
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t("share")}
+                title={t("share")}
+                className="flex h-8 w-8 shrink-0 items-center justify-center border border-line text-muted transition-colors hover:border-brand-green hover:text-brand-green"
+              >
+                <XIcon size={14} />
+              </a>
             </li>
           ))}
         </ul>
