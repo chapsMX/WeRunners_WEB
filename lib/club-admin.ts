@@ -305,7 +305,8 @@ export function slugify(name: string): string {
 
 /** A free slug for `name` (adds -2, -3… on collisions). */
 export async function uniqueClubSlug(db: Db, name: string): Promise<string> {
-  const base = slugify(name)
+  // "new" is the /clubs/new route.
+  const base = slugify(name) === "new" ? "new-club" : slugify(name)
   for (let i = 1; i < 100; i++) {
     const slug = i === 1 ? base : `${base}-${i}`
     if (!(await db.club.findUnique({ where: { slug }, select: { id: true } }))) return slug

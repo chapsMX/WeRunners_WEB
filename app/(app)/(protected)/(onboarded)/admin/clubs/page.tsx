@@ -29,7 +29,7 @@ export default async function AdminClubsPage() {
     prisma.clubRegistration.findMany({
       where: { enabled: false, club: null },
       orderBy: { createdAt: "desc" },
-      select: { id: true, clubName: true, city: true, country: true, email: true, runners: true, createdAt: true },
+      select: { id: true, clubName: true, city: true, country: true, email: true, runners: true, createdAt: true, requestedBy: { select: { username: true } } },
     }),
     prisma.waitlistEntry.findMany({
       where: { betaAccess: false },
@@ -76,6 +76,7 @@ export default async function AdminClubsPage() {
                     {place(r.city, r.country)}
                     {r.runners ? ` · ${t("declared", { count: r.runners })}` : ""} · {r.email} ·{" "}
                     {r.createdAt.toLocaleDateString(locale, { dateStyle: "medium" })}
+                    {r.requestedBy?.username ? ` · ${t("requestedBy", { username: r.requestedBy.username })}` : ""}
                   </p>
                 </div>
                 <ApproveRegistrationButton registrationId={r.id} />

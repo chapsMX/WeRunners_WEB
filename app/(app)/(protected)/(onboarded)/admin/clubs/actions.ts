@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma"
 import { clubProfileFromForm, createClub, isSuperadmin } from "@/lib/club-admin"
 import { approveRegistration } from "@/lib/clubs"
 import { grantBetaAccess } from "@/lib/club-owners"
-import { sendBetaAccessEmail, sendClubApprovedEmail } from "@/lib/admin-emails"
+import { sendBetaAccessEmail, sendClubApprovedEmail, sendClubOwnerEmail } from "@/lib/admin-emails"
 import type { ClubFormState } from "@/components/app/clubs/ClubProfileForm"
 
 async function actorId() {
@@ -30,19 +30,34 @@ export async function createClubAction(_prev: ClubFormState, form: FormData): Pr
   return { ok: true, slug: result.slug }
 }
 
-/** Approve a landing registration and tell the club (its registration email). */
+/**
+ * Approve a club registration. Emails the runner who asked for it (now its
+ * owner) and the club's own address (if it's a different email).
+ */
 export async function approveRegistrationAction(registrationId: string): Promise<AdminActionResult> {
   const actor = await actorId()
   if (!actor) return { ok: false }
-  const approved = await prisma.$transaction((tx) => approveRegistration(tx, actor, registrationId))
-  if (!approved) return { ok: false }
-  const reg = await prisma.clubRegistration.findUnique({
-    where: { id: registrationId },
-    select: { email: true, clubName: true },
-  })
-  const emailed = reg ? await sendClubApprovedEmail(reg.email, reg.clubName) : false
+  const result = await prisma.$transaction((tx) => approveRegistration(tx, actor, registrationId))
+  if (!result.ok) return { ok: false }
+  const sends: Promise<boolean>[] = []
+  if (result.owner) {
+    sends.push(
+      sendClubOwnerEmail({
+        email: result.owner.email,
+        name: result.owner.name,
+        clubName: result.clubName,
+        clubSlug: result.clubSlug,
+        hasAccount: true,
+      })
+    )
+  }
+  if (!result.owner || result.owner.email.toLowerCase() !== result.clubEmail.toLowerCase()) {
+    sends.push(sendClubApprovedEmail(result.clubEmail, result.clubName))
+  }
+  const emailed = (await Promise.all(sends)).every(Boolean)
   revalidatePath("/admin/clubs")
   revalidatePath("/onboarding")
+  revalidatePath("/dashboard")
   return { ok: true, emailed }
 }
 

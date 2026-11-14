@@ -158,14 +158,116 @@ export async function createMembership(tx: Tx, userId: string, clubId: string, n
   await tx.club.update({ where: { id: clubId }, data: { memberCount: { increment: 1 } } })
 }
 
+export type ApproveResult =
+  | { ok: false }
+  | {
+      ok: true
+      clubName: string
+      clubSlug: string
+      /** The club's own email (from the registration). */
+      clubEmail: string
+      /** The runner who asked for the club, now its owner (null if none / already in another club). */
+      owner: { email: string; name: string | null } | null
+    }
+
 /**
- * Superadmin: approve a landing registration — it becomes selectable and its
- * Club is created right away (owner = the registrant, once they join).
+ * Superadmin: approve a club registration — it becomes selectable and its Club
+ * is created right away. The runner who asked for it (in-app request, or the
+ * verified account with the registration's email) joins as owner, unless they
+ * already belong to another club.
  */
-export async function approveRegistration(tx: Tx, actorId: string, registrationId: string): Promise<boolean> {
-  if (!(await isSuperadmin(actorId, tx))) return false
-  const reg = await tx.clubRegistration.findUnique({ where: { id: registrationId }, select: { id: true } })
-  if (!reg) return false
+export async function approveRegistration(tx: Tx, actorId: string, registrationId: string, now = new Date()): Promise<ApproveResult> {
+  if (!(await isSuperadmin(actorId, tx))) return { ok: false }
+  const reg = await tx.clubRegistration.findUnique({
+    where: { id: registrationId },
+    select: { id: true, email: true, requestedById: true },
+  })
+  if (!reg) return { ok: false }
   await tx.clubRegistration.update({ where: { id: reg.id }, data: { enabled: true } })
-  return (await ensureClubForRegistration(tx, reg.id)) !== null
+  const clubId = await ensureClubForRegistration(tx, reg.id)
+  if (!clubId) return { ok: false }
+
+  const registrant = reg.requestedById
+    ? await tx.user.findUnique({ where: { id: reg.requestedById }, select: { id: true, email: true, name: true } })
+    : await tx.user.findFirst({
+        where: { email: { equals: reg.email.trim(), mode: "insensitive" }, emailVerified: true },
+        select: { id: true, email: true, name: true },
+      })
+
+  let owner: { email: string; name: string | null } | null = null
+  const club = await tx.club.findUniqueOrThrow({ where: { id: clubId }, select: { name: true, slug: true, ownerId: true } })
+  if (registrant && !club.ownerId) {
+    const active = await tx.clubMembership.findUnique({ where: { activeUserId: registrant.id }, select: { clubId: true } })
+    if (!active || active.clubId === clubId) {
+      if (!active) await createMembership(tx, registrant.id, clubId, now)
+      await tx.club.update({ where: { id: clubId }, data: { ownerId: registrant.id } })
+      owner = { email: registrant.email, name: registrant.name }
+    }
+  }
+  return { ok: true, clubName: club.name, clubSlug: club.slug, clubEmail: reg.email, owner }
+}
+
+// ── Club requests from inside the app ───────────────────────
+
+export type ClubRequestInput = {
+  clubName: string
+  city: string
+  country: string
+  email: string
+  runners: number | null
+  instagram: string | null
+  tiktok: string | null
+}
+
+export type ClubRequestResult =
+  | { ok: true }
+  | { ok: false; error: "has_club" | "has_pending" | "invalid" | "email_taken" }
+
+/** The runner's own club request waiting for approval (in-app, or landing form with their email). */
+export async function getPendingClubRequest(db: Tx | typeof prisma, userId: string, email: string) {
+  return db.clubRegistration.findFirst({
+    where: {
+      enabled: false,
+      club: null,
+      OR: [{ requestedById: userId }, { email: { equals: email.trim(), mode: "insensitive" } }],
+    },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, clubName: true, createdAt: true },
+  })
+}
+
+/** A runner without a club asks for theirs to be added (pending superadmin approval). */
+export async function createClubRequest(
+  tx: Tx,
+  user: { id: string; email: string },
+  input: ClubRequestInput
+): Promise<ClubRequestResult> {
+  if (await tx.clubMembership.findUnique({ where: { activeUserId: user.id }, select: { id: true } })) {
+    return { ok: false, error: "has_club" }
+  }
+  if (await getPendingClubRequest(tx, user.id, user.email)) return { ok: false, error: "has_pending" }
+
+  const clubName = input.clubName.trim().slice(0, 80)
+  const city = input.city.trim().slice(0, 80)
+  const email = input.email.trim().toLowerCase()
+  const country = input.country.trim().toUpperCase()
+  if (clubName.length < 2 || city.length < 2 || !/^[A-Z]{2}$/.test(country) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { ok: false, error: "invalid" }
+  }
+  if (await tx.clubRegistration.findUnique({ where: { email }, select: { id: true } })) {
+    return { ok: false, error: "email_taken" }
+  }
+  await tx.clubRegistration.create({
+    data: {
+      clubName,
+      city,
+      country,
+      email,
+      runners: input.runners && input.runners > 0 ? Math.min(Math.round(input.runners), 100000) : null,
+      instagram: input.instagram?.trim().slice(0, 200) || null,
+      tiktok: input.tiktok?.trim().slice(0, 200) || null,
+      requestedById: user.id,
+    },
+  })
+  return { ok: true }
 }

@@ -232,6 +232,13 @@
       "sharingOff": "Garmin está conectado, pero compartir actividades está desactivado: tus carreras no se sincronizan ni cuentan para tu club.",
       "sharingManage": "Administrar en Garmin Connect",
       "sharingReconnect": "Volver a conectar"
+    },
+    "noClub": {
+      "title": "Todavía no estás en un club",
+      "body": "En W3Runn3rs cada kilómetro cuenta para un club. ¿No está el tuyo? Pídenos agregarlo y quedarás como su dueño.",
+      "cta": "Registrar mi club",
+      "pendingTitle": "{club} está esperando aprobación",
+      "pendingBody": "Te avisamos por correo cuando lo aprobemos. Te unirás automáticamente como su dueño."
     }
   },
   "onboarding": {
@@ -267,8 +274,7 @@
     "clubRunners": "{count} corredores",
     "clubOnApp": "{count} en W3Runn3rs",
     "clubNone": "Mi club no está en la lista",
-    "clubNoneHint": "Termina ahora y únete a un club después. También puedes registrar tu club.",
-    "clubRegister": "Registra tu club",
+    "clubNoneHint": "Termina ahora: desde tu dashboard puedes pedir que agreguemos tu club.",
     "clubAssigned": "Eres el dueño de este club: te eligió el equipo de W3Runn3rs. Lo administras desde tu dashboard."
   },
   "settings": {
@@ -487,6 +493,28 @@
         "in_other_club": "Ya está en {club}. Un dueño no puede estar en otro club.",
         "invited_elsewhere": "Ya tiene una invitación de dueño pendiente para {club}."
       }
+    },
+    "requestedBy": "pedido por @{username}"
+  },
+  "clubRequest": {
+    "back": "Dashboard",
+    "title": "Registra tu club",
+    "subtitle": "Cuéntanos de tu club de corredores. Cuando lo aprobemos, quedarás como su dueño y tus corredores podrán unirse.",
+    "pending": "Tu solicitud para {club} está esperando aprobación. Te escribimos en cuanto la revisemos.",
+    "clubName": "Nombre del club",
+    "city": "Ciudad",
+    "country": "País",
+    "email": "Correo del club",
+    "emailHint": "El correo de contacto del club (puede ser el tuyo). Te escribimos ahí cuando se apruebe.",
+    "runners": "¿Cuántos corredores?",
+    "ownerNote": "Quedarás como dueño del club cuando lo aprobemos. El logo y el banner los agregas después.",
+    "submit": "Enviar solicitud",
+    "sending": "Enviando…",
+    "errors": {
+      "has_club": "Ya estás en un club.",
+      "has_pending": "Ya tienes una solicitud de club esperando aprobación.",
+      "invalid": "Revisa los campos: nombre y ciudad (2+ caracteres), país y un correo válido.",
+      "email_taken": "Ya hay un club registrado con ese correo. Usa otro o escríbenos."
     }
   }
 }

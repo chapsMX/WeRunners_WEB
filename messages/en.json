@@ -232,6 +232,13 @@
       "sharingOff": "Garmin is connected, but activity sharing is off — your runs won’t sync or count for your club.",
       "sharingManage": "Manage in Garmin Connect",
       "sharingReconnect": "Connect again"
+    },
+    "noClub": {
+      "title": "You're not in a club yet",
+      "body": "On W3Runn3rs every kilometer counts for a club. Is yours missing? Ask us to add it — you'll be its owner.",
+      "cta": "Register your club",
+      "pendingTitle": "{club} is waiting for approval",
+      "pendingBody": "We'll email you when it's approved. You'll join it as its owner automatically."
     }
   },
   "onboarding": {
@@ -267,8 +274,7 @@
     "clubRunners": "{count} runners",
     "clubOnApp": "{count} on W3Runn3rs",
     "clubNone": "My club isn’t listed",
-    "clubNoneHint": "Finish now and join a club later. You can also register your club.",
-    "clubRegister": "Register your club",
+    "clubNoneHint": "Finish now — you can ask for your club to be added from your dashboard.",
     "clubAssigned": "You're this club's owner — picked by the W3Runn3rs team. You can manage it from your dashboard."
   },
   "settings": {
@@ -487,6 +493,28 @@
         "in_other_club": "They're already in {club}. An owner can't belong to another club.",
         "invited_elsewhere": "They already have a pending owner invitation for {club}."
       }
+    },
+    "requestedBy": "requested by @{username}"
+  },
+  "clubRequest": {
+    "back": "Dashboard",
+    "title": "Register your club",
+    "subtitle": "Tell us about your running club. Once we approve it, you'll be its owner and your runners can join.",
+    "pending": "Your request for {club} is waiting for approval. We'll email you as soon as it's reviewed.",
+    "clubName": "Club name",
+    "city": "City",
+    "country": "Country",
+    "email": "Club email",
+    "emailHint": "The club's contact email (yours is fine). We'll write to it when the club is approved.",
+    "runners": "How many runners?",
+    "ownerNote": "You'll become the club's owner when it's approved. You can add the logo and banner afterwards.",
+    "submit": "Send request",
+    "sending": "Sending…",
+    "errors": {
+      "has_club": "You're already in a club.",
+      "has_pending": "You already have a club request waiting for approval.",
+      "invalid": "Check the fields: name and city (2+ characters), country and a valid email.",
+      "email_taken": "A club is already registered with that email. Use a different one or contact us."
     }
   }
 }
