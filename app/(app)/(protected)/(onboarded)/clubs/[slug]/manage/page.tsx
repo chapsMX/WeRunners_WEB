@@ -91,6 +91,9 @@ export default async function ManageClubPage({ params }: { params: Promise<{ slu
             {t("backToAdmin")}
           </Link>
         )}
+        <Link href={`/clubs/${access.club.slug}`} className="text-muted transition-colors hover:text-brand-green">
+          {t("viewPage")} →
+        </Link>
       </nav>
 
       <header className="flex items-center gap-4">

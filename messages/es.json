@@ -100,6 +100,7 @@
   "app": {
     "nav": {
       "dashboard": "Dashboard",
+      "myClub": "Mi club",
       "home": "Inicio",
       "activities": "Actividades",
       "club": "Mi club",
@@ -521,7 +522,8 @@
         "not_found": "Esa solicitud ya no está pendiente.",
         "has_club": "Mientras tanto se unió a otro club; la solicitud se cerró."
       }
-    }
+    },
+    "viewPage": "Ver página del club"
   },
   "clubRequest": {
     "back": "Dashboard",
@@ -567,5 +569,36 @@
       "has_club": "Ya estás en {club}.",
       "has_pending": "Ya pediste unirte a {club}. Primero cancela esa solicitud."
     }
+  },
+  "clubPage": {
+    "manage": "Administrar club",
+    "approval": "Con autorización",
+    "approvalHint": "Los corredores solicitan entrar y los administradores del club los aprueban.",
+    "members": "{count, plural, one {# miembro} other {# miembros}}",
+    "join": "Unirme al club",
+    "request": "Solicitar unirme",
+    "joining": "Enviando…",
+    "pending": "Solicitud pendiente",
+    "cancel": "Cancelar",
+    "yourClub": "Tu club",
+    "errors": {
+      "not_found": "Este club no está disponible.",
+      "has_club": "Ya estás en {club}.",
+      "has_pending": "Ya pediste unirte a {club}."
+    },
+    "stats": {
+      "title": "Este mes",
+      "km": "Kilómetros",
+      "activities": "Carreras",
+      "runners": "Corredores activos",
+      "members": "Miembros"
+    },
+    "activitiesTitle": "Carreras del mes",
+    "activitiesEmpty": "Todavía no hay carreras este mes.",
+    "leaderboardTitle": "Leaderboard · {month}",
+    "leaderboardEmpty": "Nadie ha registrado carreras este mes.",
+    "colRunner": "Corredor",
+    "colRuns": "Carreras",
+    "colKm": "Km"
   }
 }

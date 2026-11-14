@@ -179,3 +179,12 @@ export function ShieldIcon({ size = 20, className }: IconProps) {
     </svg>
   )
 }
+
+export function FlagIcon({ size = 20, className }: IconProps) {
+  return (
+    <svg {...base(size, className)}>
+      <path d="M5 21V4" />
+      <path d="M5 4h11l-2 4 2 4H5" />
+    </svg>
+  )
+}

@@ -106,7 +106,9 @@ export function ClubDirectory({
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="flex flex-wrap items-center gap-2 font-semibold text-foreground">
-                    <span className="truncate">{c.name}</span>
+                    <Link href={`/clubs/${c.slug}`} className="truncate hover:text-brand-green">
+                      {c.name}
+                    </Link>
                     {c.requiresApproval && (
                       <span className="border border-line px-1.5 py-0.5 text-[10px] font-normal uppercase tracking-wide text-muted">
                         🔒 {t("approvalBadge")}

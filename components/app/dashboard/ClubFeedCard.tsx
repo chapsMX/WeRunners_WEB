@@ -25,7 +25,15 @@ function Avatar({ row }: { row: ClubFeedRow }) {
 }
 
 /** Latest runs that counted for the runner's club (real data). */
-export function ClubFeedCard({ clubName, feed }: { clubName: string | null; feed: ClubFeedRow[] }) {
+export function ClubFeedCard({
+  clubName,
+  clubSlug,
+  feed,
+}: {
+  clubName: string | null
+  clubSlug: string | null
+  feed: ClubFeedRow[]
+}) {
   const t = useTranslations("dashboard.clubFeed")
   const tr = useTranslations("dashboard.recent")
   const locale = useLocale()
@@ -41,7 +49,13 @@ export function ClubFeedCard({ clubName, feed }: { clubName: string | null; feed
   return (
     <section className="flex h-full flex-col">
       <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
-        {clubName ?? t("fallbackName")}
+        {clubName && clubSlug ? (
+          <Link href={`/clubs/${clubSlug}`} className="hover:text-brand-green">
+            {clubName} →
+          </Link>
+        ) : (
+          clubName ?? t("fallbackName")
+        )}
       </h3>
 
       {!clubName || feed.length === 0 ? (

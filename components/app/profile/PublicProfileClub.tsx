@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import type { DashboardMembership, MonthlyClubStats, PersonalRecordRow } from "@/lib/dashboard-data"
 import { ActivityIcon, FlameIcon, TargetIcon, TrophyIcon } from "../icons"
@@ -27,7 +28,10 @@ export function ProfileClub({ club }: { club: DashboardMembership }) {
   const place = [club.city, countryName(club.country, locale)].filter(Boolean).join(" · ")
 
   return (
-    <div className="mt-4 inline-flex items-center gap-3 border border-brand-green/30 bg-brand-green/5 px-4 py-2.5 text-left">
+    <Link
+      href={`/clubs/${club.clubSlug}`}
+      className="mt-4 inline-flex items-center gap-3 border border-brand-green/30 bg-brand-green/5 px-4 py-2.5 text-left transition-colors hover:border-brand-green"
+    >
       <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-alt ring-1 ring-line">
         {club.logoUrl ? (
           <Image src={club.logoUrl} alt={club.clubName} fill sizes="40px" className="object-cover" />
@@ -42,7 +46,7 @@ export function ProfileClub({ club }: { club: DashboardMembership }) {
         <p className="font-semibold leading-tight text-foreground">{club.clubName}</p>
         {place && <p className="text-xs text-muted">{place}</p>}
       </div>
-    </div>
+    </Link>
   )
 }
 

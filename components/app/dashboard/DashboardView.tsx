@@ -58,7 +58,11 @@ export function DashboardView({
         {/* Fila 2: tus números (histórico) · últimas carreras del club */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <PersonalStats totals={data.totals} />
-          <ClubFeedCard clubName={data.membership?.clubName ?? null} feed={data.clubFeed} />
+          <ClubFeedCard
+            clubName={data.membership?.clubName ?? null}
+            clubSlug={data.membership?.clubSlug ?? null}
+            feed={data.clubFeed}
+          />
         </div>
 
         {/* Fila 3: récords personales */}

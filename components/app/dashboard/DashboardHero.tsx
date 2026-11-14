@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import { useRef, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { upload } from "@vercel/blob/client"
@@ -10,6 +11,20 @@ import { updateBanner } from "@/app/(app)/(protected)/(onboarded)/dashboard/acti
 import { ClubIcon, ImageIcon, ResetIcon } from "../icons"
 
 const DEFAULT_BANNER = "/images/fondoHero.webp"
+
+const chipClass =
+  "mt-4 inline-flex items-center gap-3 border border-white/20 bg-black/20 px-3 py-2 text-sm text-white backdrop-blur-sm"
+
+/** Club box under the greeting; links to the public club page when there's a club. */
+function ClubChip({ href, children }: { href: string | null; children: React.ReactNode }) {
+  return href ? (
+    <Link href={href} className={`${chipClass} transition-colors hover:border-brand-green`}>
+      {children}
+    </Link>
+  ) : (
+    <div className={chipClass}>{children}</div>
+  )
+}
 
 /** Hero del dashboard: banner (editable por el corredor) + saludo + club. */
 export function DashboardHero({
@@ -115,7 +130,7 @@ export function DashboardHero({
           {t("greeting", { name })}
         </h1>
 
-        <div className="mt-4 inline-flex items-center gap-3 border border-white/20 bg-black/20 px-3 py-2 text-sm text-white backdrop-blur-sm">
+        <ClubChip href={membership ? `/clubs/${membership.clubSlug}` : null}>
           {membership?.logoUrl ? (
             <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-1 ring-white/30">
               <Image src={membership.logoUrl} alt="" fill sizes="36px" className="object-cover" />
@@ -139,7 +154,7 @@ export function DashboardHero({
           ) : (
             <span className="font-semibold">{t("heroClub.none")}</span>
           )}
-        </div>
+        </ClubChip>
 
         {error && <p className="mt-3 text-sm text-red-300">{error}</p>}
       </div>
