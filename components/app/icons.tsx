@@ -104,11 +104,13 @@ export function ArrowDownIcon({ size = 16, className }: IconProps) {
   )
 }
 
+// Door on the left, arrow leaving to the right (the usual "log out" glyph).
 export function LogoutIcon({ size = 18, className }: IconProps) {
   return (
     <svg {...base(size, className)}>
-      <path d="M14 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" />
-      <path d="M9 12h11M16 8l4 4-4 4" />
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <path d="m16 17 5-5-5-5" />
+      <path d="M21 12H9" />
     </svg>
   )
 }
