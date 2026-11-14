@@ -100,6 +100,7 @@
   "app": {
     "nav": {
       "dashboard": "Dashboard",
+      "myClub": "My club",
       "home": "Home",
       "activities": "Activities",
       "club": "My club",
@@ -137,18 +138,19 @@
       "saving": "Saving…",
       "error": "We couldn't update your banner. Try a JPG, PNG or WebP under 8 MB."
     },
-    "sampleBadge": "Sample data",
     "cards": {
-      "title": "Your ranking",
-      "globalMonthly": "We Runners Monthly Ranking",
-      "clubMonthly": "Club Monthly Ranking",
-      "contribution": "Club Contribution",
-      "productivity": "Productivity",
+      "title": "Your monthly ranking in {club}",
+      "titleNoClub": "Your monthly ranking",
+      "rank": "Your rank",
       "rankSub": "of {runners} · {dist} this month",
-      "toYourClub": "added to your club",
-      "ofClubTotal": "of your club's total",
-      "noClub": "Join a club to get ranked",
-      "noRankMonth": "Log a run this month to get ranked"
+      "noRankMonth": "No runs this month yet",
+      "activities": "Activities",
+      "thisMonth": "this month",
+      "contribution": "Monthly contribution",
+      "toClub": "added to {club}",
+      "productivity": "Monthly productivity",
+      "ofClub": "of {club} total",
+      "noClub": "Join a club to get ranked"
     },
     "hero": {
       "eyebrow": "Your contribution · this week",
@@ -173,16 +175,13 @@
     },
     "personal": {
       "title": "Your numbers",
-      "week": "Week",
-      "month": "Month",
-      "streak": "Streak",
-      "streakHint": "days in a row",
-      "pace": "Avg pace",
-      "thisWeek": "this week",
-      "thisMonth": "this month",
-      "paceSub": "average",
-      "km": "km",
-      "records": "Records",
+      "totalDistance": "Total distance",
+      "allTime": "all time",
+      "longest": "Longest run",
+      "longestSub": "single run",
+      "activities": "Activities",
+      "pace": "Average pace",
+      "paceSub": "all your runs",
       "pr": {
         "K1": "1K",
         "K5": "5K",
@@ -201,7 +200,10 @@
       "today": "today",
       "yesterday": "yesterday",
       "daysAgo": "{days}d ago",
-      "manual": "Manual"
+      "manual": "Manual",
+      "share": "Share on X",
+      "shareText": "I just logged {dist} to {club} using @w3runn3rs, the global hub for running clubs.",
+      "shareTextNoClub": "I just logged {dist} using @w3runn3rs, the global hub for running clubs."
     },
     "records": {
       "title": "Personal records",
@@ -211,11 +213,11 @@
     },
     "clubFeed": {
       "fallbackName": "Your club",
-      "subtitle": "Latest club activity",
       "colRunner": "Runner",
       "colDistance": "Distance",
       "colWhen": "When",
-      "noClub": "Join a club to see its activity here."
+      "noClub": "Join a club to see its activity here.",
+      "empty": "No runs in the club yet. Be the first!"
     },
     "devices": {
       "title": "No device connected",
@@ -359,15 +361,16 @@
       "none": "Not in a running club yet"
     },
     "clubStats": {
-      "title": "Ranking",
-      "globalMonthly": "We Runners · month",
-      "clubMonthly": "Club · month",
+      "title": "Monthly ranking in {club}",
+      "rank": "Rank",
       "rankSub": "of {runners} · {dist} this month",
-      "noRankMonth": "No runs this month",
-      "contribution": "Club contribution",
+      "noRankMonth": "No runs this month yet",
+      "activities": "Activities",
+      "thisMonth": "this month",
+      "contribution": "Monthly contribution",
       "toClub": "added to {club}",
-      "share": "Share of club",
-      "ofClubTotal": "of the club’s total km"
+      "productivity": "Monthly productivity",
+      "ofClub": "of {club} total"
     },
     "records": {
       "title": "Personal records",
@@ -514,6 +517,7 @@
         "has_club": "They joined another club meanwhile; the request was closed."
       }
     },
+    "viewPage": "View club page",
     "panelTitle": "Admin panel",
     "tabs": {
       "clubs": "Clubs",
@@ -610,5 +614,36 @@
       "has_club": "You're already in {club}.",
       "has_pending": "You already asked to join {club}. Cancel that request first."
     }
+  },
+  "clubPage": {
+    "manage": "Manage club",
+    "approval": "By approval",
+    "approvalHint": "Runners request to join and the club's admins approve them.",
+    "members": "{count, plural, one {# member} other {# members}}",
+    "join": "Join club",
+    "request": "Request to join",
+    "joining": "Sending…",
+    "pending": "Request pending",
+    "cancel": "Cancel",
+    "yourClub": "Your club",
+    "errors": {
+      "not_found": "This club isn't available.",
+      "has_club": "You're already in {club}.",
+      "has_pending": "You already asked to join {club}."
+    },
+    "stats": {
+      "title": "This month",
+      "km": "Kilometers",
+      "activities": "Runs",
+      "runners": "Active runners",
+      "members": "Members"
+    },
+    "activitiesTitle": "Runs this month",
+    "activitiesEmpty": "No runs this month yet.",
+    "leaderboardTitle": "Leaderboard · {month}",
+    "leaderboardEmpty": "Nobody has logged a run this month yet.",
+    "colRunner": "Runner",
+    "colRuns": "Runs",
+    "colKm": "Km"
   }
 }

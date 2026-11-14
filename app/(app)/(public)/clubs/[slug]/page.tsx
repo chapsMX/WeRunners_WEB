@@ -1,0 +1,44 @@
+import type { Metadata } from "next"
+import { headers } from "next/headers"
+import { notFound } from "next/navigation"
+import { auth } from "@/lib/auth"
+import { getClubPage, getClubViewerState } from "@/lib/club-page"
+import { ClubHero } from "@/components/app/clubs/page/ClubHero"
+import { ClubMonthActivities } from "@/components/app/clubs/page/ClubMonthActivities"
+import { ClubLeaderboard } from "@/components/app/clubs/page/ClubLeaderboard"
+import { ClubMonthStats } from "@/components/app/clubs/page/ClubMonthStats"
+
+type Params = { slug: string }
+
+export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
+  const { slug } = await params
+  const page = await getClubPage(slug)
+  if (!page) return { title: "W3Runn3rs" }
+  return {
+    title: `${page.club.name} · W3Runn3rs`,
+    description: page.club.description ?? `${page.club.name} on W3Runn3rs, the global hub for running clubs.`,
+  }
+}
+
+// Public club page — shareable without an account (see middleware).
+export default async function ClubPage({ params }: { params: Promise<Params> }) {
+  const { slug } = await params
+  const page = await getClubPage(slug)
+  if (!page) notFound()
+
+  const session = await auth.api.getSession({ headers: await headers() })
+  const viewer = await getClubViewerState(session?.user.id ?? null, page.club.id)
+
+  return (
+    <div className="text-foreground">
+      <ClubHero club={page.club} faces={page.faces} viewer={viewer} />
+      <div className="space-y-8 px-6 py-8 lg:px-8">
+        <ClubMonthStats month={page.month} memberCount={page.club.memberCount} />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <ClubMonthActivities activities={page.activities} />
+          <ClubLeaderboard rows={page.leaderboard} />
+        </div>
+      </div>
+    </div>
+  )
+}

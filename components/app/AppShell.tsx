@@ -3,12 +3,12 @@
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
-import { useEffect, useState, type ReactNode } from "react"
+import { Fragment, useEffect, useState, type ReactNode } from "react"
 import { useTranslations } from "next-intl"
 import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 import { NAV_ITEMS } from "./nav"
-import { ClubIcon, LogoutIcon, ShieldIcon, UserIcon } from "./icons"
+import { ClubIcon, FlagIcon, LogoutIcon, ShieldIcon, UserIcon } from "./icons"
 import { LanguageToggle } from "./LanguageToggle"
 import { ProfileStats, type ProfileStatsData } from "./ProfileStats"
 import { AppTopbar } from "./AppTopbar"
@@ -23,6 +23,8 @@ type SidebarUser = {
 
 /** Extra sidebar links for club staff and the superadmin. */
 export type SidebarLinks = {
+  /** Slug of the runner's club (public club page). */
+  myClubSlug?: string | null
   /** Slug of the club the runner owns or co-manages. */
   manageClubSlug?: string | null
   superadmin?: boolean
@@ -176,9 +178,19 @@ function SidebarContent({
           }
 
           const active = item.href === "/clubs" ? pathname === "/clubs" : pathname.startsWith(item.href)
+          const myClub =
+            item.key === "dashboard" && links.myClubSlug ? (
+              <NavLink
+                href={`/clubs/${links.myClubSlug}`}
+                active={pathname === `/clubs/${links.myClubSlug}`}
+                onNavigate={onNavigate}
+                icon={<FlagIcon size={20} className="shrink-0" />}
+                label={t("nav.myClub")}
+              />
+            ) : null
           return (
+            <Fragment key={item.href}>
             <Link
-              key={item.href}
               href={item.href}
               onClick={onNavigate}
               aria-current={active ? "page" : undefined}
@@ -192,6 +204,8 @@ function SidebarContent({
               <Icon size={20} className="shrink-0" />
               <span className="flex-1">{label}</span>
             </Link>
+            {myClub}
+            </Fragment>
           )
         })}
 

@@ -10,6 +10,13 @@ const intlMiddleware = createMiddleware(routing)
 // "/u/" = perfiles públicos de corredores (compartibles sin login)
 const APP_PUBLIC_PATHS = ["/auth/sign-in", "/auth/sign-up", "/auth/waiting", "/u/"]
 
+// Public club pages: /clubs/<slug> exactly (not /clubs, /clubs/new or /manage).
+const PUBLIC_CLUB_PAGE = /^\/clubs\/(?!new\/?$)[^/]+\/?$/
+
+function isPublicAppPath(pathname: string): boolean {
+  return APP_PUBLIC_PATHS.some((p) => pathname.startsWith(p)) || PUBLIC_CLUB_PAGE.test(pathname)
+}
+
 // La cookie de sesión de Better Auth se llama "better-auth.session_token" en
 // HTTP (local) y "__Secure-better-auth.session_token" en HTTPS (producción).
 // getSessionCookie resuelve ambos nombres.
@@ -42,7 +49,7 @@ function handleAppRequest(request: NextRequest): NextResponse {
   // Checa solo la existencia de la cookie — sin DB, edge-compatible.
   // La validación real de sesión + beta gate ocurre en (protected)/layout.tsx
   const hasSession = Boolean(getSessionCookie(request))
-  const isPublic = APP_PUBLIC_PATHS.some((p) => pathname.startsWith(p))
+  const isPublic = isPublicAppPath(pathname)
 
   if (!isPublic && !hasSession) {
     const signInUrl = new URL("/auth/sign-in", request.url)

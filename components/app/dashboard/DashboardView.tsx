@@ -1,6 +1,5 @@
 "use client"
 
-import { useTranslations } from "next-intl"
 import type { DashboardData } from "@/lib/dashboard-data"
 import { DashboardHero } from "./DashboardHero"
 import type { GarminResult } from "@/lib/garmin/results"
@@ -21,7 +20,6 @@ export function DashboardView({
   firstName: string
   garminResult?: GarminResult | null
 }) {
-  const t = useTranslations("dashboard")
 
   return (
     <div>
@@ -51,29 +49,24 @@ export function DashboardView({
           />
         )}
 
-        {/* Sección 50/50: últimas carreras · ranking (siempre datos reales) */}
+        {/* Fila 1: últimas carreras · ranking mensual en el club */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <RecentActivities activities={data.recent} />
-          <RankGrid ranking={data.ranking} />
+          <RecentActivities activities={data.recent} clubName={data.membership?.clubName ?? null} />
+          <RankGrid monthly={data.monthly} clubName={data.membership?.clubName ?? null} />
         </div>
 
-        {/* Lo de abajo sigue con datos de muestra mientras no haya actividades */}
-        {data.isSample && (
-          <div className="flex justify-end">
-            <span className="border border-brand-green/40 bg-brand-green/10 px-3 py-1 text-xs font-medium text-brand-green">
-              {t("sampleBadge")}
-            </span>
-          </div>
-        )}
-
-        {/* Personal records — contenedor de 3 columnas (estilo home) */}
-        <RecordsCard records={data.personal.records} />
-
-        {/* Sección 50/50: tus números (izquierda) · tabla del club (derecha) */}
+        {/* Fila 2: tus números (histórico) · últimas carreras del club */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <PersonalStats personal={data.personal} />
-          <ClubFeedCard clubName={data.club?.name ?? null} feed={data.clubFeed} />
+          <PersonalStats totals={data.totals} />
+          <ClubFeedCard
+            clubName={data.membership?.clubName ?? null}
+            clubSlug={data.membership?.clubSlug ?? null}
+            feed={data.clubFeed}
+          />
         </div>
+
+        {/* Fila 3: récords personales */}
+        <RecordsCard records={data.records} />
       </div>
     </div>
   )
