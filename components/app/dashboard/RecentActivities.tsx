@@ -10,7 +10,7 @@ import {
 } from "@/lib/format"
 import type { ActivityRow } from "@/lib/dashboard-data"
 import { ActivityIcon } from "../icons"
-import { XIcon } from "@/components/ui/SocialIcons"
+import { FarcasterIcon, XIcon } from "@/components/ui/SocialIcons"
 
 // Plataformas de origen — marcas que no se traducen (MANUAL sí, vía i18n).
 const SOURCE_LABEL: Record<string, string> = {
@@ -23,18 +23,26 @@ const SOURCE_LABEL: Record<string, string> = {
   GOOGLE_FIT: "Google Fit",
 }
 
-/** X (Twitter) share link for one run. */
-function shareUrl(text: string) {
-  return `https://x.com/intent/tweet?text=${encodeURIComponent(text)}`
+const APP_URL = "https://app.w3runn3rs.com"
+
+/** Share intents for one run: the text plus the club's public page as a link (spaces as %20). */
+function shareLinks(text: string, url: string | null) {
+  const q = (pairs: [string, string][]) => pairs.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join("&")
+  return {
+    x: `https://x.com/intent/tweet?${q(url ? [["text", text], ["url", url]] : [["text", text]])}`,
+    farcaster: `https://farcaster.xyz/~/compose?${q(url ? [["text", text], ["embeds[]", url]] : [["text", text]])}`,
+  }
 }
 
 export function RecentActivities({
   activities,
   clubName,
+  clubSlug,
 }: {
   activities: ActivityRow[]
-  /** Runner's current club — used in the share text when the run itself didn't count for one. */
+  /** Runner's current club — used in the share when the run itself didn't count for one. */
   clubName: string | null
+  clubSlug: string | null
 }) {
   const t = useTranslations("dashboard.recent")
   const locale = useLocale()
@@ -99,24 +107,43 @@ export function RecentActivities({
                 </p>
               </div>
 
-              <a
-                href={shareUrl(
-                  (a.clubName ?? clubName)
-                    ? t("shareText", { dist: formatDistance(a.distanceMeters), club: a.clubName ?? clubName ?? "" })
-                    : t("shareTextNoClub", { dist: formatDistance(a.distanceMeters) })
-                )}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={t("share")}
-                title={t("share")}
-                className="flex h-8 w-8 shrink-0 items-center justify-center border border-line text-muted transition-colors hover:border-brand-green hover:text-brand-green"
-              >
-                <XIcon size={14} />
-              </a>
+              <ShareButtons
+                links={(() => {
+                  const club = a.clubName ?? clubName
+                  const slug = a.clubSlug ?? clubSlug
+                  const dist = formatDistance(a.distanceMeters)
+                  return shareLinks(
+                    club ? t("shareText", { dist, club }) : t("shareTextNoClub", { dist }),
+                    slug ? `${APP_URL}/clubs/${slug}` : null
+                  )
+                })()}
+                labels={{ x: t("shareX"), farcaster: t("shareFarcaster") }}
+              />
             </li>
           ))}
         </ul>
       )}
     </section>
+  )
+}
+
+function ShareButtons({
+  links,
+  labels,
+}: {
+  links: { x: string; farcaster: string }
+  labels: { x: string; farcaster: string }
+}) {
+  const cls =
+    "flex h-8 w-8 shrink-0 items-center justify-center border border-line text-muted transition-colors hover:border-brand-green hover:text-brand-green"
+  return (
+    <span className="flex shrink-0 gap-1.5">
+      <a href={links.x} target="_blank" rel="noopener noreferrer" aria-label={labels.x} title={labels.x} className={cls}>
+        <XIcon size={14} />
+      </a>
+      <a href={links.farcaster} target="_blank" rel="noopener noreferrer" aria-label={labels.farcaster} title={labels.farcaster} className={cls}>
+        <FarcasterIcon size={14} />
+      </a>
+    </span>
   )
 }

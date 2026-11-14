@@ -1,9 +1,15 @@
+import type { Metadata } from "next"
 import { headers } from "next/headers"
 import { auth } from "@/lib/auth"
 import { getDashboardData } from "@/lib/dashboard-data"
 import { DashboardView } from "@/components/app/dashboard/DashboardView"
 import { parseGarminResult } from "@/lib/garmin/results"
 import { SignUpTracker } from "@/components/app/SignUpTracker"
+
+export const metadata: Metadata = {
+  title: "Dashboard · W3Runn3rs",
+  description: "Your runs, your club's monthly ranking and your numbers on W3Runn3rs.",
+}
 
 export default async function DashboardPage({
   searchParams,

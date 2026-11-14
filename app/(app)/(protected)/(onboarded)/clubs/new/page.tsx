@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
@@ -6,6 +7,10 @@ import { prisma } from "@/lib/prisma"
 import { getAppTranslator } from "@/lib/app-i18n"
 import { getPendingClubRequest } from "@/lib/clubs"
 import { ClubRequestForm } from "@/components/app/clubs/ClubRequestForm"
+
+export const metadata: Metadata = {
+  title: "Register your club · W3Runn3rs",
+}
 
 // A runner without a club asks for theirs to be added to W3Runn3rs.
 export default async function NewClubRequestPage() {

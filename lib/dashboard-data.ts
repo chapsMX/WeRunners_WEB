@@ -23,6 +23,7 @@ export type ActivityRow = {
   source: string // GARMIN, POLAR, MANUAL, ...
   /** Club the run counted for (snapshot at ingestion); null if it didn't count. */
   clubName: string | null
+  clubSlug: string | null
 }
 
 export type PersonalRecordRow = {
@@ -140,7 +141,7 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
         avgPaceSecPerKm: true,
         activityDate: true,
         source: true,
-        club: { select: { name: true } },
+        club: { select: { name: true, slug: true } },
       },
     }),
     prisma.personalRecord.findMany({
@@ -196,6 +197,7 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
       date: a.activityDate,
       source: a.source,
       clubName: a.club?.name ?? null,
+      clubSlug: a.club?.slug ?? null,
     })),
     clubFeed,
     bannerUrl: user?.bannerUrl ?? null,

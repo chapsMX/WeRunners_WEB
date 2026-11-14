@@ -201,9 +201,10 @@
       "yesterday": "ayer",
       "daysAgo": "hace {days} d",
       "manual": "Manual",
-      "share": "Compartir en X",
       "shareText": "Acabo de sumar {dist} a {club} con @w3runn3rs, el hub global de clubes de corredores.",
-      "shareTextNoClub": "Acabo de registrar {dist} con @w3runn3rs, el hub global de clubes de corredores."
+      "shareTextNoClub": "Acabo de registrar {dist} con @w3runn3rs, el hub global de clubes de corredores.",
+      "shareX": "Compartir en X",
+      "shareFarcaster": "Compartir en Farcaster"
     },
     "records": {
       "title": "Récords personales",

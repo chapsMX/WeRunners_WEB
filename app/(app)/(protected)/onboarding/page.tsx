@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Image from "next/image"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
@@ -15,6 +16,10 @@ function suggestUsername(name?: string | null, email?: string | null): string {
   const base = (name || email?.split("@")[0] || "").toLowerCase()
   const cleaned = base.replace(/[^a-z0-9_]/g, "").slice(0, 20)
   return cleaned.length >= 3 ? cleaned : ""
+}
+
+export const metadata: Metadata = {
+  title: "Welcome · W3Runn3rs",
 }
 
 export default async function OnboardingPage() {
