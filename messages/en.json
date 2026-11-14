@@ -395,8 +395,6 @@
   },
   "clubAdmin": {
     "superadmin": "Superadmin",
-    "adminTitle": "Clubs",
-    "adminSubtitle": "Create clubs, approve registrations from the landing and hand clubs over to their owners.",
     "clubsTitle": "{count, plural, one {# club} other {# clubs}}",
     "members": "{count, plural, one {# member} other {# members}}",
     "declared": "{count} runners declared",
@@ -474,10 +472,6 @@
     "emailFailed": "Done, but the email couldn't be sent.",
     "grantBeta": "Give access",
     "granting": "Giving access…",
-    "waitlistTitle": "Waitlist without access ({count})",
-    "waitlistEmpty": "Everyone on the waitlist has access.",
-    "waitlistHint": "Giving access emails them: they must sign in with that same email (Google or password).",
-    "hasAccount": "Has account",
     "owner": {
       "title": "Choose owner",
       "hint": "Search any account or waitlist email. The owner gets beta access, joins this club and is emailed. Without an account, they become owner when they sign up with that email.",
@@ -523,7 +517,58 @@
         "has_club": "They joined another club meanwhile; the request was closed."
       }
     },
-    "viewPage": "View club page"
+    "viewPage": "View club page",
+    "panelTitle": "Admin panel",
+    "tabs": {
+      "clubs": "Clubs",
+      "waitlist": "Waitlist",
+      "activity": "Activity"
+    },
+    "waitlist": {
+      "total": "On the waitlist",
+      "withAccess": "With access",
+      "withAccount": "Signed up",
+      "onboarded": "Onboarded",
+      "pendingTitle": "Waiting for access ({count})",
+      "pendingEmpty": "Everyone on the waitlist has access.",
+      "grantedTitle": "With access ({count})",
+      "grantedEmpty": "Nobody has access yet.",
+      "hint": "Giving access emails them: they must sign in with that same email (Google or password).",
+      "joined": "joined {date}",
+      "status": {
+        "noAccount": "no account yet",
+        "onboarding": "signed up · onboarding pending",
+        "noClub": "no club",
+        "inClub": "in {club}"
+      }
+    },
+    "activity": {
+      "active": "Active users",
+      "withClub": "In a club",
+      "withDevice": "Device connected",
+      "ran30": "Ran in last 30 days",
+      "latestTitle": "Latest {count} runs received",
+      "latestEmpty": "No runs received yet.",
+      "usersTitle": "Active users ({count})",
+      "noClub": "no club",
+      "noDevice": "no device",
+      "since": "since {date}",
+      "runs": "{count, plural, one {# run} other {# runs}}",
+      "lastRun": "last {date}",
+      "noRuns": "no runs yet",
+      "ran": "ran {date}",
+      "received": "received {date}",
+      "counts": "Counts",
+      "excluded": {
+        "MANUAL": "Manual",
+        "WEB_UPLOAD": "Web upload",
+        "NO_CLUB": "No club",
+        "BEFORE_JOIN": "Before joining",
+        "IMPLAUSIBLE_PACE": "Pace flag",
+        "DUPLICATE": "Duplicate",
+        "UNKNOWN": "Excluded"
+      }
+    }
   },
   "clubRequest": {
     "back": "Dashboard",

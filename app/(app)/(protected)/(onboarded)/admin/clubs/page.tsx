@@ -4,14 +4,14 @@ import { getAppTranslator } from "@/lib/app-i18n"
 import { prisma } from "@/lib/prisma"
 import { countryName } from "@/lib/countries"
 import { ClubProfileForm, EMPTY_CLUB_FORM } from "@/components/app/clubs/ClubProfileForm"
-import { ApproveRegistrationButton, GrantBetaButton } from "@/components/app/clubs/ApproveRegistrationButton"
+import { ApproveRegistrationButton } from "@/components/app/clubs/ApproveRegistrationButton"
 import { createClubAction } from "./actions"
 
-// Superadmin: every club, pending landing registrations, and "create club".
+// Superadmin › Clubs: pending registrations, every club, and "create club".
 export default async function AdminClubsPage() {
   const { t, locale } = await getAppTranslator("clubAdmin")
 
-  const [clubs, pending, waitlist] = await Promise.all([
+  const [clubs, pending] = await Promise.all([
     prisma.club.findMany({
       orderBy: { name: "asc" },
       select: {
@@ -31,32 +31,12 @@ export default async function AdminClubsPage() {
       orderBy: { createdAt: "desc" },
       select: { id: true, clubName: true, city: true, country: true, email: true, runners: true, createdAt: true, requestedBy: { select: { username: true } } },
     }),
-    prisma.waitlistEntry.findMany({
-      where: { betaAccess: false },
-      orderBy: { createdAt: "asc" },
-      select: { email: true, name: true, createdAt: true, convertedAt: true },
-    }),
   ])
-  const withAccount = new Set(
-    (
-      await prisma.user.findMany({
-        where: { email: { in: waitlist.map((w) => w.email), mode: "insensitive" } },
-        select: { email: true },
-      })
-    ).map((u) => u.email.toLowerCase())
-  )
-
   const place = (city: string | null, country: string) =>
     [city, countryName(country, locale)].filter(Boolean).join(" · ")
 
   return (
-    <div className="mx-auto max-w-5xl space-y-10 px-6 py-8 lg:px-8">
-      <header>
-        <p className="text-xs font-semibold uppercase tracking-wide text-brand-green">{t("superadmin")}</p>
-        <h1 className="mt-1 text-2xl font-bold text-foreground sm:text-3xl">{t("adminTitle")}</h1>
-        <p className="mt-2 text-sm text-muted">{t("adminSubtitle")}</p>
-      </header>
-
+    <div className="space-y-10">
       {/* Pending registrations from the landing */}
       <section>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
@@ -85,41 +65,6 @@ export default async function AdminClubsPage() {
           </ul>
         )}
         <p className="mt-2 text-xs text-muted">{t("pendingHint")}</p>
-      </section>
-
-      {/* Waitlist → beta access */}
-      <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
-          {t("waitlistTitle", { count: waitlist.length })}
-        </h2>
-        {waitlist.length === 0 ? (
-          <p className="border border-dashed border-line bg-surface-alt/30 p-6 text-center text-sm text-muted">
-            {t("waitlistEmpty")}
-          </p>
-        ) : (
-          <ul className="divide-y divide-line border border-line bg-surface-alt/40">
-            {waitlist.map((w) => (
-              <li key={w.email} className="flex flex-wrap items-center gap-4 px-4 py-3">
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold text-foreground">
-                    {w.name || w.email}
-                    {withAccount.has(w.email.toLowerCase()) && (
-                      <span className="ml-2 border border-line px-1.5 py-0.5 text-[10px] font-normal uppercase tracking-wide text-muted">
-                        {t("hasAccount")}
-                      </span>
-                    )}
-                  </p>
-                  <p className="truncate text-xs text-muted">
-                    {w.name ? `${w.email} · ` : ""}
-                    {w.createdAt.toLocaleDateString(locale, { dateStyle: "medium" })}
-                  </p>
-                </div>
-                <GrantBetaButton email={w.email} />
-              </li>
-            ))}
-          </ul>
-        )}
-        <p className="mt-2 text-xs text-muted">{t("waitlistHint")}</p>
       </section>
 
       {/* Clubs */}

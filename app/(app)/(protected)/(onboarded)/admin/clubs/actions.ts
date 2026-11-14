@@ -69,6 +69,7 @@ export async function grantBetaAction(email: string): Promise<AdminActionResult>
   if (!entry) return { ok: false }
   const newly = await grantBetaAccess(prisma, email)
   const emailed = newly ? await sendBetaAccessEmail(email, entry.name) : false
-  revalidatePath("/admin/clubs")
+  revalidatePath("/admin/waitlist")
+  revalidatePath("/admin/activity")
   return { ok: true, emailed }
 }

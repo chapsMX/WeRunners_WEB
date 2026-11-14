@@ -395,8 +395,6 @@
   },
   "clubAdmin": {
     "superadmin": "Superadmin",
-    "adminTitle": "Clubes",
-    "adminSubtitle": "Crea clubes, aprueba los registros de la landing y entrega cada club a su dueño.",
     "clubsTitle": "{count, plural, one {# club} other {# clubes}}",
     "members": "{count, plural, one {# miembro} other {# miembros}}",
     "declared": "{count} corredores declarados",
@@ -474,10 +472,6 @@
     "emailFailed": "Listo, pero no se pudo enviar el correo.",
     "grantBeta": "Dar acceso",
     "granting": "Dando acceso…",
-    "waitlistTitle": "Waitlist sin acceso ({count})",
-    "waitlistEmpty": "Todos en la waitlist ya tienen acceso.",
-    "waitlistHint": "Al dar acceso le llega un correo: debe entrar con ese mismo correo (Google o contraseña).",
-    "hasAccount": "Tiene cuenta",
     "owner": {
       "title": "Elegir dueño",
       "hint": "Busca cualquier cuenta o correo de la waitlist. El dueño recibe acceso beta, se une a este club y le llega un correo. Si no tiene cuenta, queda como dueño al registrarse con ese correo.",
@@ -523,7 +517,58 @@
         "has_club": "Mientras tanto se unió a otro club; la solicitud se cerró."
       }
     },
-    "viewPage": "Ver página del club"
+    "viewPage": "Ver página del club",
+    "panelTitle": "Panel de admin",
+    "tabs": {
+      "clubs": "Clubes",
+      "waitlist": "Waitlist",
+      "activity": "Actividad"
+    },
+    "waitlist": {
+      "total": "En la waitlist",
+      "withAccess": "Con acceso",
+      "withAccount": "Registrados",
+      "onboarded": "Onboarding completo",
+      "pendingTitle": "Esperando acceso ({count})",
+      "pendingEmpty": "Todos en la waitlist ya tienen acceso.",
+      "grantedTitle": "Con acceso ({count})",
+      "grantedEmpty": "Nadie tiene acceso todavía.",
+      "hint": "Al dar acceso le llega un correo: debe entrar con ese mismo correo (Google o contraseña).",
+      "joined": "se apuntó el {date}",
+      "status": {
+        "noAccount": "todavía sin cuenta",
+        "onboarding": "registrado · onboarding pendiente",
+        "noClub": "sin club",
+        "inClub": "en {club}"
+      }
+    },
+    "activity": {
+      "active": "Usuarios activos",
+      "withClub": "En un club",
+      "withDevice": "Con dispositivo",
+      "ran30": "Corrieron en 30 días",
+      "latestTitle": "Últimas {count} carreras recibidas",
+      "latestEmpty": "Todavía no llegan carreras.",
+      "usersTitle": "Usuarios activos ({count})",
+      "noClub": "sin club",
+      "noDevice": "sin dispositivo",
+      "since": "desde el {date}",
+      "runs": "{count, plural, one {# carrera} other {# carreras}}",
+      "lastRun": "última: {date}",
+      "noRuns": "sin carreras",
+      "ran": "corrió el {date}",
+      "received": "llegó el {date}",
+      "counts": "Cuenta",
+      "excluded": {
+        "MANUAL": "Manual",
+        "WEB_UPLOAD": "Subida web",
+        "NO_CLUB": "Sin club",
+        "BEFORE_JOIN": "Antes de unirse",
+        "IMPLAUSIBLE_PACE": "Ritmo dudoso",
+        "DUPLICATE": "Duplicada",
+        "UNKNOWN": "No cuenta"
+      }
+    }
   },
   "clubRequest": {
     "back": "Dashboard",
