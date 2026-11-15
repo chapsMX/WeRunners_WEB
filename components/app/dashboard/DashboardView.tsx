@@ -31,7 +31,7 @@ export function DashboardView({
       />
 
       {/* Contenido con margen interior */}
-      <div className="space-y-8 px-6 py-8 lg:px-8">
+      <div className="space-y-8 px-6 pt-8 lg:px-8">
         {/* Resultado al volver de Garmin (?garmin=…) */}
         {garminResult && <GarminResultNotice result={garminResult} />}
 

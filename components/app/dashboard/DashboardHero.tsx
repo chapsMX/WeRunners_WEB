@@ -9,6 +9,8 @@ import { useLocale, useTranslations } from "next-intl"
 import type { DashboardMembership } from "@/lib/dashboard-data"
 import { updateBanner } from "@/app/(app)/(protected)/(onboarded)/dashboard/actions"
 import { ClubIcon, ImageIcon, ResetIcon } from "../icons"
+import { clubPageUrl, shareLinks } from "@/lib/share"
+import { ShareButtons } from "../ShareButtons"
 
 const DEFAULT_BANNER = "/images/fondoHero.webp"
 
@@ -155,6 +157,17 @@ export function DashboardHero({
             <span className="font-semibold">{t("heroClub.none")}</span>
           )}
         </ClubChip>
+
+        {membership && (
+          <div className="mt-3 flex items-center gap-2">
+            <span className="text-xs font-medium text-white/80">{t("clubShare.label")}</span>
+            <ShareButtons
+              tone="light"
+              links={shareLinks(t("clubShare.text", { club: membership.clubName }), clubPageUrl(membership.clubSlug))}
+              labels={{ x: t("recent.shareX"), farcaster: t("recent.shareFarcaster") }}
+            />
+          </div>
+        )}
 
         {error && <p className="mt-3 text-sm text-red-300">{error}</p>}
       </div>
