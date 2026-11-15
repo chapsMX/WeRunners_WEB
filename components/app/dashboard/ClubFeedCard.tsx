@@ -51,7 +51,7 @@ export function ClubFeedCard({
       <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
         {clubName && clubSlug ? (
           <Link href={`/clubs/${clubSlug}`} className="hover:text-brand-green">
-            {clubName} →
+            {t("titleLastRuns", { club: clubName })} →
           </Link>
         ) : (
           clubName ?? t("fallbackName")

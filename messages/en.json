@@ -218,7 +218,8 @@
       "colDistance": "Distance",
       "colWhen": "When",
       "noClub": "Join a club to see its activity here.",
-      "empty": "No runs in the club yet. Be the first!"
+      "empty": "No runs in the club yet. Be the first!",
+      "titleLastRuns": "{club} Last 10 runs"
     },
     "devices": {
       "title": "No device connected",
@@ -247,6 +248,10 @@
       "joinPendingTitle": "Waiting for {club} to approve you",
       "joinPendingBody": "Its admins have your request. Your kilometers count for the club from the moment you're approved.",
       "manageRequest": "View request"
+    },
+    "clubShare": {
+      "label": "Share your club",
+      "text": "I run with {club} on @w3runn3rs, the global hub for running clubs. Join us!"
     }
   },
   "onboarding": {

@@ -218,7 +218,8 @@
       "colDistance": "Distancia",
       "colWhen": "Cuándo",
       "noClub": "Únete a un club para ver su actividad aquí.",
-      "empty": "Todavía no hay carreras en el club. ¡Sé el primero!"
+      "empty": "Todavía no hay carreras en el club. ¡Sé el primero!",
+      "titleLastRuns": "{club} últimas 10 carreras"
     },
     "devices": {
       "title": "No tienes dispositivos conectados",
@@ -247,6 +248,10 @@
       "joinPendingTitle": "Esperando que {club} te apruebe",
       "joinPendingBody": "Sus administradores ya tienen tu solicitud. Tus kilómetros cuentan para el club desde que te aprueben.",
       "manageRequest": "Ver solicitud"
+    },
+    "clubShare": {
+      "label": "Comparte tu club",
+      "text": "Corro con {club} en @w3runn3rs, el hub global de clubes de corredores. ¡Súmate!"
     }
   },
   "onboarding": {

@@ -10,7 +10,8 @@ import {
 } from "@/lib/format"
 import type { ActivityRow } from "@/lib/dashboard-data"
 import { ActivityIcon } from "../icons"
-import { FarcasterIcon, XIcon } from "@/components/ui/SocialIcons"
+import { clubPageUrl, shareLinks } from "@/lib/share"
+import { ShareButtons } from "../ShareButtons"
 
 // Plataformas de origen — marcas que no se traducen (MANUAL sí, vía i18n).
 const SOURCE_LABEL: Record<string, string> = {
@@ -21,17 +22,6 @@ const SOURCE_LABEL: Record<string, string> = {
   STRAVA: "Strava",
   APPLE_HEALTH: "Apple",
   GOOGLE_FIT: "Google Fit",
-}
-
-const APP_URL = "https://app.w3runn3rs.com"
-
-/** Share intents for one run: the text plus the club's public page as a link (spaces as %20). */
-function shareLinks(text: string, url: string | null) {
-  const q = (pairs: [string, string][]) => pairs.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join("&")
-  return {
-    x: `https://x.com/intent/tweet?${q(url ? [["text", text], ["url", url]] : [["text", text]])}`,
-    farcaster: `https://farcaster.xyz/~/compose?${q(url ? [["text", text], ["embeds[]", url]] : [["text", text]])}`,
-  }
 }
 
 export function RecentActivities({
@@ -114,7 +104,7 @@ export function RecentActivities({
                   const dist = formatDistance(a.distanceMeters)
                   return shareLinks(
                     club ? t("shareText", { dist, club }) : t("shareTextNoClub", { dist }),
-                    slug ? `${APP_URL}/clubs/${slug}` : null
+                    slug ? clubPageUrl(slug) : null
                   )
                 })()}
                 labels={{ x: t("shareX"), farcaster: t("shareFarcaster") }}
@@ -127,23 +117,3 @@ export function RecentActivities({
   )
 }
 
-function ShareButtons({
-  links,
-  labels,
-}: {
-  links: { x: string; farcaster: string }
-  labels: { x: string; farcaster: string }
-}) {
-  const cls =
-    "flex h-8 w-8 shrink-0 items-center justify-center border border-line text-muted transition-colors hover:border-brand-green hover:text-brand-green"
-  return (
-    <span className="flex shrink-0 gap-1.5">
-      <a href={links.x} target="_blank" rel="noopener noreferrer" aria-label={labels.x} title={labels.x} className={cls}>
-        <XIcon size={14} />
-      </a>
-      <a href={links.farcaster} target="_blank" rel="noopener noreferrer" aria-label={labels.farcaster} title={labels.farcaster} className={cls}>
-        <FarcasterIcon size={14} />
-      </a>
-    </span>
-  )
-}
