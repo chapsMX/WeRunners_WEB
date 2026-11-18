@@ -56,6 +56,7 @@ export function ClubRequestForm({ defaultEmail }: { defaultEmail: string }) {
         <div className="sm:col-span-2">
           {field("email", t("email"), { required: true, type: "email", defaultValue: defaultEmail, hint: t("emailHint") })}
         </div>
+        <div className="sm:col-span-2">{field("website", t("website"), { placeholder: "https://yourclub.com" })}</div>
         {field("runners", t("runners"), { type: "number", placeholder: "25" })}
         {field("instagram", "Instagram", { placeholder: "@club" })}
         {field("tiktok", "TikTok", { placeholder: "@club" })}

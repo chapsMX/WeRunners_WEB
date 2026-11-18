@@ -23,6 +23,7 @@ export async function createClubRequestAction(_prev: ClubRequestState, form: For
     runners: Number.isFinite(runners) ? runners : null,
     instagram: str("instagram") || null,
     tiktok: str("tiktok") || null,
+    website: str("website") || null,
   }
   const result = await prisma.$transaction((tx) => createClubRequest(tx, session.user, input))
   if (!result.ok) return { error: result.error }

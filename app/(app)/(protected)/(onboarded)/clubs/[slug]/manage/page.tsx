@@ -45,6 +45,7 @@ export default async function ManageClubPage({ params }: { params: Promise<{ slu
         twitter: true,
         tiktok: true,
         facebook: true,
+        website: true,
         contactEmail: true,
         memberCount: true,
         ownerId: true,
@@ -170,6 +171,7 @@ export default async function ManageClubPage({ params }: { params: Promise<{ slu
             twitter: club.twitter ?? "",
             tiktok: club.tiktok ?? "",
             facebook: club.facebook ?? "",
+            website: club.website ?? "",
             contactEmail: club.contactEmail ?? "",
           }}
           action={updateClubProfileAction.bind(null, club.id)}

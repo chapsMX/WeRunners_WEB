@@ -3,6 +3,7 @@ import { put } from "@vercel/blob";
 import { sql } from "@/lib/db";
 import { resend } from "@/lib/resend";
 import { countryName, isCountryCode } from "@/lib/countries";
+import { cleanUrl } from "@/lib/profile-validation";
 
 export async function GET() {
   try {
@@ -32,6 +33,7 @@ export async function POST(req: NextRequest) {
     const twitter   = form.get("twitter")   as string | null;
     const tiktok    = form.get("tiktok")    as string | null;
     const facebook  = form.get("facebook")  as string | null;
+    const websiteRaw = form.get("website")  as string | null;
     const logo      = form.get("logo")      as File | null;
 
     if (!clubName || !city || !email) {
@@ -48,6 +50,14 @@ export async function POST(req: NextRequest) {
       );
     }
     const countryLabel = `${countryName(country, "en")} (${country})`;
+
+    const website = cleanUrl(websiteRaw ?? "");
+    if (website.invalid) {
+      return NextResponse.json(
+        { error: "Please enter a valid website (e.g. https://yourclub.com)." },
+        { status: 400 }
+      );
+    }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim().toLowerCase())) {
@@ -85,7 +95,7 @@ export async function POST(req: NextRequest) {
 
     await sql`
       INSERT INTO "ClubRegistration"
-        (id, "clubName", city, country, email, runners, "logoUrl", instagram, twitter, tiktok, facebook, "createdAt")
+        (id, "clubName", city, country, email, runners, "logoUrl", instagram, twitter, tiktok, facebook, website, "createdAt")
       VALUES (
         gen_random_uuid()::text,
         ${clubName.trim()},
@@ -98,6 +108,7 @@ export async function POST(req: NextRequest) {
         ${trim(twitter)},
         ${trim(tiktok)},
         ${trim(facebook)},
+        ${website.url},
         NOW()
       )
     `;
@@ -119,6 +130,7 @@ export async function POST(req: NextRequest) {
       `Email     : ${email.trim().toLowerCase()}`,
       `Runners   : ${runners || "—"}`,
       `Logo      : ${logoUrl || "—"}`,
+      `Website   : ${website.url || "—"}`,
       ``,
       `Social media`,
       social,

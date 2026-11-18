@@ -19,7 +19,18 @@ const SOCIAL_ICON: Record<ClubSocialNetwork, typeof XIcon> = {
   facebook: FacebookIcon,
 }
 
-/** Club banner + logo, name, members (4 faces), description, socials and the join action. */
+/** "https://www.club.com/" → "club.com" for display. */
+function websiteLabel(url: string): string {
+  try {
+    const u = new URL(url)
+    const path = u.pathname === "/" ? "" : u.pathname
+    return (u.hostname.replace(/^www\./, "") + path).slice(0, 60)
+  } catch {
+    return url
+  }
+}
+
+/** Club banner + logo, name, members (4 faces), description, website, socials and the join action. */
 export function ClubHero({ club, faces, viewer }: { club: ClubPageData["club"]; faces: ClubPageData["faces"]; viewer: Viewer }) {
   const t = useTranslations("clubPage")
   const locale = useLocale()
@@ -106,6 +117,17 @@ export function ClubHero({ club, faces, viewer }: { club: ClubPageData["club"]; 
         </div>
 
         {club.description && <p className="mt-4 max-w-2xl whitespace-pre-line text-sm leading-relaxed text-foreground/90">{club.description}</p>}
+
+        {club.website && (
+          <a
+            href={club.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-brand-green hover:underline"
+          >
+            {websiteLabel(club.website)} ↗
+          </a>
+        )}
 
         {socials.length > 0 && (
           <ul className="mt-4 flex items-center gap-2">

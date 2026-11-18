@@ -24,6 +24,7 @@ export type ClubPageData = {
     memberCount: number
     requiresApproval: boolean
     socials: { instagram: string | null; twitter: string | null; tiktok: string | null; facebook: string | null }
+    website: string | null
   }
   /** Up to 4 random members, preferring ones with a photo. */
   faces: ClubRunner[]
@@ -69,6 +70,7 @@ export async function getClubPage(slug: string, db: Db = prisma): Promise<ClubPa
       twitter: true,
       tiktok: true,
       facebook: true,
+      website: true,
     },
   })
   if (!club) return null
@@ -126,6 +128,7 @@ export async function getClubPage(slug: string, db: Db = prisma): Promise<ClubPa
       memberCount: club.memberCount,
       requiresApproval: club.joinPolicy === "APPROVAL",
       socials: { instagram: club.instagram, twitter: club.twitter, tiktok: club.tiktok, facebook: club.facebook },
+      website: club.website,
     },
     faces,
     month: {

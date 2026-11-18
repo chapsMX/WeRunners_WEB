@@ -21,6 +21,7 @@ export type ClubFormInitial = {
   twitter: string
   tiktok: string
   facebook: string
+  website: string
   contactEmail: string
 }
 
@@ -36,6 +37,7 @@ export const EMPTY_CLUB_FORM: ClubFormInitial = {
   twitter: "",
   tiktok: "",
   facebook: "",
+  website: "",
   contactEmail: "",
 }
 
@@ -229,6 +231,7 @@ export function ClubProfileForm({
         {field("twitter", "X", { placeholder: "@club" })}
         {field("tiktok", "TikTok", { placeholder: "@club" })}
         {field("facebook", "Facebook", { placeholder: "facebook.com/club" })}
+        <div className="sm:col-span-2">{field("website", t("website"), { placeholder: "https://yourclub.com" })}</div>
         <div className="sm:col-span-2">{field("contactEmail", t("contactEmail"), { type: "email" })}</div>
       </div>
 
