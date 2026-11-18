@@ -61,6 +61,13 @@ export default async function SettingsPage() {
     ? await recheckGarminPermissions(session.user.id)
     : null
   const sharing = garmin ? sharingState(fresh ?? garmin) : null
+  // One device provider per runner: Garmin, otherwise Polar.
+  const polar = garmin
+    ? null
+    : await prisma.deviceConnectionPolar.findFirst({
+        where: { userId: session.user.id, isActive: true },
+        select: { connectedAt: true, lastSyncAt: true },
+      })
   const device = garmin
     ? {
         provider: "garmin" as const,
@@ -68,7 +75,14 @@ export default async function SettingsPage() {
         lastSyncAt: garmin.lastSyncAt?.toISOString() ?? null,
         activitySharing: sharing === "unknown" ? null : sharing === "on",
       }
-    : null
+    : polar
+      ? {
+          provider: "polar" as const,
+          connectedAt: polar.connectedAt.toISOString(),
+          lastSyncAt: polar.lastSyncAt?.toISOString() ?? null,
+          activitySharing: true,
+        }
+      : null
 
   return (
     <SettingsForm

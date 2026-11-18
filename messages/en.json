@@ -236,7 +236,16 @@
       },
       "sharingOff": "Garmin is connected, but activity sharing is off — your runs won’t sync or count for your club.",
       "sharingManage": "Manage in Garmin Connect",
-      "sharingReconnect": "Connect again"
+      "sharingReconnect": "Connect again",
+      "polarResult": {
+        "connected": "Polar connected. Your next runs will sync automatically.",
+        "consent_required": "Polar needs you to accept its data-sharing consents first. Accept them at account.polar.com and connect again.",
+        "denied": "You cancelled the Polar connection.",
+        "invalid_state": "The connection expired. Please try again.",
+        "in_use": "That Polar account is already linked to another W3Runn3rs account.",
+        "other_provider": "You already have another device connected. Disconnect it first.",
+        "failed": "We couldn’t connect Polar. Please try again."
+      }
     },
     "noClub": {
       "title": "You're not in a club yet",
@@ -342,7 +351,6 @@
     },
     "device": {
       "label": "Device",
-      "garminConnected": "Garmin connected",
       "since": "Since {date}",
       "lastSync": "last run received {when}",
       "noSyncYet": "no runs received yet",
@@ -353,12 +361,16 @@
       "permissionsHint": "Garmin permissions are managed in Garmin Connect.",
       "manageInGarmin": "Manage in Garmin Connect",
       "reconnect": "Connect again",
-      "disconnect": "Disconnect Garmin",
-      "disconnectConfirm": "Disconnect Garmin? Your past runs stay on W3Runn3rs; new runs stop syncing. You can connect again anytime.",
+      "disconnect": "Disconnect {provider}",
+      "disconnectConfirm": "Disconnect {provider}? Your past runs stay on W3Runn3rs; new runs stop syncing. You can connect again anytime.",
       "disconnectYes": "Yes, disconnect",
       "disconnecting": "Disconnecting…",
       "cancel": "Cancel",
-      "disconnectError": "We couldn’t disconnect Garmin. Please try again."
+      "disconnectError": "We couldn’t disconnect {provider}. Please try again.",
+      "connected": "{provider} connected",
+      "polarSharingLabel": "What Polar shares with W3Runn3rs",
+      "polarSharingHint": "Your runs (exercises) sync automatically. Polar consents are managed in your Polar account.",
+      "manageInPolar": "Manage in your Polar account"
     }
   },
   "profile": {

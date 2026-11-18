@@ -8,12 +8,16 @@ import { DeviceIcon } from "@/components/app/icons"
 
 // Garmin data-sharing settings live in Garmin Connect (we can't change them).
 export const GARMIN_PERMISSIONS_URL = "https://connect.garmin.com/modern/settings/accountInformation"
+// Polar consents / data sharing live in the Polar account.
+export const POLAR_ACCOUNT_URL = "https://account.polar.com"
+
+const PROVIDER_LABEL = { garmin: "Garmin", polar: "Polar" } as const
 
 export type DeviceStatus = {
-  provider: "garmin"
+  provider: "garmin" | "polar"
   connectedAt: string // ISO
   lastSyncAt: string | null // ISO — last activity received
-  activitySharing: boolean | null // ACTIVITY_EXPORT granted; null = not confirmed yet
+  activitySharing: boolean | null // Garmin ACTIVITY_EXPORT granted; null = not confirmed yet (Polar: always true)
 } | null
 
 function relative(iso: string, locale: string): string {
@@ -25,7 +29,7 @@ function relative(iso: string, locale: string): string {
   return rtf.format(Math.round(diffSec / 86400), "day")
 }
 
-/** Settings → Device: connection status, Garmin permissions and disconnect. */
+/** Settings → Device: connection status, provider permissions and disconnect. */
 export function DeviceSection({ device }: { device: DeviceStatus }) {
   const t = useTranslations("settings.device")
   const locale = useLocale()
@@ -38,12 +42,12 @@ export function DeviceSection({ device }: { device: DeviceStatus }) {
     setBusy(true)
     setError(null)
     try {
-      const res = await fetch("/api/integrations/garmin/disconnect", { method: "POST" })
+      const res = await fetch(`/api/integrations/${device!.provider}/disconnect`, { method: "POST" })
       if (!res.ok && res.status !== 404) throw new Error(String(res.status))
       setConfirming(false)
       router.refresh() // server re-reads the (now inactive) connection
     } catch {
-      setError(t("disconnectError"))
+      setError(t("disconnectError", { provider: PROVIDER_LABEL[device!.provider] }))
     } finally {
       setBusy(false)
     }
@@ -63,7 +67,7 @@ export function DeviceSection({ device }: { device: DeviceStatus }) {
               <DeviceIcon size={18} />
             </div>
             <div>
-              <p className="font-semibold text-foreground">{t("garminConnected")}</p>
+              <p className="font-semibold text-foreground">{t("connected", { provider: PROVIDER_LABEL[device.provider] })}</p>
               <p className="text-sm text-muted">
                 {t("since", {
                   date: new Date(device.connectedAt).toLocaleDateString(locale, { dateStyle: "medium" }),
@@ -76,7 +80,8 @@ export function DeviceSection({ device }: { device: DeviceStatus }) {
             </div>
           </div>
 
-          {/* Permissions */}
+          {/* Permissions (Garmin) */}
+          {device.provider === "garmin" && (
           <div className="border-t border-line pt-5">
             <p className="text-sm font-semibold text-foreground">{t("permissionsLabel")}</p>
             {device.activitySharing ? (
@@ -108,12 +113,28 @@ export function DeviceSection({ device }: { device: DeviceStatus }) {
               )}
             </div>
           </div>
+          )}
+
+          {device.provider === "polar" && (
+            <div className="border-t border-line pt-5">
+              <p className="text-sm font-semibold text-foreground">{t("polarSharingLabel")}</p>
+              <p className="mt-1 text-sm text-muted">{t("polarSharingHint")}</p>
+              <a
+                href={POLAR_ACCOUNT_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-block border border-line px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-brand-green/50 hover:text-brand-green"
+              >
+                {t("manageInPolar")} ↗
+              </a>
+            </div>
+          )}
 
           {/* Disconnect */}
           <div className="border-t border-line pt-5">
             {confirming ? (
               <div className="space-y-3">
-                <p className="text-sm text-foreground">{t("disconnectConfirm")}</p>
+                <p className="text-sm text-foreground">{t("disconnectConfirm", { provider: PROVIDER_LABEL[device.provider] })}</p>
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
@@ -139,7 +160,7 @@ export function DeviceSection({ device }: { device: DeviceStatus }) {
                 onClick={() => setConfirming(true)}
                 className="text-sm font-medium text-muted transition-colors hover:text-red-400"
               >
-                {t("disconnect")}
+                {t("disconnect", { provider: PROVIDER_LABEL[device.provider] })}
               </button>
             )}
             {error && <p className="mt-2 text-sm text-red-400">{error}</p>}

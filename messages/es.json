@@ -236,7 +236,16 @@
       },
       "sharingOff": "Garmin está conectado, pero compartir actividades está desactivado: tus carreras no se sincronizan ni cuentan para tu club.",
       "sharingManage": "Administrar en Garmin Connect",
-      "sharingReconnect": "Volver a conectar"
+      "sharingReconnect": "Volver a conectar",
+      "polarResult": {
+        "connected": "Polar conectado. Tus próximas carreras se sincronizan solas.",
+        "consent_required": "Polar necesita que primero aceptes sus consentimientos para compartir datos. Acéptalos en account.polar.com y vuelve a conectar.",
+        "denied": "Cancelaste la conexión con Polar.",
+        "invalid_state": "La conexión expiró. Intenta de nuevo.",
+        "in_use": "Esa cuenta de Polar ya está ligada a otra cuenta de W3Runn3rs.",
+        "other_provider": "Ya tienes otro dispositivo conectado. Desconéctalo primero.",
+        "failed": "No pudimos conectar Polar. Intenta de nuevo."
+      }
     },
     "noClub": {
       "title": "Todavía no estás en un club",
@@ -342,7 +351,6 @@
     },
     "device": {
       "label": "Dispositivo",
-      "garminConnected": "Garmin conectado",
       "since": "Desde el {date}",
       "lastSync": "última carrera recibida {when}",
       "noSyncYet": "todavía no llega ninguna carrera",
@@ -353,12 +361,16 @@
       "permissionsHint": "Los permisos de Garmin se administran en Garmin Connect.",
       "manageInGarmin": "Administrar en Garmin Connect",
       "reconnect": "Volver a conectar",
-      "disconnect": "Desconectar Garmin",
-      "disconnectConfirm": "¿Desconectar Garmin? Tus carreras pasadas se quedan en W3Runn3rs; las nuevas dejan de sincronizarse. Puedes volver a conectar cuando quieras.",
+      "disconnect": "Desconectar {provider}",
+      "disconnectConfirm": "¿Desconectar {provider}? Tus carreras pasadas se quedan en W3Runn3rs; las nuevas dejan de sincronizarse. Puedes volver a conectar cuando quieras.",
       "disconnectYes": "Sí, desconectar",
       "disconnecting": "Desconectando…",
       "cancel": "Cancelar",
-      "disconnectError": "No pudimos desconectar Garmin. Intenta de nuevo."
+      "disconnectError": "No pudimos desconectar {provider}. Intenta de nuevo.",
+      "connected": "{provider} conectado",
+      "polarSharingLabel": "Qué comparte Polar con W3Runn3rs",
+      "polarSharingHint": "Tus carreras (ejercicios) se sincronizan solas. Los consentimientos de Polar se administran en tu cuenta de Polar.",
+      "manageInPolar": "Administrar en tu cuenta de Polar"
     }
   },
   "profile": {
