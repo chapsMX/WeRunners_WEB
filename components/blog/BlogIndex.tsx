@@ -22,7 +22,7 @@ function PostCard({
 }) {
   const formattedDate = new Date(post.date).toLocaleDateString(
     locale === "es" ? "es-MX" : "en-US",
-    { year: "numeric", month: "long", day: "numeric" }
+    { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }
   );
 
   if (featured) {
