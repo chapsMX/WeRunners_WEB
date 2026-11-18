@@ -487,6 +487,7 @@ model Activity {
   club    Club?            @relation(fields: [clubId], references: [id])
   records PersonalRecord[]
   garmin  GarminActivity? // payload crudo cuando source = GARMIN
+  polar   PolarActivity? // payload crudo cuando source = POLAR
 
   @@unique([userId, source, externalId])
   @@index([userId, activityDate])
@@ -724,20 +725,58 @@ model DeviceConnectionPolar {
   id     String @id @default(cuid())
   userId String @unique
 
-  polarUserId String @unique // x_user_id, viene en la respuesta del token
-  memberId    String @unique // nuestro identificador, enviado en el registro
-  accessToken String @db.Text // no expira salvo revocación
+  polarUserId    String    @unique // x_user_id, viene en la respuesta del token
+  memberId       String    @unique // nuestro identificador, enviado en el registro
+  accessToken    String    @db.Text // AES-256-GCM (lib/garmin/crypto). Sin refresh token
+  // expires_in del token (~1 año). La doc dice que no expira salvo revocación.
+  tokenExpiresAt DateTime?
 
   registrationStatus PolarRegistrationStatus @default(PENDING)
 
-  connectedAt  DateTime  @default(now())
-  registeredAt DateTime? // cuándo se completó POST /v3/users
-  lastSyncAt   DateTime?
-  isActive     Boolean   @default(true)
+  connectedAt    DateTime  @default(now())
+  registeredAt   DateTime? // cuándo se completó POST /v3/users
+  lastSyncAt     DateTime?
+  isActive       Boolean   @default(true)
+  deregisteredAt DateTime? // DELETE /v3/users/{id} (desconectar)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("device_connections_polar")
+}
+
+// Push de Polar (webhook único por cliente). Se guarda crudo y se procesa
+// después de responder 200; el cron reintenta lo que falló.
+model PolarWebhookEvent {
+  id          String    @id @default(cuid())
+  eventType   String // EXERCISE | ...
+  payload     Json
+  receivedAt  DateTime  @default(now())
+  processedAt DateTime?
+  attempts    Int       @default(0)
+  error       String?   @db.Text
+
+  @@index([processedAt, receivedAt])
+  @@map("polar_webhook_events")
+}
+
+// Ejercicio crudo de Polar (uno por id). Solo carreras, ligado a su fila
+// canónica en `activities` (igual que garmin_activities).
+model PolarActivity {
+  id           String   @id @default(cuid())
+  exerciseId   String   @unique // id (hash) de AccessLink
+  polarUserId  String
+  activityType String // detailed_sport_info, p. ej. "TREADMILL_RUNNING"
+  startTime    DateTime
+  deviceName   String?
+  raw          Json
+  receivedAt   DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  activityId String   @unique
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@index([polarUserId, startTime])
+  @@map("polar_activities")
 }
 
 // Strava — OAuth2 estándar

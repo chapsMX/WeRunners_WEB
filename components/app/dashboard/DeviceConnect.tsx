@@ -4,17 +4,19 @@ import { useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import type { GarminResult } from "@/lib/garmin/results"
+import type { PolarResult } from "@/lib/polar/results"
 import { trackEvent } from "@/lib/analytics"
 import { DeviceIcon } from "../icons"
 
 /** Full navigation (plain <a>, not next/link): the route redirects to Garmin. */
 export const GARMIN_CONNECT_PATH = "/api/integrations/garmin/connect"
+export const POLAR_CONNECT_PATH = "/api/integrations/polar/connect"
 
-// Providers shown in the banner. Only Garmin is live; the rest render disabled.
+// Providers shown in the banner. Garmin and Polar are live; the rest render disabled.
 // Text buttons for now — brand logos come later (check each brand's guidelines).
 const DEVICES = [
   { id: "garmin", label: "Garmin", href: GARMIN_CONNECT_PATH },
-  { id: "polar", label: "Polar", href: null },
+  { id: "polar", label: "Polar", href: POLAR_CONNECT_PATH },
   { id: "suunto", label: "Suunto", href: null },
 ] as const
 
@@ -37,7 +39,7 @@ export function ConnectDeviceBanner() {
       <div className="flex flex-wrap gap-2">
         {DEVICES.map((d) =>
           d.href ? (
-            // Plain <a>: the route redirects to Garmin, so we want a full navigation.
+            // Plain <a>: the route redirects to the provider, so we want a full navigation.
             <a
               key={d.id}
               href={d.href}
@@ -63,7 +65,8 @@ export function ConnectDeviceBanner() {
   )
 }
 
-const TONE: Record<GarminResult, "ok" | "warn" | "error"> = {
+type Tone = "ok" | "warn" | "error"
+const GARMIN_TONE: Record<GarminResult, Tone> = {
   connected: "ok",
   connected_no_activity: "warn",
   denied: "warn",
@@ -72,21 +75,33 @@ const TONE: Record<GarminResult, "ok" | "warn" | "error"> = {
   other_provider: "warn",
   failed: "error",
 }
+const POLAR_TONE: Record<PolarResult, Tone> = {
+  connected: "ok",
+  consent_required: "warn",
+  denied: "warn",
+  invalid_state: "error",
+  in_use: "error",
+  other_provider: "warn",
+  failed: "error",
+}
 
-/** One-time notice after returning from Garmin (?garmin=<result>). */
-export function GarminResultNotice({ result }: { result: GarminResult }) {
-  const t = useTranslations("dashboard.devices.result")
+type ResultProps = { provider: "garmin"; result: GarminResult } | { provider: "polar"; result: PolarResult }
+
+/** One-time notice after returning from a provider (?garmin=<result> / ?polar=<result>). */
+export function DeviceResultNotice(props: ResultProps) {
+  const t = useTranslations(props.provider === "polar" ? "dashboard.devices.polarResult" : "dashboard.devices.result")
+  const { provider, result } = props
 
   // Track the outcome once, then drop the query param so a refresh doesn't
   // show (or count) it again. history.replaceState keeps this render.
   useEffect(() => {
-    trackEvent.deviceConnectResult("garmin", result)
+    trackEvent.deviceConnectResult(provider, result)
     const url = new URL(window.location.href)
-    url.searchParams.delete("garmin")
+    url.searchParams.delete(provider)
     window.history.replaceState(window.history.state, "", url)
-  }, [result])
+  }, [provider, result])
 
-  const tone = TONE[result]
+  const tone = props.provider === "polar" ? POLAR_TONE[props.result] : GARMIN_TONE[props.result]
   return (
     <p
       role="status"

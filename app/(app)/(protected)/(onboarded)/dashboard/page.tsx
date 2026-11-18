@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth"
 import { getDashboardData } from "@/lib/dashboard-data"
 import { DashboardView } from "@/components/app/dashboard/DashboardView"
 import { parseGarminResult } from "@/lib/garmin/results"
+import { parsePolarResult } from "@/lib/polar/results"
 import { SignUpTracker } from "@/components/app/SignUpTracker"
 
 export const metadata: Metadata = {
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ garmin?: string | string[]; signup?: string | string[] }>
+  searchParams: Promise<{ garmin?: string | string[]; polar?: string | string[]; signup?: string | string[] }>
 }) {
   const session = await auth.api.getSession({ headers: await headers() })
   const [data, params] = await Promise.all([getDashboardData(session!.user.id), searchParams])
@@ -31,6 +32,7 @@ export default async function DashboardPage({
         data={data}
         firstName={firstName}
         garminResult={parseGarminResult(params.garmin)}
+        polarResult={parsePolarResult(params.polar)}
       />
     </>
   )

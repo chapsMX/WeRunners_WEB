@@ -3,6 +3,9 @@
 // transaction client so a whole webhook event is applied atomically (and so
 // tests can run inside a rolled-back transaction).
 import type { ActivityType, ExclusionReason, Prisma } from "@prisma/client"
+import { decideFairness } from "@/lib/activity-fairness"
+
+export { IMPLAUSIBLE_PACE_SEC_PER_KM } from "@/lib/activity-fairness"
 
 type Tx = Prisma.TransactionClient
 
@@ -18,12 +21,6 @@ const RUN_TYPES: Record<string, ActivityType> = {
   TREADMILL_RUNNING: "TREADMILL", // indoor counts the same as GPS (fairness rules)
   INDOOR_RUNNING: "TREADMILL",
 }
-
-/** Faster than this (seconds per km) is treated as not a run (e.g. a bike). */
-export const IMPLAUSIBLE_PACE_SEC_PER_KM = 150 // 2:30 min/km
-
-/** Same run recorded on two watches: starts within this window. */
-const DUPLICATE_START_WINDOW_SEC = 5 * 60
 
 /** Subset of the Activity API v2.1 activity summary we use. */
 export type GarminActivitySummary = {
@@ -57,48 +54,6 @@ export type ActivityOutcome =
 
 const int = (n: number | undefined | null) =>
   typeof n === "number" && Number.isFinite(n) ? Math.round(n) : null
-
-/** Club membership active on the day the run happened (not the sync day). */
-async function clubOnDate(tx: Tx, userId: string, at: Date) {
-  const active = await tx.clubMembership.findFirst({
-    where: {
-      userId,
-      joinedAt: { lte: at },
-      OR: [{ leftAt: null }, { leftAt: { gt: at } }],
-    },
-    orderBy: { joinedAt: "desc" },
-    select: { clubId: true },
-  })
-  if (active) return { clubId: active.clubId, reason: null }
-  // Has a club, but joined after this run → no backfill for clubs.
-  const later = await tx.clubMembership.findFirst({
-    where: { userId, joinedAt: { gt: at } },
-    select: { id: true },
-  })
-  return { clubId: null, reason: later ? ("BEFORE_JOIN" as const) : ("NO_CLUB" as const) }
-}
-
-/** Another counting run of this user, from a different device, starting at ~the same time. */
-async function findDuplicate(
-  tx: Tx,
-  userId: string,
-  externalId: string,
-  start: Date,
-  deviceName: string | null
-) {
-  const w = DUPLICATE_START_WINDOW_SEC * 1000
-  return tx.activity.findFirst({
-    where: {
-      userId,
-      source: "GARMIN",
-      externalId: { not: externalId },
-      countsForLeaderboard: true,
-      activityDate: { gte: new Date(start.getTime() - w), lte: new Date(start.getTime() + w) },
-      ...(deviceName ? { NOT: { deviceName } } : {}),
-    },
-    select: { id: true },
-  })
-}
 
 /**
  * Keep the run summary exactly as Garmin sent it (garmin_activities), linked to
@@ -154,27 +109,20 @@ export async function ingestGarminActivity(
   const isManual = Boolean(s.manual)
   const isWebUpload = Boolean(s.isWebUpload)
 
-  // ── Fairness: decide whether it counts for the club, and why not ──
-  let reason: ExclusionReason | null = null
-  let clubId: string | null = null
-  if (isManual) reason = "MANUAL"
-  else if (isWebUpload) reason = "WEB_UPLOAD"
-  else {
-    const club = await clubOnDate(tx, userId, activityDate)
-    if (club.reason) reason = club.reason
-    else if (avgPaceSecPerKm !== null && avgPaceSecPerKm < IMPLAUSIBLE_PACE_SEC_PER_KM) {
-      reason = "IMPLAUSIBLE_PACE"
-    } else if (await findDuplicate(tx, userId, externalId, activityDate, deviceName)) {
-      reason = "DUPLICATE"
-    } else {
-      clubId = club.clubId
-    }
-  }
-  const countsForLeaderboard = reason === null
-  // clubId is only set on runs that count, so club totals are a plain SUM by clubId.
+  // ── Fairness (shared rules): counts for the club, and why not ──
+  const { countsForLeaderboard, reason, clubId } = await decideFairness(tx, {
+    source: "GARMIN",
+    userId,
+    externalId,
+    activityDate,
+    deviceName,
+    isManual,
+    isWebUpload,
+    avgPaceSecPerKm,
+  })
 
   const data = {
-    clubId: countsForLeaderboard ? clubId : null,
+    clubId,
     distanceMeters,
     durationSeconds,
     elevationGainMeters: int(s.totalElevationGainInMeters),

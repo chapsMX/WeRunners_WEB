@@ -3,7 +3,8 @@
 import type { DashboardData } from "@/lib/dashboard-data"
 import { DashboardHero } from "./DashboardHero"
 import type { GarminResult } from "@/lib/garmin/results"
-import { ActivitySharingWarning, ConnectDeviceBanner, GarminResultNotice } from "./DeviceConnect"
+import type { PolarResult } from "@/lib/polar/results"
+import { ActivitySharingWarning, ConnectDeviceBanner, DeviceResultNotice } from "./DeviceConnect"
 import { RankGrid } from "./RankGrid"
 import { PersonalStats } from "./PersonalStats"
 import { RecordsCard } from "./RecordsCard"
@@ -15,10 +16,12 @@ export function DashboardView({
   data,
   firstName,
   garminResult,
+  polarResult,
 }: {
   data: DashboardData
   firstName: string
   garminResult?: GarminResult | null
+  polarResult?: PolarResult | null
 }) {
 
   return (
@@ -32,8 +35,9 @@ export function DashboardView({
 
       {/* Contenido con margen interior */}
       <div className="space-y-8 px-6 pt-8 lg:px-8">
-        {/* Resultado al volver de Garmin (?garmin=…) */}
-        {garminResult && <GarminResultNotice result={garminResult} />}
+        {/* Resultado al volver del proveedor (?garmin=… / ?polar=…) */}
+        {garminResult && <DeviceResultNotice provider="garmin" result={garminResult} />}
+        {polarResult && <DeviceResultNotice provider="polar" result={polarResult} />}
 
         {/* Sin dispositivo: un botón por proveedor que lleva directo a su conexión */}
         {!data.deviceConnected && <ConnectDeviceBanner />}
