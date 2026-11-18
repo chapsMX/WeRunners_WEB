@@ -13,6 +13,7 @@ import type { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
 import { isBlobImageUrl } from "@/lib/blob-upload"
 import { isCountryCode } from "@/lib/countries"
+import { cleanUrl } from "@/lib/profile-validation"
 
 type Tx = Prisma.TransactionClient
 type Db = Tx | typeof prisma
@@ -193,6 +194,7 @@ export type ClubProfileInput = {
   twitter?: string | null
   tiktok?: string | null
   facebook?: string | null
+  website?: string | null
   contactEmail?: string | null
 }
 
@@ -214,6 +216,7 @@ type CleanClubProfile = {
   twitter?: string | null
   tiktok?: string | null
   facebook?: string | null
+  website?: string | null
   contactEmail?: string | null
 }
 
@@ -244,6 +247,11 @@ export function cleanClubProfile(input: ClubProfileInput): CleanClubProfile | nu
   if (input.joinPolicy !== undefined) {
     if (input.joinPolicy !== "OPEN" && input.joinPolicy !== "APPROVAL") return null
     out.joinPolicy = input.joinPolicy
+  }
+  if (input.website !== undefined) {
+    const w = cleanUrl(input.website ?? "")
+    if (w.invalid) return null
+    out.website = w.url
   }
   if (input.description !== undefined) out.description = trimOrNull(input.description, 600)
   if (input.city !== undefined) out.city = trimOrNull(input.city, 80)
@@ -278,6 +286,7 @@ export function clubProfileFromForm(form: FormData): ClubProfileInput {
     twitter: nullable("twitter"),
     tiktok: nullable("tiktok"),
     facebook: nullable("facebook"),
+    website: nullable("website"),
     contactEmail: nullable("contactEmail"),
   }
 }

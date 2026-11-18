@@ -473,7 +473,7 @@
         "not_found": "No encontramos el club.",
         "not_member": "Ese corredor no es miembro activo de este club.",
         "is_owner": "Primero transfiere el club.",
-        "invalid": "Revisa los campos: nombre (2+ caracteres), país y correo válidos.",
+        "invalid": "Revisa los campos: nombre (2+ caracteres), país, correo y sitio web válidos.",
         "slug_taken": "Ese club ya existe.",
         "unknown": "Algo salió mal. Intenta de nuevo."
       },
@@ -485,7 +485,8 @@
       "joinPolicyOPEN": "Abierto",
       "joinPolicyOPENHint": "Cualquier corredor se une de inmediato.",
       "joinPolicyAPPROVAL": "Con autorización",
-      "joinPolicyAPPROVALHint": "Los corredores solicitan entrar; tú o un colaborador los aprueban."
+      "joinPolicyAPPROVALHint": "Los corredores solicitan entrar; tú o un colaborador los aprueban.",
+      "website": "Sitio web (opcional)"
     },
     "emailFailed": "Listo, pero no se pudo enviar el correo.",
     "grantBeta": "Dar acceso",
@@ -606,8 +607,10 @@
       "has_club": "Ya estás en un club.",
       "has_pending": "Ya tienes una solicitud de club esperando aprobación.",
       "invalid": "Revisa los campos: nombre y ciudad (2+ caracteres), país y un correo válido.",
-      "email_taken": "Ya hay un club registrado con ese correo. Usa otro o escríbenos."
-    }
+      "email_taken": "Ya hay un club registrado con ese correo. Usa otro o escríbenos.",
+      "invalid_website": "Escribe un sitio web válido, p. ej. https://tuclub.com."
+    },
+    "website": "Sitio web (opcional)"
   },
   "clubDirectory": {
     "title": "Clubes",

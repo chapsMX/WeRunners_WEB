@@ -29,7 +29,7 @@ export default async function AdminClubsPage() {
     prisma.clubRegistration.findMany({
       where: { enabled: false, club: null },
       orderBy: { createdAt: "desc" },
-      select: { id: true, clubName: true, city: true, country: true, email: true, runners: true, createdAt: true, requestedBy: { select: { username: true } } },
+      select: { id: true, clubName: true, city: true, country: true, email: true, runners: true, createdAt: true, website: true, requestedBy: { select: { username: true } } },
     }),
   ])
   const place = (city: string | null, country: string) =>
@@ -57,6 +57,14 @@ export default async function AdminClubsPage() {
                     {r.runners ? ` · ${t("declared", { count: r.runners })}` : ""} · {r.email} ·{" "}
                     {r.createdAt.toLocaleDateString(locale, { dateStyle: "medium" })}
                     {r.requestedBy?.username ? ` · ${t("requestedBy", { username: r.requestedBy.username })}` : ""}
+                    {r.website && (
+                      <>
+                        {" · "}
+                        <a href={r.website} target="_blank" rel="noopener noreferrer" className="text-brand-green hover:underline">
+                          {r.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                        </a>
+                      </>
+                    )}
                   </p>
                 </div>
                 <ApproveRegistrationButton registrationId={r.id} />

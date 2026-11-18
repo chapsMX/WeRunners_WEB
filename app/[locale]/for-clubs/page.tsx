@@ -30,6 +30,7 @@ export default function ForClubsPage() {
   const [twitter, setTwitter]     = useState("");
   const [tiktok, setTiktok]       = useState("");
   const [facebook, setFacebook]   = useState("");
+  const [website, setWebsite]     = useState("");
   const [logoFile, setLogoFile]   = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [status, setStatus]       = useState<Status>("idle");
@@ -71,6 +72,7 @@ export default function ForClubsPage() {
       form.append("twitter",   twitter);
       form.append("tiktok",    tiktok);
       form.append("facebook",  facebook);
+      form.append("website",   website);
       if (logoFile) form.append("logo", logoFile);
 
       const res = await fetch("/api/clubs", { method: "POST", body: form });
@@ -217,6 +219,15 @@ export default function ForClubsPage() {
                 value={runners}
                 onChange={(e) => setRunners(e.target.value)}
                 min="1"
+                disabled={status === "loading"}
+              />
+
+              <Input
+                type="text"
+                inputMode="url"
+                placeholder="Website (optional)  https://yourclub.com"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
                 disabled={status === "loading"}
               />
 

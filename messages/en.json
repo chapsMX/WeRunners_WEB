@@ -473,7 +473,7 @@
         "not_found": "Club not found.",
         "not_member": "That runner isn't an active member of this club.",
         "is_owner": "Transfer ownership first.",
-        "invalid": "Check the fields: name (2+ characters), a valid country and email.",
+        "invalid": "Check the fields: name (2+ characters), a valid country, email and website.",
         "slug_taken": "That club already exists.",
         "unknown": "Something went wrong. Try again."
       },
@@ -485,7 +485,8 @@
       "joinPolicyOPEN": "Open",
       "joinPolicyOPENHint": "Any runner can join right away.",
       "joinPolicyAPPROVAL": "By approval",
-      "joinPolicyAPPROVALHint": "Runners request to join; you or a collaborator approve them."
+      "joinPolicyAPPROVALHint": "Runners request to join; you or a collaborator approve them.",
+      "website": "Website (optional)"
     },
     "emailFailed": "Done, but the email couldn't be sent.",
     "grantBeta": "Give access",
@@ -606,8 +607,10 @@
       "has_club": "You're already in a club.",
       "has_pending": "You already have a club request waiting for approval.",
       "invalid": "Check the fields: name and city (2+ characters), country and a valid email.",
-      "email_taken": "A club is already registered with that email. Use a different one or contact us."
-    }
+      "email_taken": "A club is already registered with that email. Use a different one or contact us.",
+      "invalid_website": "Enter a valid website, e.g. https://yourclub.com."
+    },
+    "website": "Website (optional)"
   },
   "clubDirectory": {
     "title": "Clubs",

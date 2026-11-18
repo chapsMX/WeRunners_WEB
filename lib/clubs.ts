@@ -8,6 +8,7 @@
 // The onboarding form submits "club:<id>" or "reg:<id>".
 import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
+import { cleanUrl } from "@/lib/profile-validation"
 import { claimRegistrantOwnership, getClubAccess, isSuperadmin, uniqueClubSlug } from "@/lib/club-admin"
 
 /** A runner can change clubs once per lock period. */
@@ -102,6 +103,7 @@ export async function ensureClubForRegistration(tx: Tx, registrationId: string):
       twitter: reg.twitter,
       tiktok: reg.tiktok,
       facebook: reg.facebook,
+      website: reg.website,
       initialMemberCount: reg.runners,
       registrationId: reg.id,
     },
@@ -229,11 +231,12 @@ export type ClubRequestInput = {
   runners: number | null
   instagram: string | null
   tiktok: string | null
+  website: string | null
 }
 
 export type ClubRequestResult =
   | { ok: true }
-  | { ok: false; error: "has_club" | "has_pending" | "invalid" | "email_taken" }
+  | { ok: false; error: "has_club" | "has_pending" | "invalid" | "invalid_website" | "email_taken" }
 
 /** The runner's own club request waiting for approval (in-app, or landing form with their email). */
 export async function getPendingClubRequest(db: Tx | typeof prisma, userId: string, email: string) {
@@ -266,6 +269,8 @@ export async function createClubRequest(
   if (clubName.length < 2 || city.length < 2 || !/^[A-Z]{2}$/.test(country) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { ok: false, error: "invalid" }
   }
+  const website = cleanUrl(input.website ?? "")
+  if (website.invalid) return { ok: false, error: "invalid_website" }
   if (await tx.clubRegistration.findUnique({ where: { email }, select: { id: true } })) {
     return { ok: false, error: "email_taken" }
   }
@@ -278,6 +283,7 @@ export async function createClubRequest(
       runners: input.runners && input.runners > 0 ? Math.min(Math.round(input.runners), 100000) : null,
       instagram: input.instagram?.trim().slice(0, 200) || null,
       tiktok: input.tiktok?.trim().slice(0, 200) || null,
+      website: website.url,
       requestedById: user.id,
     },
   })

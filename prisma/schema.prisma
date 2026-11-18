@@ -186,6 +186,7 @@ model ClubRegistration {
   twitter         String?
   tiktok          String?
   facebook        String?
+  website         String? // sitio web del club (https://…)
   createdAt       DateTime        @default(now())
   waitlistEntries WaitlistEntry[]
   club            Club? // platform club, once a runner joins
@@ -339,6 +340,7 @@ model Club {
   twitter      String?
   tiktok       String?
   facebook     String?
+  website      String? // sitio web del club (https://…)
   contactEmail String?
 
   initialMemberCount Int?
