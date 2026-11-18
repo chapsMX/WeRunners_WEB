@@ -91,7 +91,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   const formattedDate = new Date(post.date).toLocaleDateString(
     locale === "es" ? "es-MX" : "en-US",
-    { year: "numeric", month: "long", day: "numeric" }
+    { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }
   );
 
   const ogImage = post.coverImage
