@@ -1,5 +1,6 @@
-// Server-only: health of the device integrations, for the daily ops email
-// (/api/cron/daily) and Admin › Activity. Webhook events are stored first and
+// Server-only: health of the device integrations (daily email + Admin ›
+// Activity) and the daily summary of new runners and runs (daily email,
+// /api/cron/daily). Webhook events are stored first and
 // processed after the response; anything still unprocessed after the retries
 // is a run we could be losing.
 import { prisma } from "@/lib/prisma"
@@ -122,9 +123,125 @@ export async function getOpsHealth(now = new Date(), db: Db = prisma): Promise<O
   }
 }
 
-/** Worth an email: lost/stuck events or runs to review. A quiet day sends nothing. */
+/** Lost/stuck events or runs to review. */
 export function hasProblems(health: OpsHealth): boolean {
   return health.problems.length > 0 || health.paceFlags.length > 0
+}
+
+// ── Daily summary (new runners + runs received), for the same email ──
+
+type SummaryDb = Pick<typeof prisma, "user" | "activity">
+
+export type NewUserRow = {
+  name: string
+  username: string | null
+  email: string
+  onboarded: boolean
+  clubName: string | null
+  /** Connected provider (GARMIN, POLAR, …) or null. */
+  device: string | null
+  createdAt: Date
+}
+
+export type RunsSummary = {
+  /** Runs received (stored) in the last 24 h, counted or not. */
+  received: number
+  counted: number
+  countedMeters: number
+  /** Distinct runners among the runs received. */
+  runners: number
+  /** Excluded runs by reason (MANUAL, BEFORE_JOIN, …). */
+  excluded: Record<string, number>
+  /** Runs received by source (GARMIN, POLAR, …). */
+  bySource: Record<string, number>
+  /** Counted km per club, most km first. */
+  byClub: { clubName: string; meters: number; runs: number }[]
+}
+
+export type DailySummary = {
+  newUsers: NewUserRow[]
+  newUsersTotal: number
+  runs: RunsSummary
+}
+
+export async function getDailySummary(now = new Date(), db: SummaryDb = prisma): Promise<DailySummary> {
+  const since = { gte: new Date(now.getTime() - DAY_MS) }
+  const [users, newUsersTotal, runs] = await Promise.all([
+    db.user.findMany({
+      where: { createdAt: since },
+      orderBy: { createdAt: "asc" },
+      take: PROBLEMS_LIMIT,
+      select: {
+        name: true,
+        username: true,
+        email: true,
+        onboardingCompletedAt: true,
+        connectedProvider: true,
+        createdAt: true,
+        memberships: { where: { activeUserId: { not: null } }, select: { club: { select: { name: true } } } },
+      },
+    }),
+    db.user.count({ where: { createdAt: since } }),
+    db.activity.findMany({
+      where: { createdAt: since },
+      select: {
+        userId: true,
+        source: true,
+        distanceMeters: true,
+        countsForLeaderboard: true,
+        exclusionReason: true,
+        club: { select: { name: true } },
+      },
+    }),
+  ])
+
+  const excluded: Record<string, number> = {}
+  const bySource: Record<string, number> = {}
+  const clubs = new Map<string, { meters: number; runs: number }>()
+  let counted = 0
+  let countedMeters = 0
+  for (const r of runs) {
+    bySource[r.source] = (bySource[r.source] ?? 0) + 1
+    if (r.countsForLeaderboard) {
+      counted++
+      countedMeters += r.distanceMeters
+      const name = r.club?.name ?? "?"
+      const c = clubs.get(name) ?? { meters: 0, runs: 0 }
+      clubs.set(name, { meters: c.meters + r.distanceMeters, runs: c.runs + 1 })
+    } else {
+      const reason = r.exclusionReason ?? "UNKNOWN"
+      excluded[reason] = (excluded[reason] ?? 0) + 1
+    }
+  }
+
+  return {
+    newUsers: users.map((u) => ({
+      name: u.name || "Runner",
+      username: u.username,
+      email: u.email,
+      onboarded: Boolean(u.onboardingCompletedAt),
+      clubName: u.memberships[0]?.club.name ?? null,
+      device: u.connectedProvider ?? null,
+      createdAt: u.createdAt,
+    })),
+    newUsersTotal,
+    runs: {
+      received: runs.length,
+      counted,
+      countedMeters,
+      runners: new Set(runs.map((r) => r.userId)).size,
+      excluded,
+      bySource,
+      byClub: [...clubs.entries()]
+        .map(([clubName, c]) => ({ clubName, ...c }))
+        .sort((a, b) => b.meters - a.meters || a.clubName.localeCompare(b.clubName)),
+    },
+  }
+}
+
+/** Anything at all to report: problems, new runners or runs. A completely quiet day sends nothing. */
+export function shouldSendDigest(health: OpsHealth, summary: DailySummary): boolean {
+  return hasProblems(health) || summary.newUsersTotal > 0 || summary.runs.received > 0
 }
 
 /**
