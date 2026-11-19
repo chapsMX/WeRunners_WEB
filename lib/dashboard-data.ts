@@ -7,6 +7,7 @@ import {
   recheckGarminPermissions,
   sharingState,
 } from "@/lib/garmin/permissions"
+import { getClubWorldRank, type ClubWorldRank } from "@/lib/leaderboard"
 
 // ─────────────────────────────────────────────────────────────
 // Types the UI consumes
@@ -91,6 +92,8 @@ export type DashboardData = {
   /** No club yet, but they asked to join one that requires approval. */
   pendingJoinRequest: { clubName: string } | null
   monthly: MonthlyClubStats
+  /** The runner's club on the global leaderboard this month. null = no club. */
+  worldRank: ClubWorldRank | null
   totals: PersonalTotals
   /** The runner's personal records (time-based). Empty = none yet. */
   records: PersonalRecordRow[]
@@ -160,8 +163,9 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
   const activitySharingOff = Boolean(garmin?.isActive && sharingState(garmin) === "off")
 
   const clubId = membership?.clubId ?? null
-  const [monthly, clubFeed, pendingClubRequest, pendingJoinRequest] = await Promise.all([
+  const [monthly, worldRank, clubFeed, pendingClubRequest, pendingJoinRequest] = await Promise.all([
     getMonthlyClubStats(userId, clubId),
+    clubId ? getClubWorldRank(clubId) : Promise.resolve(null),
     clubId ? getClubFeed(clubId) : Promise.resolve([]),
     !membership && user?.email
       ? getPendingClubRequest(prisma, userId, user.email).then((r) => (r ? { clubName: r.clubName } : null))
@@ -185,6 +189,7 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
     pendingClubRequest,
     pendingJoinRequest,
     monthly,
+    worldRank,
     totals,
     records: realRecords(prRecords),
     recent: recentActivities.map((a) => ({

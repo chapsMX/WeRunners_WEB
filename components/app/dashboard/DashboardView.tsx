@@ -31,6 +31,7 @@ export function DashboardView({
         name={firstName}
         membership={data.membership}
         bannerUrl={data.bannerUrl}
+        worldRank={data.worldRank}
       />
 
       {/* Contenido con margen interior */}

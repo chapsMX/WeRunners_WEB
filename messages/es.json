@@ -668,5 +668,34 @@
     "colRunner": "Corredor",
     "colRuns": "Carreras",
     "colKm": "Km"
+  },
+  "leaderboard": {
+    "metaTitle": "Leaderboard de clubes de corredores · W3Runn3rs",
+    "metaDescription": "Clubes de corredores de todo el mundo, ordenados por los kilómetros que corren sus integrantes. Cada kilómetro cuenta para un club.",
+    "title": "Leaderboard de clubes",
+    "subtitle": "Clubes de corredores de todo el mundo, ordenados por los kilómetros que corren sus integrantes. Un corredor, un club: cada kilómetro cuenta para el suyo.",
+    "tabs": {
+      "month": "Este mes",
+      "week": "Esta semana"
+    },
+    "colClub": "Club",
+    "colRunners": "Corredores",
+    "colPerRunner": "Km / corredor",
+    "colKm": "Km",
+    "yourClub": "Tu club",
+    "empty": {
+      "month": "Todavía no hay kilómetros este mes. La primera corrida pone a un club en el #1.",
+      "week": "Todavía no hay kilómetros esta semana. La primera corrida pone a un club en el #1."
+    },
+    "footnote": "Solo cuentan las corridas grabadas por un dispositivo, desde el día en que el corredor se une a su club. La semana empieza el lunes y el mes el día 1 (UTC).",
+    "share": "Compartir",
+    "shareText": "Clubes de corredores de todo el mundo, ordenados por kilómetros en @w3runn3rs. ¿Dónde va el tuyo?",
+    "shareX": "Compartir en X",
+    "shareFarcaster": "Compartir en Farcaster"
+  },
+  "worldRank": {
+    "ranked": "#{rank} de {clubs} clubes en el mundo este mes",
+    "unranked": "Sin kilómetros este mes todavía",
+    "cta": "Ver el leaderboard"
   }
 }

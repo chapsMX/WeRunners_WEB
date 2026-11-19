@@ -1,5 +1,5 @@
 import type { ComponentType } from "react"
-import { ClubIcon, HomeIcon, SettingsIcon } from "./icons"
+import { ClubIcon, HomeIcon, SettingsIcon, TrophyIcon } from "./icons"
 
 export type NavItem = {
   /** Clave dentro del namespace "app.nav" para traducir el label. */
@@ -16,5 +16,6 @@ export type NavItem = {
 export const NAV_ITEMS: NavItem[] = [
   { key: "dashboard", href: "/dashboard", icon: HomeIcon },
   { key: "clubs", href: "/clubs", icon: ClubIcon },
+  { key: "leaderboard", href: "/leaderboard", icon: TrophyIcon },
   { key: "settings", href: "/settings", icon: SettingsIcon },
 ]

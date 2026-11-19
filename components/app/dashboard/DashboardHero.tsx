@@ -11,6 +11,8 @@ import { updateBanner } from "@/app/(app)/(protected)/(onboarded)/dashboard/acti
 import { ClubIcon, ImageIcon, ResetIcon } from "../icons"
 import { clubPageUrl, shareLinks } from "@/lib/share"
 import { ShareButtons } from "../ShareButtons"
+import { WorldRankBadge } from "../leaderboard/WorldRankBadge"
+import type { ClubWorldRank } from "@/lib/leaderboard"
 
 const DEFAULT_BANNER = "/images/fondoHero.webp"
 
@@ -33,11 +35,14 @@ export function DashboardHero({
   name,
   membership,
   bannerUrl,
+  worldRank,
 }: {
   name: string
   membership: DashboardMembership
   /** The runner's own banner (independent of the club banner). */
   bannerUrl: string | null
+  /** Their club on the global leaderboard this month. */
+  worldRank: ClubWorldRank | null
 }) {
   const t = useTranslations("dashboard")
   const locale = useLocale()
@@ -157,7 +162,11 @@ export function DashboardHero({
             <span className="font-semibold">{t("heroClub.none")}</span>
           )}
         </ClubChip>
-
+        {worldRank && (
+          <div className="mt-3">
+            <WorldRankBadge worldRank={worldRank} tone="light" />
+          </div>
+        )}
         {membership && (
           <div className="mt-3 flex items-center gap-2">
             <span className="text-xs font-medium text-white/80">{t("clubShare.label")}</span>
