@@ -171,6 +171,12 @@ model WaitlistEntry {
   convertedAt DateTime?
 
   club ClubRegistration? @relation(fields: [clubId], references: [id])
+
+  // Llegó por el link de invitación de un club (/clubs/<slug>/join): ese link
+  // da acceso a la beta y deja el club preseleccionado en el onboarding.
+  // (clubId de arriba es otra cosa: el club que eligió en el form del landing.)
+  inviteClubId String?
+  inviteClub   Club?   @relation(fields: [inviteClubId], references: [id], onDelete: SetNull)
 }
 
 model ClubRegistration {
@@ -362,13 +368,14 @@ model Club {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  memberships  ClubMembership[]
-  ownerInvites ClubOwnerInvite[]
-  joinRequests ClubJoinRequest[]
-  activities   Activity[]
-  stats        ClubStats[]
-  leaderboard  LeaderboardEntry[]
-  snapshots    WeeklySnapshot[]
+  memberships    ClubMembership[]
+  ownerInvites   ClubOwnerInvite[]
+  joinRequests   ClubJoinRequest[]
+  invitedSignups WaitlistEntry[]
+  activities     Activity[]
+  stats          ClubStats[]
+  leaderboard    LeaderboardEntry[]
+  snapshots      WeeklySnapshot[]
 
   @@map("clubs")
 }

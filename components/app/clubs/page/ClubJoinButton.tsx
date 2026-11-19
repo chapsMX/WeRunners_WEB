@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
@@ -12,22 +11,37 @@ type Viewer = Awaited<ReturnType<typeof getClubViewerState>>
 const primary =
   "border border-brand-green bg-brand-green px-4 py-2 text-sm font-semibold text-brand-navy transition-colors hover:bg-brand-green/90 disabled:opacity-50"
 
-/** Join (open club) / Request to join (approval) / pending / member — or sign in for guests. */
-export function ClubJoinButton({ clubId, requiresApproval, viewer }: { clubId: string; requiresApproval: boolean; viewer: Viewer }) {
+/**
+ * Join (open club) / Request to join (approval) / pending / member. Guests and
+ * runners who haven't finished onboarding go through the club invite link
+ * (/clubs/<slug>/join): sign-in → access → onboarding with this club picked.
+ */
+export function ClubJoinButton({
+  clubId,
+  clubSlug,
+  requiresApproval,
+  viewer,
+}: {
+  clubId: string
+  clubSlug: string
+  requiresApproval: boolean
+  viewer: Viewer
+}) {
   const t = useTranslations("clubPage")
   const router = useRouter()
   const [pending, start] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
-  if (!viewer.signedIn) {
+  if (!viewer.signedIn || (!viewer.onboarded && !viewer.isMember)) {
     return (
-      <Link href="/auth/sign-in" className={primary}>
+      // Plain <a>: the invite link is a route handler (cookie + redirect), not a page.
+      <a href={`/clubs/${encodeURIComponent(clubSlug)}/join`} className={primary}>
         {requiresApproval ? t("request") : t("join")}
-      </Link>
+      </a>
     )
   }
   if (viewer.isMember) return <span className="text-sm font-semibold text-brand-green">✓ {t("yourClub")}</span>
-  if (!viewer.onboarded || viewer.inOtherClub || viewer.pendingElsewhere) return null
+  if (viewer.inOtherClub || viewer.pendingElsewhere) return null
 
   if (viewer.pendingHere) {
     return (

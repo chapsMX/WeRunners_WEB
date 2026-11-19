@@ -1,17 +1,22 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import Image from "next/image"
+import { useSearchParams } from "next/navigation"
 import { authClient } from "@/lib/auth-client"
 
 type Mode = "signin" | "signup"
 
-export default function SignInForm() {
-  const router = useRouter()
+export default function SignInForm({
+  inviteClub,
+}: {
+  /** Club whose invite link brought them here (most are new: start on "Create account"). */
+  inviteClub: { name: string; logoUrl: string | null } | null
+}) {
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard"
 
-  const [mode, setMode] = useState<Mode>("signin")
+  const [mode, setMode] = useState<Mode>(inviteClub ? "signup" : "signin")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [name, setName] = useState("")
@@ -62,7 +67,8 @@ export default function SignInForm() {
         )
         setLoading(false)
       } else {
-        router.push(callbackUrl)
+        // Full navigation: the callback may be a route handler (club invite link).
+        window.location.assign(callbackUrl)
       }
     }
   }
@@ -97,6 +103,22 @@ export default function SignInForm() {
         </div>
       ) : (
       <div className="bg-slate-900/90 backdrop-blur-sm border border-slate-700 p-8 space-y-6">
+
+        {inviteClub && (
+          <div className="flex items-center gap-3 border border-brand-green/40 bg-brand-green/10 px-4 py-3">
+            <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-800">
+              {inviteClub.logoUrl ? (
+                <Image src={inviteClub.logoUrl} alt="" fill sizes="40px" className="object-cover" />
+              ) : (
+                <span className="text-sm font-bold text-brand-green">{inviteClub.name.charAt(0).toUpperCase()}</span>
+              )}
+            </span>
+            <p className="text-sm text-slate-300">
+              You&apos;re joining <span className="font-semibold text-white">{inviteClub.name}</span>. Sign in or create
+              your account to make your kilometers count for it.
+            </p>
+          </div>
+        )}
 
         <h1 className="text-white text-2xl font-bold text-center">
           {mode === "signin" ? "Welcome back" : "Join W3Runn3rs"}

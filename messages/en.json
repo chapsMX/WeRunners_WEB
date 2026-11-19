@@ -292,6 +292,7 @@
     },
     "clubLabel": "Your running club",
     "clubHint": "Every kilometer you run counts for the club you pick.",
+    "clubInvited": "You came through {club}'s invite, so it's already picked. Every kilometer you run counts for it.",
     "clubLock": "You can switch clubs once every 6 months. Kilometers you run with a club stay with that club — they never move to a new one.",
     "clubRunners": "{count} runners",
     "clubOnApp": "{count} on W3Runn3rs",
@@ -554,6 +555,7 @@
       "grantedEmpty": "Nobody has access yet.",
       "hint": "Giving access emails them: they must sign in with that same email (Google or password).",
       "joined": "joined {date}",
+      "viaInvite": "via {club}'s invite link",
       "status": {
         "noAccount": "no account yet",
         "onboarding": "signed up · onboarding pending",

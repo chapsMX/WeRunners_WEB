@@ -20,6 +20,7 @@ export function OnboardingForm({
   defaultLocale,
   clubs,
   assignedClub,
+  invitedClub,
 }: {
   name: string | null
   suggestedUsername: string
@@ -28,6 +29,8 @@ export function OnboardingForm({
   clubs: SelectableClub[]
   /** Club the runner was already placed in (picked as its owner). Replaces the picker. */
   assignedClub: { name: string; city: string | null; country: string; logoUrl: string | null } | null
+  /** Picker value ("club:<id>") of the club whose invite link brought them: preselected, listed first. */
+  invitedClub: string | null
 }) {
   const t = useTranslations("onboarding")
   const [state, formAction, isPending] = useActionState<OnboardingState, FormData>(
@@ -42,7 +45,9 @@ export function OnboardingForm({
   const [instagram, setInstagram] = useState("")
   const [facebook, setFacebook] = useState("")
   const [strava, setStrava] = useState("")
-  const [club, setClub] = useState("")
+  const [club, setClub] = useState(invitedClub ?? "")
+  const invited = invitedClub ? clubs.find((c) => c.id === invitedClub) : undefined
+  const orderedClubs = invited ? [invited, ...clubs.filter((c) => c !== invited)] : clubs
 
   const firstName = (name ?? "").split(" ")[0]
   const usernameError = state.error?.field === "username" ? state.error.code : null
@@ -116,9 +121,11 @@ export function OnboardingForm({
         ) : (
           <fieldset>
             <legend className="block text-sm font-semibold text-foreground">{t("clubLabel")}</legend>
-            <p className="mt-1 text-xs text-muted">{t("clubHint")}</p>
+            <p className="mt-1 text-xs text-muted">
+              {invited ? t("clubInvited", { club: invited.name }) : t("clubHint")}
+            </p>
             <div className="mt-3 space-y-2" role="radiogroup">
-              {clubs.map((c) => (
+              {orderedClubs.map((c) => (
                 <ClubOption
                   key={c.id}
                   club={c}

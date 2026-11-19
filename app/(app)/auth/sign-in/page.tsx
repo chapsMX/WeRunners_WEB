@@ -5,6 +5,7 @@ import AppHeader from "@/components/layout/AppHeader"
 import AppFooter from "@/components/layout/AppFooter"
 import SignInForm from "./SignInForm"
 import { appOpenGraph, appTwitter } from "@/lib/app-share-metadata"
+import { getInviteClubFromCookie } from "@/lib/club-invite"
 
 // The tab keeps "Sign In"; link previews (app.w3runn3rs.com is the link people
 // share from the waitlist) get the marketing title instead.
@@ -19,7 +20,10 @@ export const metadata: Metadata = {
   twitter: { ...appTwitter, title: SHARE_TITLE, description: SHARE_DESCRIPTION },
 }
 
-export default function SignInPage() {
+export default async function SignInPage() {
+  // Came through a club invite link → show which club they're joining.
+  const invite = await getInviteClubFromCookie()
+
   return (
     <>
       <AppHeader />
@@ -68,7 +72,7 @@ export default function SignInPage() {
           {/* Right: sign-in card */}
           <div className="w-full max-w-md">
             <Suspense fallback={<div className="h-96 bg-slate-900/80 rounded-2xl animate-pulse" />}>
-              <SignInForm />
+              <SignInForm inviteClub={invite ? { name: invite.name, logoUrl: invite.logoUrl } : null} />
             </Suspense>
           </div>
         </div>

@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma"
 import { getAppLocale } from "@/lib/app-i18n"
 import { getSelectableClubs } from "@/lib/clubs"
 import { applyOwnerInvite } from "@/lib/club-owners"
+import { inviteClubIdFromCookie } from "@/lib/club-invite"
 import AppHeader from "@/components/layout/AppHeader"
 import AppFooter from "@/components/layout/AppFooter"
 import { OnboardingForm } from "./OnboardingForm"
@@ -29,7 +30,7 @@ export default async function OnboardingPage() {
   // Picked as a club owner before signing up → join that club now.
   await prisma.$transaction((tx) => applyOwnerInvite(tx, session.user.id, session.user.email))
 
-  const [user, clubs, locale, membership] = await Promise.all([
+  const [user, clubs, locale, membership, cookieInvite, waitlist] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
       select: { onboardingCompletedAt: true, username: true, preferredUnit: true },
@@ -40,6 +41,12 @@ export default async function OnboardingPage() {
       where: { activeUserId: session.user.id },
       select: { club: { select: { name: true, city: true, country: true, logoUrl: true } } },
     }),
+    inviteClubIdFromCookie(),
+    // Invite recorded by the beta gate: covers finishing onboarding on another device.
+    prisma.waitlistEntry.findUnique({
+      where: { email: session.user.email.trim().toLowerCase() },
+      select: { inviteClubId: true },
+    }),
   ])
 
   // Ya completó onboarding → directo al dashboard.
@@ -48,6 +55,10 @@ export default async function OnboardingPage() {
   }
 
   const suggested = user?.username ?? suggestUsername(session.user.name, session.user.email)
+
+  // Came through a club invite link → that club preselected (if it's still selectable).
+  const inviteId = cookieInvite ?? waitlist?.inviteClubId ?? null
+  const invitedClub = !membership && inviteId && clubs.some((c) => c.id === `club:${inviteId}`) ? `club:${inviteId}` : null
 
   return (
     <>
@@ -72,6 +83,7 @@ export default async function OnboardingPage() {
             defaultLocale={locale}
             clubs={clubs}
             assignedClub={membership?.club ?? null}
+            invitedClub={invitedClub}
           />
         </div>
       </main>

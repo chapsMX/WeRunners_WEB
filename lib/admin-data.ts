@@ -13,6 +13,8 @@ export type WaitlistRow = {
   name: string | null
   createdAt: Date
   beta: boolean
+  /** Came through this club's invite link (which granted access). */
+  inviteClubName: string | null
   /** Account in the app with this email. */
   account: { username: string | null; onboarded: boolean; clubName: string | null } | null
 }
@@ -21,7 +23,7 @@ export type WaitlistRow = {
 export async function getWaitlistOverview(db: Db = prisma) {
   const entries = await db.waitlistEntry.findMany({
     orderBy: { createdAt: "asc" },
-    select: { email: true, name: true, createdAt: true, betaAccess: true },
+    select: { email: true, name: true, createdAt: true, betaAccess: true, inviteClub: { select: { name: true } } },
   })
   const users = await db.user.findMany({
     where: { email: { in: entries.map((e) => e.email), mode: "insensitive" } },
@@ -40,6 +42,7 @@ export async function getWaitlistOverview(db: Db = prisma) {
       name: e.name,
       createdAt: e.createdAt,
       beta: e.betaAccess,
+      inviteClubName: e.inviteClub?.name ?? null,
       account: u
         ? { username: u.username, onboarded: Boolean(u.onboardingCompletedAt), clubName: u.memberships[0]?.club.name ?? null }
         : null,

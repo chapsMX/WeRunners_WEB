@@ -9,6 +9,7 @@ import { APP_LOCALE_COOKIE } from "@/lib/app-i18n"
 import { cleanHandle, cleanUrl, validateUsername } from "@/lib/profile-validation"
 import { joinSelectedClub } from "@/lib/clubs"
 import { sendJoinRequestEmails } from "@/lib/admin-emails"
+import { CLUB_INVITE_COOKIE } from "@/lib/club-invite"
 
 export type OnboardingState = {
   error?: {
@@ -115,11 +116,14 @@ export async function completeOnboarding(
   }
 
   // Persiste el idioma elegido en la cookie que lee el app.
-  ;(await cookies()).set(APP_LOCALE_COOKIE, safeLocale, {
+  const jar = await cookies()
+  jar.set(APP_LOCALE_COOKIE, safeLocale, {
     path: "/",
     maxAge: 60 * 60 * 24 * 365,
     sameSite: "lax",
   })
+  // The club invite (if any) did its job: access + preselected club.
+  jar.delete(CLUB_INVITE_COOKIE)
 
   // Analytics: the dashboard fires GA4 `sign_up` once with this method.
   // Better Auth stores email/password accounts with providerId "credential".
