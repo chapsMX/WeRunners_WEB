@@ -588,6 +588,22 @@
         "IMPLAUSIBLE_PACE": "Ritmo dudoso",
         "DUPLICATE": "Duplicada",
         "UNKNOWN": "No cuenta"
+      },
+      "webhooks": {
+        "title": "Webhooks · últimas 24 h",
+        "provider": "Proveedor",
+        "received": "Recibidos",
+        "processed": "Procesados",
+        "pending": "Pendientes",
+        "failed": "Fallidos",
+        "hint": "Pendientes y fallidos cuentan todos los eventos sin procesar, de cualquier fecha. Fallido = se agotaron los reintentos: el cron diario ya no lo vuelve a intentar.",
+        "allClear": "Todo en orden: no hay eventos atorados ni fallidos.",
+        "stuck": "Atorado",
+        "exhausted": "Reintentos agotados",
+        "attempts": "{count, plural, one {# intento} other {# intentos}}",
+        "retry": "Reintentar",
+        "retrying": "Reintentando…",
+        "retryFailed": "No se pudo reintentar"
       }
     }
   },

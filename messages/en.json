@@ -588,6 +588,22 @@
         "IMPLAUSIBLE_PACE": "Pace flag",
         "DUPLICATE": "Duplicate",
         "UNKNOWN": "Excluded"
+      },
+      "webhooks": {
+        "title": "Webhooks · last 24 h",
+        "provider": "Provider",
+        "received": "Received",
+        "processed": "Processed",
+        "pending": "Pending",
+        "failed": "Failed",
+        "hint": "Pending and failed count every unprocessed event, of any age. Failed = retries exhausted: the daily cron won't try again.",
+        "allClear": "All clear: no stuck or failed events.",
+        "stuck": "Stuck",
+        "exhausted": "Retries exhausted",
+        "attempts": "{count, plural, one {# attempt} other {# attempts}}",
+        "retry": "Retry",
+        "retrying": "Retrying…",
+        "retryFailed": "Retry failed"
       }
     }
   },
