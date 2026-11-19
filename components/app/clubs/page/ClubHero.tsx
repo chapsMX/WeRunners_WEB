@@ -9,6 +9,8 @@ import { countryName } from "@/lib/countries"
 import { clubSocialHref, type ClubSocialNetwork } from "@/lib/club-socials"
 import { FacebookIcon, InstagramIcon, TikTokIcon, XIcon } from "@/components/ui/SocialIcons"
 import { ClubJoinButton } from "./ClubJoinButton"
+import { WorldRankBadge } from "../../leaderboard/WorldRankBadge"
+import type { ClubWorldRank } from "@/lib/leaderboard"
 
 type Viewer = Awaited<ReturnType<typeof getClubViewerState>>
 
@@ -31,7 +33,18 @@ function websiteLabel(url: string): string {
 }
 
 /** Club banner + logo, name, members (4 faces), description, website, socials and the join action. */
-export function ClubHero({ club, faces, viewer }: { club: ClubPageData["club"]; faces: ClubPageData["faces"]; viewer: Viewer }) {
+export function ClubHero({
+  club,
+  faces,
+  viewer,
+  worldRank,
+}: {
+  club: ClubPageData["club"]
+  faces: ClubPageData["faces"]
+  viewer: Viewer
+  /** The club on the global leaderboard this month (null if inactive). */
+  worldRank: ClubWorldRank | null
+}) {
   const t = useTranslations("clubPage")
   const locale = useLocale()
   const place = [club.city, countryName(club.country, locale)].filter(Boolean).join(" · ")
@@ -89,6 +102,11 @@ export function ClubHero({ club, faces, viewer }: { club: ClubPageData["club"]; 
           )}
         </h1>
         {place && <p className="mt-1 text-sm text-muted">{place}</p>}
+        {worldRank && (
+          <div className="mt-3">
+            <WorldRankBadge worldRank={worldRank} />
+          </div>
+        )}
 
         <div className="mt-4 flex items-center gap-3">
           {faces.length > 0 && (

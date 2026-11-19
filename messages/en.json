@@ -666,5 +666,34 @@
     "colRunner": "Runner",
     "colRuns": "Runs",
     "colKm": "Km"
+  },
+  "leaderboard": {
+    "metaTitle": "Running club leaderboard · W3Runn3rs",
+    "metaDescription": "Running clubs from around the world, ranked by the kilometers their runners log. Every kilometer counts for one club.",
+    "title": "Club leaderboard",
+    "subtitle": "Running clubs from around the world, ranked by the kilometers their runners log. One runner, one club: every kilometer counts for theirs.",
+    "tabs": {
+      "month": "This month",
+      "week": "This week"
+    },
+    "colClub": "Club",
+    "colRunners": "Runners",
+    "colPerRunner": "Km / runner",
+    "colKm": "Km",
+    "yourClub": "Your club",
+    "empty": {
+      "month": "No kilometers yet this month. The first run puts a club at #1.",
+      "week": "No kilometers yet this week. The first run puts a club at #1."
+    },
+    "footnote": "Only runs recorded by a device count, from the day a runner joins their club. Weeks start on Monday and months on the 1st (UTC).",
+    "share": "Share",
+    "shareText": "Running clubs from around the world, ranked by kilometers on @w3runn3rs. Where's yours?",
+    "shareX": "Share on X",
+    "shareFarcaster": "Share on Farcaster"
+  },
+  "worldRank": {
+    "ranked": "#{rank} of {clubs} clubs worldwide this month",
+    "unranked": "No kilometers yet this month",
+    "cta": "See the leaderboard"
   }
 }

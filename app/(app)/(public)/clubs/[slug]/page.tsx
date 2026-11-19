@@ -7,6 +7,7 @@ import { ClubHero } from "@/components/app/clubs/page/ClubHero"
 import { ClubMonthActivities } from "@/components/app/clubs/page/ClubMonthActivities"
 import { ClubLeaderboard } from "@/components/app/clubs/page/ClubLeaderboard"
 import { ClubMonthStats } from "@/components/app/clubs/page/ClubMonthStats"
+import { getClubWorldRank } from "@/lib/leaderboard"
 
 type Params = { slug: string }
 
@@ -27,11 +28,14 @@ export default async function ClubPage({ params }: { params: Promise<Params> }) 
   if (!page) notFound()
 
   const session = await auth.api.getSession({ headers: await headers() })
-  const viewer = await getClubViewerState(session?.user.id ?? null, page.club.id)
+  const [viewer, worldRank] = await Promise.all([
+    getClubViewerState(session?.user.id ?? null, page.club.id),
+    getClubWorldRank(page.club.id),
+  ])
 
   return (
     <div className="text-foreground">
-      <ClubHero club={page.club} faces={page.faces} viewer={viewer} />
+      <ClubHero club={page.club} faces={page.faces} viewer={viewer} worldRank={worldRank} />
       <div className="space-y-8 px-6 py-8 lg:px-8">
         <ClubMonthStats month={page.month} memberCount={page.club.memberCount} />
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
