@@ -93,20 +93,30 @@ export async function deregisterUser(accessToken: string, polarUserId: string): 
   if (!res.ok && res.status !== 204) throw new PolarApiError("DELETE /users failed", res.status)
 }
 
-/** Only fetch exercise URLs on AccessLink itself (the webhook hands us the URL). */
-export function isPolarExerciseUrl(value: string): boolean {
+// Hosts the webhook may use for exercise URLs. Polar sends them without "www"
+// (https://polaraccesslink.com/v3/exercises/<id>) while the documented API base
+// has it — accept both, and always fetch through POLAR_API.
+const ACCESSLINK_HOSTS = new Set(["polaraccesslink.com", "www.polaraccesslink.com"])
+
+/**
+ * Exercise id from a webhook exercise URL on AccessLink itself, or null.
+ * We never fetch the URL as given: the request is rebuilt on POLAR_API.
+ */
+export function polarExerciseId(value: string): string | null {
   try {
     const url = new URL(value)
-    return url.protocol === "https:" && url.hostname === "www.polaraccesslink.com" && /^\/v3\/exercises\/[\w-]+$/.test(url.pathname)
+    if (url.protocol !== "https:" || !ACCESSLINK_HOSTS.has(url.hostname) || url.port) return null
+    return /^\/v3\/exercises\/([\w-]+)$/.exec(url.pathname)?.[1] ?? null
   } catch {
-    return false
+    return null
   }
 }
 
-/** GET an exercise by its AccessLink URL (summary fields; no samples/route). */
+/** GET an exercise by its webhook URL (summary fields; no samples/route). */
 export async function getExercise(accessToken: string, url: string): Promise<unknown> {
-  if (!isPolarExerciseUrl(url)) throw new PolarApiError("Unexpected exercise URL", 400)
-  const res = await fetch(url, {
+  const id = polarExerciseId(url)
+  if (!id) throw new PolarApiError("Unexpected exercise URL", 400)
+  const res = await fetch(`${POLAR_API}/exercises/${encodeURIComponent(id)}`, {
     headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" },
     cache: "no-store",
   })
