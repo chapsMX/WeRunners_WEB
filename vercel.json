@@ -1,14 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "schedules": {
-    "garmin-events-retry": {
+    "daily-ops": {
       "schedule": "0 6 * * *",
-      "path": "/api/cron/garmin-events",
-      "requestMethod": "GET"
-    },
-    "polar-events-retry": {
-      "schedule": "15 6 * * *",
-      "path": "/api/cron/polar-events",
+      "path": "/api/cron/daily",
       "requestMethod": "GET"
     }
   }
