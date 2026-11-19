@@ -10,11 +10,17 @@ const intlMiddleware = createMiddleware(routing)
 // "/u/" = perfiles públicos de corredores (compartibles sin login)
 const APP_PUBLIC_PATHS = ["/auth/sign-in", "/auth/sign-up", "/auth/waiting", "/u/"]
 
-// Public club pages: /clubs/<slug> exactly (not /clubs, /clubs/new or /manage).
+// Public club pages: /clubs/<slug> exactly (not /clubs, /clubs/new or /manage),
+// and their invite link /clubs/<slug>/join (handles guests itself).
 const PUBLIC_CLUB_PAGE = /^\/clubs\/(?!new\/?$)[^/]+\/?$/
+const CLUB_INVITE_LINK = /^\/clubs\/[^/]+\/join\/?$/
 
 function isPublicAppPath(pathname: string): boolean {
-  return APP_PUBLIC_PATHS.some((p) => pathname.startsWith(p)) || PUBLIC_CLUB_PAGE.test(pathname)
+  return (
+    APP_PUBLIC_PATHS.some((p) => pathname.startsWith(p)) ||
+    PUBLIC_CLUB_PAGE.test(pathname) ||
+    CLUB_INVITE_LINK.test(pathname)
+  )
 }
 
 // La cookie de sesión de Better Auth se llama "better-auth.session_token" en

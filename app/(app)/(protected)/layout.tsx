@@ -3,6 +3,7 @@ import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { resolveBetaAccess } from "@/lib/beta-access"
+import { inviteClubIdFromCookie } from "@/lib/club-invite"
 
 // Capa 1 del área protegida: sesión + beta gate.
 // El gate de onboarding y el AppShell viven en el grupo (onboarded);
@@ -14,9 +15,10 @@ export default async function ProtectedLayout({ children }: { children: ReactNod
     redirect("/auth/sign-in")
   }
 
-  // Beta gate: si betaOpen = true, cualquier usuario registrado pasa.
+  // Beta gate: si betaOpen = true, cualquier usuario registrado pasa; quien
+  // llega por el link de invitación de un club (cookie) también.
   // De paso registra en el waitlist a quien entró directo al app.
-  if (!(await resolveBetaAccess(session.user))) {
+  if (!(await resolveBetaAccess(session.user, await inviteClubIdFromCookie()))) {
     redirect("/auth/waiting")
   }
 

@@ -75,7 +75,7 @@ export function ClubHero({ club, faces, viewer }: { club: ClubPageData["club"]; 
                 {t("manage")}
               </Link>
             )}
-            <ClubJoinButton clubId={club.id} requiresApproval={club.requiresApproval} viewer={viewer} />
+            <ClubJoinButton clubId={club.id} clubSlug={club.slug} requiresApproval={club.requiresApproval} viewer={viewer} />
           </div>
         </div>
 

@@ -35,6 +35,7 @@ export default async function AdminWaitlistPage() {
         <p className="truncate text-xs text-muted">
           {r.name ? `${r.email} · ` : ""}
           {t("joined", { date: date(r.createdAt) })} · {status(r)}
+          {r.inviteClubName && <span className="text-brand-green"> · {t("viaInvite", { club: r.inviteClubName })}</span>}
         </p>
       </div>
       {action && <GrantBetaButton email={r.email} />}

@@ -27,39 +27,53 @@ export async function hasBetaAccess(email: string): Promise<boolean> {
  * Beta check for the protected area that also keeps the waitlist complete:
  * - no entry yet (signed up straight in the app) → create one (betaAccess false),
  *   so the "You're on the list" screen is true and access can be granted there;
- * - entry from the landing form → stamp convertedAt the first time.
+ * - entry from the landing form → stamp convertedAt the first time;
+ * - came through a club invite link (inviteClubId = the cookie's club, still
+ *   active) → the invite grants access and the club is remembered on the entry
+ *   (admin waitlist + onboarding fallback on another device).
  */
-export async function resolveBetaAccess(user: {
-  email: string
-  name?: string | null
-}): Promise<boolean> {
+export async function resolveBetaAccess(
+  user: { email: string; name?: string | null },
+  inviteClubId?: string | null
+): Promise<boolean> {
   const email = user.email.trim().toLowerCase()
-  const [betaOpen, entry] = await Promise.all([
+  const [betaOpen, entry, inviteClub] = await Promise.all([
     isBetaOpen(),
     prisma.waitlistEntry.findUnique({
       where: { email },
-      select: { betaAccess: true, convertedAt: true },
+      select: { betaAccess: true, convertedAt: true, inviteClubId: true },
     }),
+    inviteClubId
+      ? prisma.club.findFirst({ where: { id: inviteClubId, active: true }, select: { id: true } })
+      : Promise.resolve(null),
   ])
+  const invitedTo = inviteClub?.id ?? null
 
   if (!entry) {
     try {
       await prisma.waitlistEntry.create({
-        data: { email, name: user.name?.trim() || null, convertedAt: new Date() },
+        data: {
+          email,
+          name: user.name?.trim() || null,
+          convertedAt: new Date(),
+          ...(invitedTo ? { betaAccess: true, inviteClubId: invitedTo } : {}),
+        },
       })
     } catch (e) {
-      // Concurrent request already created it — fine.
+      // Concurrent request already created it — fine (the next request, still
+      // carrying the cookie, records the invite on the existing entry).
       if (!(e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002")) throw e
     }
-    return betaOpen
+    return betaOpen || Boolean(invitedTo)
   }
 
-  if (!entry.convertedAt) {
-    await prisma.waitlistEntry.update({
-      where: { email },
-      data: { convertedAt: new Date() },
-    })
+  const data: Prisma.WaitlistEntryUpdateInput = {}
+  if (!entry.convertedAt) data.convertedAt = new Date()
+  if (invitedTo && !entry.betaAccess) data.betaAccess = true
+  if (invitedTo && !entry.inviteClubId) data.inviteClub = { connect: { id: invitedTo } }
+  if (Object.keys(data).length > 0) {
+    await prisma.waitlistEntry.update({ where: { email }, data })
   }
 
-  return betaOpen || entry.betaAccess
+  return betaOpen || entry.betaAccess || Boolean(invitedTo)
 }
