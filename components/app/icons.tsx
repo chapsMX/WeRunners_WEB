@@ -188,3 +188,47 @@ export function FlagIcon({ size = 20, className }: IconProps) {
     </svg>
   )
 }
+
+// ── Marketing (ambassadors landing) ──
+
+export function MegaphoneIcon({ size = 20, className }: IconProps) {
+  return (
+    <svg {...base(size, className)}>
+      <path d="M3 10v4a1 1 0 0 0 1 1h3l6 4V5L7 9H4a1 1 0 0 0-1 1Z" />
+      <path d="M17 9a4 4 0 0 1 0 6" />
+      <path d="M19.5 6.5a7.5 7.5 0 0 1 0 11" />
+    </svg>
+  )
+}
+
+export function RocketIcon({ size = 20, className }: IconProps) {
+  return (
+    <svg {...base(size, className)}>
+      <path d="M14 4c3-1.5 5.5-1.5 6 0 1.5.5 1.5 3 0 6l-6.5 6.5-6-6L14 4Z" />
+      <circle cx="15.5" cy="8.5" r="1.5" />
+      <path d="M7.5 10.5 4 11l-1 2 4.5 1" />
+      <path d="M13.5 16.5 13 20l-2 1-1-4.5" />
+      <path d="M6.5 17.5 4 20" />
+    </svg>
+  )
+}
+
+export function ShirtIcon({ size = 20, className }: IconProps) {
+  return (
+    <svg {...base(size, className)}>
+      <path d="M9 3a3 3 0 0 0 6 0l5 2.5-2 4.5-2-1V21H8V9l-2 1-2-4.5L9 3Z" />
+    </svg>
+  )
+}
+
+export function GiftIcon({ size = 20, className }: IconProps) {
+  return (
+    <svg {...base(size, className)}>
+      <rect x="3" y="8" width="18" height="4" rx="1" />
+      <path d="M5 12v9h14v-9" />
+      <path d="M12 8v13" />
+      <path d="M12 8C10.5 4.5 7 4 7 6.5S10 8 12 8Z" />
+      <path d="M12 8c1.5-3.5 5-4 5-1.5S14 8 12 8Z" />
+    </svg>
+  )
+}
