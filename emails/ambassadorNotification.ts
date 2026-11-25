@@ -8,6 +8,9 @@ type AmbassadorData = {
   twitter: string | null;
   tiktok: string | null;
   motivation: string;
+  /** App applications: the runner's username and their club (pending = request not approved yet). */
+  username?: string | null;
+  club?: { name: string; pending: boolean } | null;
 };
 
 function row(label: string, value: string, last = false): string {
@@ -67,6 +70,8 @@ export function ambassadorNotificationHtml(data: AmbassadorData): string {
               <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                 ${row("Name", `<strong>${escapeHtml(data.fullName)}</strong>`)}
                 ${row("Email", escapeHtml(data.email))}
+                ${data.username !== undefined ? row("Username", data.username ? `<a href="https://app.w3runn3rs.com/u/${encodeURIComponent(data.username)}" style="color:#111827;">@${escapeHtml(data.username)}</a>` : "—") : ""}
+                ${data.club ? row("Club", escapeHtml(data.club.name) + (data.club.pending ? " (request pending approval)" : "")) : ""}
                 ${row("Country", escapeHtml(data.country))}
                 ${row("Instagram", handle("instagram", data.instagram))}
                 ${row("Twitter / X", handle("x", data.twitter))}

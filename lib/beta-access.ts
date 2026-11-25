@@ -30,11 +30,13 @@ export async function hasBetaAccess(email: string): Promise<boolean> {
  * - entry from the landing form → stamp convertedAt the first time;
  * - came through a club invite link (inviteClubId = the cookie's club, still
  *   active) → the invite grants access and the club is remembered on the entry
- *   (admin waitlist + onboarding fallback on another device).
+ *   (admin waitlist + onboarding fallback on another device);
+ * - heading to the ambassador application (ambassadorIntent) → access too.
  */
 export async function resolveBetaAccess(
   user: { email: string; name?: string | null },
-  inviteClubId?: string | null
+  inviteClubId?: string | null,
+  ambassadorIntent = false
 ): Promise<boolean> {
   const email = user.email.trim().toLowerCase()
   const [betaOpen, entry, inviteClub] = await Promise.all([
@@ -48,6 +50,7 @@ export async function resolveBetaAccess(
       : Promise.resolve(null),
   ])
   const invitedTo = inviteClub?.id ?? null
+  const pass = Boolean(invitedTo) || ambassadorIntent
 
   if (!entry) {
     try {
@@ -56,7 +59,8 @@ export async function resolveBetaAccess(
           email,
           name: user.name?.trim() || null,
           convertedAt: new Date(),
-          ...(invitedTo ? { betaAccess: true, inviteClubId: invitedTo } : {}),
+          ...(pass ? { betaAccess: true } : {}),
+          ...(invitedTo ? { inviteClubId: invitedTo } : {}),
         },
       })
     } catch (e) {
@@ -64,16 +68,16 @@ export async function resolveBetaAccess(
       // carrying the cookie, records the invite on the existing entry).
       if (!(e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002")) throw e
     }
-    return betaOpen || Boolean(invitedTo)
+    return betaOpen || pass
   }
 
   const data: Prisma.WaitlistEntryUpdateInput = {}
   if (!entry.convertedAt) data.convertedAt = new Date()
-  if (invitedTo && !entry.betaAccess) data.betaAccess = true
+  if (pass && !entry.betaAccess) data.betaAccess = true
   if (invitedTo && !entry.inviteClubId) data.inviteClub = { connect: { id: invitedTo } }
   if (Object.keys(data).length > 0) {
     await prisma.waitlistEntry.update({ where: { email }, data })
   }
 
-  return betaOpen || entry.betaAccess || Boolean(invitedTo)
+  return betaOpen || entry.betaAccess || pass
 }

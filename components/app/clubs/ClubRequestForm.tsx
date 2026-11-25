@@ -11,7 +11,8 @@ import {
 const input =
   "mt-2 w-full rounded-xl border border-line bg-surface-alt/40 px-3 py-2.5 text-sm text-foreground placeholder:text-muted/50 transition-colors focus:border-brand-green focus:outline-none"
 
-export function ClubRequestForm({ defaultEmail }: { defaultEmail: string }) {
+/** next: where to go after sending (only the ambassador application today; default the dashboard). */
+export function ClubRequestForm({ defaultEmail, next }: { defaultEmail: string; next?: string | null }) {
   const t = useTranslations("clubRequest")
   const locale = useLocale()
   const countries = useMemo(() => countryOptions(locale), [locale])
@@ -38,6 +39,7 @@ export function ClubRequestForm({ defaultEmail }: { defaultEmail: string }) {
 
   return (
     <form action={action} className="space-y-5">
+      {next && <input type="hidden" name="next" value={next} />}
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="sm:col-span-2">{field("clubName", t("clubName"), { required: true })}</div>
         {field("city", t("city"), { required: true })}

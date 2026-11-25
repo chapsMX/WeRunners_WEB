@@ -1,9 +1,10 @@
 import type { ReactNode } from "react"
-import { headers } from "next/headers"
+import { cookies, headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { resolveBetaAccess } from "@/lib/beta-access"
 import { inviteClubIdFromCookie } from "@/lib/club-invite"
+import { AMBASSADOR_INTENT_COOKIE } from "@/lib/ambassador-intent"
 
 // Capa 1 del área protegida: sesión + beta gate.
 // El gate de onboarding y el AppShell viven en el grupo (onboarded);
@@ -18,7 +19,8 @@ export default async function ProtectedLayout({ children }: { children: ReactNod
   // Beta gate: si betaOpen = true, cualquier usuario registrado pasa; quien
   // llega por el link de invitación de un club (cookie) también.
   // De paso registra en el waitlist a quien entró directo al app.
-  if (!(await resolveBetaAccess(session.user, await inviteClubIdFromCookie()))) {
+  const ambassadorIntent = (await cookies()).has(AMBASSADOR_INTENT_COOKIE)
+  if (!(await resolveBetaAccess(session.user, await inviteClubIdFromCookie(), ambassadorIntent))) {
     redirect("/auth/waiting")
   }
 

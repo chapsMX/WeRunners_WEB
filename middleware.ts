@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getSessionCookie } from "better-auth/cookies"
 import { ON_LIST_COOKIE, ON_LIST_DOMAIN, ON_LIST_MAX_AGE, isW3Host } from "./lib/on-list-cookie"
 import { routing } from "./i18n/routing"
+import { AMBASSADOR_APPLY_PATH, AMBASSADOR_INTENT_COOKIE, AMBASSADOR_INTENT_MAX_AGE } from "./lib/ambassador-intent"
 
 const intlMiddleware = createMiddleware(routing)
 
@@ -39,6 +40,7 @@ const APP_PATH_PREFIXES = [
   "/leaderboard",
   "/settings",
   "/admin",
+  "/ambassadors/", // /ambassadors/apply (the app); /ambassadors itself is the landing (www, i18n)
 ]
 
 function isAppSubdomain(request: NextRequest): boolean {
@@ -61,12 +63,34 @@ function handleAppRequest(request: NextRequest): NextResponse {
   if (!isPublic && !hasSession) {
     const signInUrl = new URL("/auth/sign-in", request.url)
     signInUrl.searchParams.set("callbackUrl", pathname)
-    return NextResponse.redirect(signInUrl)
+    const redirect = NextResponse.redirect(signInUrl)
+    if (isAmbassadorIntent(request)) setAmbassadorIntentCookie(redirect)
+    return redirect
   }
 
   const response = NextResponse.next()
   if (hasSession) setOnListCookie(request, response)
+  if (isAmbassadorIntent(request)) setAmbassadorIntentCookie(response)
   return response
+}
+
+// Heading to the ambassador application (landing "Apply now" → sign-in with
+// callbackUrl=/ambassadors/apply, or the page itself): remember it so the beta
+// gate lets them in and onboarding brings them back (lib/ambassador-intent).
+function isAmbassadorIntent(request: NextRequest): boolean {
+  const { pathname, searchParams } = request.nextUrl
+  if (pathname.startsWith(AMBASSADOR_APPLY_PATH)) return true
+  return pathname.startsWith("/auth/sign-in") && (searchParams.get("callbackUrl") ?? "").startsWith(AMBASSADOR_APPLY_PATH)
+}
+
+function setAmbassadorIntentCookie(response: NextResponse) {
+  response.cookies.set(AMBASSADOR_INTENT_COOKIE, "1", {
+    path: "/",
+    maxAge: AMBASSADOR_INTENT_MAX_AGE,
+    sameSite: "lax",
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+  })
 }
 
 // Signed-in → on the waitlist (every account is). Share that with the landing
