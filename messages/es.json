@@ -727,7 +727,13 @@
     "share": "Compartir",
     "shareText": "Clubes de corredores de todo el mundo, ordenados por kilómetros en @w3runn3rs. ¿Dónde va el tuyo?",
     "shareX": "Compartir en X",
-    "shareFarcaster": "Compartir en Farcaster"
+    "shareFarcaster": "Compartir en Farcaster",
+    "og": {
+      "eyebrow": "Clubes de corredores del mundo",
+      "subtitle": "Cada kilómetro cuenta para un club.",
+      "top": "Top clubes del mes",
+      "empty": "La primera corrida pone a un club en el #1."
+    }
   },
   "worldRank": {
     "ranked": "#{rank} de {clubs} clubes en el mundo este mes",
@@ -791,6 +797,9 @@
       },
       "cta": "Aplica ahora →",
       "note": "Revisamos las aplicaciones conforme llegan. Solo contactaremos a quienes queden preseleccionados."
+    },
+    "og": {
+      "eyebrow": "Programa de embajadores"
     }
   },
   "ambassadorApply": {

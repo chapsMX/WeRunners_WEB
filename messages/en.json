@@ -727,7 +727,13 @@
     "share": "Share",
     "shareText": "Running clubs from around the world, ranked by kilometers on @w3runn3rs. Where's yours?",
     "shareX": "Share on X",
-    "shareFarcaster": "Share on Farcaster"
+    "shareFarcaster": "Share on Farcaster",
+    "og": {
+      "eyebrow": "Running clubs worldwide",
+      "subtitle": "Every kilometer counts for one club.",
+      "top": "Top clubs this month",
+      "empty": "The first run puts a club at #1."
+    }
   },
   "worldRank": {
     "ranked": "#{rank} of {clubs} clubs worldwide this month",
@@ -791,6 +797,9 @@
       },
       "cta": "Apply now →",
       "note": "Applications are reviewed on a rolling basis. Only shortlisted candidates will be contacted."
+    },
+    "og": {
+      "eyebrow": "Ambassador Program"
     }
   },
   "ambassadorApply": {
