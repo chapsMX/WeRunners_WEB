@@ -27,7 +27,8 @@ export const appTwitter = {
 } satisfies NonNullable<Metadata["twitter"]>
 
 /**
- * Link preview with its own share card (an /api/og/* image, 1200×630).
+ * Link preview with its own share card (an /api/og/* image, 1200×630, or a
+ * static file in /public with its own size).
  * Relative image URLs resolve against the layout's metadataBase (www or app).
  */
 export function shareMetadata({
@@ -35,13 +36,17 @@ export function shareMetadata({
   description,
   image,
   alt,
+  width = 1200,
+  height = 630,
 }: {
   title: string
   description: string
   image: string
   alt?: string
+  width?: number
+  height?: number
 }): Pick<Metadata, "openGraph" | "twitter"> {
-  const images = [{ url: image, width: 1200, height: 630, alt: alt ?? title }]
+  const images = [{ url: image, width, height, alt: alt ?? title }]
   return {
     openGraph: { ...appOpenGraph, title, description, images },
     twitter: { ...appTwitter, title, description, images: [image] },

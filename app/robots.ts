@@ -7,7 +7,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
+        // /api/og/ = share-card images: X's crawler respects robots.txt when
+        // fetching og:image, so they must stay allowed (longest match wins).
+        allow: ["/", "/api/og/"],
         // Evitar indexar rutas de API, assets internos o duplicados
         disallow: ["/api/", "/_next/"],
       },
