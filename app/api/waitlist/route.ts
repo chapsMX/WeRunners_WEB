@@ -33,13 +33,13 @@ export async function POST(req: NextRequest) {
     // Fire both emails concurrently — failures don't block the 201 response
     await Promise.allSettled([
       resend.emails.send({
-        from:    "w3runn3rs <noreply@w3runn3rs.com>",
+        from:    "We Runners <noreply@w3runn3rs.com>",
         to:      normalized,
         subject: waitlistWelcomeSubject,
         html:    waitlistWelcomeHtml(name?.trim()),
       }),
       resend.emails.send({
-        from:    "w3runn3rs <noreply@w3runn3rs.com>",
+        from:    "We Runners <noreply@w3runn3rs.com>",
         to:      "run@w3runn3rs.com",
         subject: waitlistNotificationSubject(normalized),
         html:    waitlistNotificationHtml({ email: normalized, name: name?.trim(), clubId }),

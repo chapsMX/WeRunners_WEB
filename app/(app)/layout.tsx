@@ -11,7 +11,7 @@ import { appOpenGraph, appTwitter } from "@/lib/app-share-metadata"
 // each page's own <title> and description.
 export const metadata: Metadata = {
   metadataBase: new URL("https://app.w3runn3rs.com"),
-  title: "W3Runn3rs",
+  title: "We Runners",
   description: "The global hub for running clubs. Pick your running club, make every kilometer count.",
   openGraph: appOpenGraph,
   twitter: appTwitter,

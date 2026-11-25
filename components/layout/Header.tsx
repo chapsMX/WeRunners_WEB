@@ -57,11 +57,11 @@ export default function Header() {
           <Link
             href={`/${locale}`}
             className="flex items-center gap-3 group"
-            aria-label="w3runn3rs — home"
+            aria-label="We Runners — home"
           >
             <Image
               src="/images/logoAzul.png"
-              alt="w3runn3rs"
+              alt="We Runners"
               width={980}
               height={656}
               className="h-14 w-auto opacity-90 group-hover:opacity-100 transition-opacity"

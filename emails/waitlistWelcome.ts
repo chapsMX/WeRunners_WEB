@@ -7,7 +7,7 @@ export function waitlistWelcomeHtml(name?: string | null): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>You're on the w3runn3rs waitlist!</title>
+  <title>You're on the We Runners waitlist!</title>
 </head>
 <body style="margin:0;padding:0;background-color:#0a0a0a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0a0a;padding:40px 16px;">
@@ -20,7 +20,7 @@ export function waitlistWelcomeHtml(name?: string | null): string {
             <td align="center" style="padding-bottom:32px;">
               <img
                 src="https://www.w3runn3rs.com/images/logoAzul.png"
-                alt="w3runn3rs"
+                alt="We Runners"
                 width="160"
                 style="height:auto;display:block;"
               />
@@ -44,7 +44,7 @@ export function waitlistWelcomeHtml(name?: string | null): string {
                 ${greeting}
               </p>
               <p style="margin:0 0 32px;font-size:15px;color:#9ca3af;text-align:center;line-height:1.6;">
-                We'll notify you as soon as w3runn3rs is ready to launch.<br/>
+                We'll notify you as soon as We Runners is ready to launch.<br/>
                 In the meantime, follow us for updates and help us spread the word.
               </p>
 
@@ -87,7 +87,7 @@ export function waitlistWelcomeHtml(name?: string | null): string {
           <tr>
             <td style="padding-top:28px;text-align:center;">
               <p style="margin:0 0 8px;font-size:12px;color:#4b5563;">
-                © 2026 w3runn3rs. All rights reserved.
+                © 2026 We Runners. All rights reserved.
               </p>
               <p style="margin:0;font-size:12px;color:#4b5563;">
                 <a href="https://www.w3runn3rs.com/en/privacy-policy" style="color:#6b7280;text-decoration:none;">Privacy Policy</a>
@@ -106,4 +106,4 @@ export function waitlistWelcomeHtml(name?: string | null): string {
 `;
 }
 
-export const waitlistWelcomeSubject = "You're on the w3runn3rs waitlist! 🎉";
+export const waitlistWelcomeSubject = "You're on the We Runners waitlist! 🎉";

@@ -19,12 +19,12 @@ export function clubOwnerHtml(opts: {
     ? "From your dashboard, open <strong>Manage club</strong> to edit the club profile, add collaborators and look after your members."
     : `Create your account with <strong>${escapeHtml(opts.email)}</strong> (Google or password) — you'll land straight in ${club} as its owner. Signing up with a different email won't link you to the club.`;
   return darkEmailLayout({
-    title: `You're the admin of ${club} on W3Runn3rs`,
+    title: `You're the admin of ${club} on We Runners`,
     emoji: "🏃",
     heading: `You're the admin of ${club}`,
     bodyHtml:
       paragraph(greeting) +
-      paragraph(`You're now the owner of <strong>${club}</strong> on W3Runn3rs.`) +
+      paragraph(`You're now the owner of <strong>${club}</strong> on We Runners.`) +
       paragraph(next, true),
     cta: opts.hasAccount
       ? { href: opts.manageUrl, label: "Manage your club →" }
@@ -32,4 +32,4 @@ export function clubOwnerHtml(opts: {
   });
 }
 
-export const clubOwnerSubject = (clubName: string) => `You're the admin of ${clubName} on W3Runn3rs`;
+export const clubOwnerSubject = (clubName: string) => `You're the admin of ${clubName} on We Runners`;

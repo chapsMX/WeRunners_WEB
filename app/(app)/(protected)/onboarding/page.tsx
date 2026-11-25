@@ -20,7 +20,7 @@ function suggestUsername(name?: string | null, email?: string | null): string {
 }
 
 export const metadata: Metadata = {
-  title: "Welcome · W3Runn3rs",
+  title: "Welcome · We Runners",
 }
 
 export default async function OnboardingPage() {
@@ -68,7 +68,7 @@ export default async function OnboardingPage() {
       <main className="relative min-h-screen overflow-hidden">
         <Image
           src="/images/fondoHero.webp"
-          alt="W3Runn3rs runners"
+          alt="We Runners runners"
           fill
           priority
           className="object-cover object-center"

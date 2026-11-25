@@ -88,7 +88,7 @@ export function generateStaticParams() {
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "W3Runn3rs",
+  name: "We Runners",
   url: BASE_URL,
   logo: `${BASE_URL}/images/logoAzul.png`,
   sameAs: [

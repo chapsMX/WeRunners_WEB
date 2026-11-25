@@ -8,7 +8,7 @@ import {
   type SignupMethod,
 } from "@/emails/appSignupNotification"
 
-const FROM = "w3runn3rs <noreply@w3runn3rs.com>"
+const FROM = "We Runners <noreply@w3runn3rs.com>"
 const TEAM_INBOX = "run@w3runn3rs.com"
 
 type MailUser = { email: string; name?: string | null }

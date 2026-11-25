@@ -12,7 +12,7 @@ export function followListMetadata(kind: FollowListKind) {
   return async function generateMetadata({ params }: { params: Promise<{ username: string }> }): Promise<Metadata> {
     const { username } = await params
     const label = kind === "followers" ? "Followers" : "Following"
-    return { title: `${label} · @${username.toLowerCase()} · W3Runn3rs`, robots: { index: false, follow: true } }
+    return { title: `${label} · @${username.toLowerCase()} · We Runners`, robots: { index: false, follow: true } }
   }
 }
 

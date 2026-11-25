@@ -16,7 +16,7 @@ export default function Hero() {
       {/* Background image */}
       <Image
         src="/images/fondoHero.webp"
-        alt="W3 Runn3rs hero background"
+        alt="We Runners hero background"
         fill
         priority
         className="object-cover object-center"
@@ -31,7 +31,7 @@ export default function Hero() {
         {/* Rows 1 + 2 — title & tagline, almost touching */}
         <div className="flex flex-col items-center gap-1">
           <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold text-white tracking-tight leading-none">
-            W3 Runn3rs
+            We Runners
           </h1>
           <p className="text-xl sm:text-2xl md:text-3xl font-semibold text-brand-green leading-tight">
             {t("subtitle")}

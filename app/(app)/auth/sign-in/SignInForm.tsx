@@ -77,8 +77,8 @@ export default function SignInForm({
     <div className="w-full">
       {/* Logo — mobile only */}
       <div className="text-center mb-8 lg:hidden">
-        <span className="text-brand-green font-bold text-3xl tracking-tight">W3</span>
-        <span className="text-white font-bold text-3xl tracking-tight">RUNN3RS</span>
+        <span className="text-brand-green font-bold text-3xl tracking-tight">WE</span>{" "}
+        <span className="text-white font-bold text-3xl tracking-tight">RUNNERS</span>
         <p className="text-white/60 text-sm mt-1">Pick your running club, make it count.</p>
       </div>
 
@@ -121,7 +121,7 @@ export default function SignInForm({
         )}
 
         <h1 className="text-white text-2xl font-bold text-center">
-          {mode === "signin" ? "Welcome back" : "Join W3Runn3rs"}
+          {mode === "signin" ? "Welcome back" : "Join We Runners"}
         </h1>
 
         {/* Google */}

@@ -62,7 +62,7 @@ export function darkEmailLayout({
         <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
           <tr>
             <td align="center" style="padding-bottom:32px;">
-              <img src="https://www.w3runn3rs.com/images/logoAzul.png" alt="w3runn3rs" width="160" style="height:auto;display:block;" />
+              <img src="https://www.w3runn3rs.com/images/logoAzul.png" alt="We Runners" width="160" style="height:auto;display:block;" />
             </td>
           </tr>
           <tr>
@@ -77,7 +77,7 @@ export function darkEmailLayout({
           </tr>
           <tr>
             <td style="padding-top:28px;text-align:center;">
-              <p style="margin:0 0 8px;font-size:12px;color:#4b5563;">© 2026 w3runn3rs. All rights reserved.</p>
+              <p style="margin:0 0 8px;font-size:12px;color:#4b5563;">© 2026 We Runners. All rights reserved.</p>
               <p style="margin:0;font-size:12px;color:#4b5563;">
                 <a href="https://www.w3runn3rs.com/en/privacy-policy" style="color:#6b7280;text-decoration:none;">Privacy Policy</a>
                 &nbsp;·&nbsp;

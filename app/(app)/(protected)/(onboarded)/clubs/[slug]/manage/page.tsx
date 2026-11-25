@@ -18,7 +18,7 @@ import { updateClubProfileAction } from "./actions"
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const club = await prisma.club.findUnique({ where: { slug }, select: { name: true } })
-  return { title: `Manage ${club?.name ?? "club"} · W3Runn3rs`, robots: { index: false, follow: false } }
+  return { title: `Manage ${club?.name ?? "club"} · We Runners`, robots: { index: false, follow: false } }
 }
 
 // Club management: owner, collaborators and the superadmin.

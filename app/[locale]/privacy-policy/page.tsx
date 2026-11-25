@@ -11,10 +11,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const es = locale === "es";
   return buildPageMetadata(locale, "/privacy-policy", {
-    title: es ? "Política de privacidad — W3Runn3rs" : "Privacy Policy — W3Runn3rs",
+    title: es ? "Política de privacidad — We Runners" : "Privacy Policy — We Runners",
     description: es
-      ? "Qué datos recaba W3Runn3rs, para qué los usa, qué es público y cómo controlarlos."
-      : "What data W3Runn3rs collects, what it's used for, what's public and how to control it.",
+      ? "Qué datos recaba We Runners, para qué los usa, qué es público y cómo controlarlos."
+      : "What data We Runners collects, what it's used for, what's public and how to control it.",
   });
 }
 

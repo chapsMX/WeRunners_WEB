@@ -8,8 +8,8 @@ import { parsePolarResult } from "@/lib/polar/results"
 import { SignUpTracker } from "@/components/app/SignUpTracker"
 
 export const metadata: Metadata = {
-  title: "Dashboard · W3Runn3rs",
-  description: "Your runs, your club's monthly ranking and your numbers on W3Runn3rs.",
+  title: "Dashboard · We Runners",
+  description: "Your runs, your club's monthly ranking and your numbers on We Runners.",
 }
 
 export default async function DashboardPage({

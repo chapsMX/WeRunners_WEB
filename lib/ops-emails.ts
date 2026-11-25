@@ -5,7 +5,7 @@ import { resend } from "@/lib/resend"
 import { APP_URL } from "@/lib/share"
 import type { DailySummary, OpsHealth } from "@/lib/ops-health"
 
-const FROM = "w3runn3rs <noreply@w3runn3rs.com>"
+const FROM = "We Runners <noreply@w3runn3rs.com>"
 const TEAM_INBOX = "run@w3runn3rs.com"
 
 export type RetrySummary = { pending: number; ok: number; failed: number }
@@ -50,7 +50,7 @@ export function opsDigestSubject(health: OpsHealth, summary: DailySummary): stri
   if (exhausted) parts.push(`⚠ ${plural(exhausted, "failed event")}`)
   if (stuck) parts.push(`⚠ ${plural(stuck, "stuck event")}`)
   if (health.paceFlags.length) parts.push(plural(health.paceFlags.length, "pace flag"))
-  return `[W3Runn3rs daily] ${parts.join(" · ")}`
+  return `[We Runners daily] ${parts.join(" · ")}`
 }
 
 export function opsDigestText(health: OpsHealth, summary: DailySummary, retries: Retries): string {

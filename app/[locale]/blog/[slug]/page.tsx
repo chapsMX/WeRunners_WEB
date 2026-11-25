@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : `${SITE_URL}/images/share.png`;
 
   return {
-    title: `${post.title} — W3Runn3rs Blog`,
+    title: `${post.title} — We Runners Blog`,
     description: post.excerpt,
     openGraph: {
       title: post.title,
@@ -107,12 +107,12 @@ export default async function BlogPostPage({ params }: Props) {
     datePublished: post.date,
     author: {
       "@type": "Organization",
-      name: post.author ?? "W3Runn3rs Team",
+      name: post.author ?? "We Runners Team",
       url: SITE_URL,
     },
     publisher: {
       "@type": "Organization",
-      name: "W3Runn3rs",
+      name: "We Runners",
       url: SITE_URL,
       logo: {
         "@type": "ImageObject",
@@ -217,8 +217,8 @@ export default async function BlogPostPage({ params }: Props) {
             </p>
             <h2 className="text-2xl md:text-3xl font-extrabold text-foreground mb-6">
               {locale === "es"
-                ? "Encuentra tu club en w3runn3rs."
-                : "Find your running club on w3runn3rs."}
+                ? "Encuentra tu club en We Runners."
+                : "Find your running club on We Runners."}
             </h2>
             <Link
               href={`/${locale}/waitlist`}

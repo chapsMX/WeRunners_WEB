@@ -22,7 +22,7 @@ function stripPrefix(stored: string | null, prefix: string): string {
 }
 
 export const metadata: Metadata = {
-  title: "Edit profile · W3Runn3rs",
+  title: "Edit profile · We Runners",
 }
 
 export default async function SettingsPage() {

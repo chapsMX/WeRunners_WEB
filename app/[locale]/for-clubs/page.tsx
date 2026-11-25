@@ -108,7 +108,7 @@ export default function ForClubsPage() {
               <span className="text-brand-green">need a home?</span>
             </h1>
             <p className="text-xl text-muted max-w-2xl mx-auto">
-              Registering your club on w3runn3rs is free and takes just a few
+              Registering your club on We Runners is free and takes just a few
               minutes. Once you&apos;re in, your club joins the global leaderboard.
             </p>
           </div>

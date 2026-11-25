@@ -8,7 +8,7 @@ import { OnTheListCard, BackArrow } from "@/components/waitlist/OnTheListCard"
 import SignOutButton from "./SignOutButton"
 
 export const metadata: Metadata = {
-  title: "You're on the list — W3Runn3rs",
+  title: "You're on the list — We Runners",
   description: "Your account is created. We'll notify you when it's your turn.",
 }
 
@@ -25,7 +25,7 @@ export default async function WaitingPage() {
       <main className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <Image
           src="/images/fondoHero.webp"
-          alt="W3Runn3rs runners"
+          alt="We Runners runners"
           fill
           priority
           className="object-cover object-center"

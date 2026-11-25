@@ -10,7 +10,7 @@ import { ClubRequestForm } from "@/components/app/clubs/ClubRequestForm"
 import { AMBASSADOR_APPLY_PATH } from "@/lib/ambassador-intent"
 
 export const metadata: Metadata = {
-  title: "Register your club · W3Runn3rs",
+  title: "Register your club · We Runners",
 }
 
 // A runner without a club asks for theirs to be added to W3Runn3rs.

@@ -8,14 +8,14 @@ export function PrivacyPolicyEn() {
       <p className="text-slate-400 text-sm">Last updated: November 19, 2026 | Mexico City, Mexico</p>
 
       <p>
-        This policy explains what personal data W3Runn3rs collects, what we use it for, what other people can see, and
+        This policy explains what personal data We Runners collects, what we use it for, what other people can see, and
         how you can control it. It applies to our website (<strong>www.w3runn3rs.com</strong>) and our app (
         <strong>app.w3runn3rs.com</strong>), together the &ldquo;Service&rdquo;.
       </p>
 
       <h2>1. Who we are</h2>
       <p>
-        W3Runn3rs (&ldquo;we&rdquo;, &ldquo;us&rdquo;) is a global hub for running clubs, based in Mexico City, Mexico. We
+        We Runners (&ldquo;we&rdquo;, &ldquo;us&rdquo;) is a global hub for running clubs, based in Mexico City, Mexico. We
         are responsible for the personal data described in this policy. For anything related to your data, write to{" "}
         <a href={`mailto:${CONTACT}`}>{CONTACT}</a>.
       </p>
@@ -103,7 +103,7 @@ export function PrivacyPolicyEn() {
       </p>
 
       <h2>4. What other people can see</h2>
-      <p>W3Runn3rs is built around clubs, so some information is public, including to people without an account:</p>
+      <p>We Runners is built around clubs, so some information is public, including to people without an account:</p>
       <ul>
         <li>
           <strong>Your profile</strong> (app.w3runn3rs.com/u/your-username): name, username, photo, bio, social links,
@@ -126,7 +126,7 @@ export function PrivacyPolicyEn() {
       <ul>
         <li>You connect a provider by signing in with it and accepting the permissions it shows you. You can change those permissions in the provider&apos;s app.</li>
         <li>
-          You can disconnect at any time from your settings in W3Runn3rs or from the provider&apos;s app. When you
+          You can disconnect at any time from your settings in We Runners or from the provider&apos;s app. When you
           disconnect, we delete your access credentials and stop receiving runs. Runs we already received stay in your
           account and keep counting for the club they counted for, unless you ask us to delete them (see section 8).
         </li>

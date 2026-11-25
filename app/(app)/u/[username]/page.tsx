@@ -45,9 +45,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { username } = await params
   const user = await getUser(username)
-  if (!user) return { title: "W3Runn3rs" }
+  if (!user) return { title: "We Runners" }
   return {
-    title: `${user.name} (@${user.username}) · W3Runn3rs`,
+    title: `${user.name} (@${user.username}) · We Runners`,
     description: user.bio ?? undefined,
   }
 }

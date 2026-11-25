@@ -8,12 +8,12 @@ export function verifyEmailHtml(url: string, name?: string | null): string {
   const safeUrl = escapeHtml(url);
 
   return darkEmailLayout({
-    title: "Verify your W3Runn3rs email",
+    title: "Verify your We Runners email",
     emoji: "✉️",
     heading: "Verify your email",
     bodyHtml:
       paragraph(greeting) +
-      paragraph("Confirm this is your email to finish creating your W3Runn3rs account.", true),
+      paragraph("Confirm this is your email to finish creating your We Runners account.", true),
     cta: { href: safeUrl, label: "Verify my email →" },
     afterCtaHtml: `
               <p style="margin:0 0 8px;font-size:12px;color:#6b7280;text-align:center;line-height:1.6;">
@@ -26,4 +26,4 @@ export function verifyEmailHtml(url: string, name?: string | null): string {
   });
 }
 
-export const verifyEmailSubject = "Verify your W3Runn3rs email";
+export const verifyEmailSubject = "Verify your We Runners email";

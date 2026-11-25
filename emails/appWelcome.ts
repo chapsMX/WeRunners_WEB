@@ -7,7 +7,7 @@ export function appWelcomeHtml(name?: string | null): string {
   const greeting = first ? `Welcome, ${escapeHtml(first)}!` : "Welcome, runner!";
 
   return darkEmailLayout({
-    title: "Your W3Runn3rs account is ready",
+    title: "Your We Runners account is ready",
     emoji: "🏃",
     heading: "Your account is ready",
     bodyHtml:
@@ -16,8 +16,8 @@ export function appWelcomeHtml(name?: string | null): string {
         "You're on the list. We're rolling out access gradually and we'll email you as soon as it's your turn to pick your running club and make every kilometer count.",
         true
       ),
-    cta: { href: "https://app.w3runn3rs.com", label: "Go to W3Runn3rs →" },
+    cta: { href: "https://app.w3runn3rs.com", label: "Go to We Runners →" },
   });
 }
 
-export const appWelcomeSubject = "Your W3Runn3rs account is ready 🏃";
+export const appWelcomeSubject = "Your We Runners account is ready 🏃";

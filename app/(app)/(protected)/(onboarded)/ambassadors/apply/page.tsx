@@ -12,7 +12,7 @@ import { AmbassadorApplyForm } from "@/components/app/ambassadors/AmbassadorAppl
 import { SignUpTracker } from "@/components/app/SignUpTracker"
 
 export const metadata: Metadata = {
-  title: "Ambassador application · W3Runn3rs",
+  title: "Ambassador application · We Runners",
   robots: { index: false, follow: false },
 }
 

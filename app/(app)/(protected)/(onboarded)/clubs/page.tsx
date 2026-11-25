@@ -8,8 +8,8 @@ import { getClubDirectory } from "@/lib/clubs"
 import { ClubDirectory } from "@/components/app/clubs/ClubDirectory"
 
 export const metadata: Metadata = {
-  title: "Clubs · W3Runn3rs",
-  description: "Every running club on W3Runn3rs. Pick yours and every kilometer counts for it.",
+  title: "Clubs · We Runners",
+  description: "Every running club on We Runners. Pick yours and every kilometer counts for it.",
 }
 
 // Every club on W3Runn3rs. Runners without a club join (open clubs) or ask
