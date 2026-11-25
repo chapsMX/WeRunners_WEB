@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
     ].filter(Boolean).join("\n") || "—";
 
     const notifyBody = [
-      `New club registration on w3runn3rs`,
+      `New club registration on We Runners`,
       ``,
       `Club name : ${clubName.trim()}`,
       `City      : ${city.trim()}`,
@@ -155,19 +155,19 @@ export async function POST(req: NextRequest) {
       ``,
       `Questions? Reply to this email or reach us at run@w3runn3rs.com`,
       ``,
-      `— The w3runn3rs team`,
+      `— The We Runners team`,
     ].join("\n");
 
     // Send both emails and log any errors
     const [notifyResult, confirmResult] = await Promise.allSettled([
       resend.emails.send({
-        from:    "w3runn3rs <noreply@w3runn3rs.com>",
+        from:    "We Runners <noreply@w3runn3rs.com>",
         to:      "run@w3runn3rs.com",
         subject: `New club registration: ${clubName.trim()}`,
         text:    notifyBody,
       }),
       resend.emails.send({
-        from:    "w3runn3rs <noreply@w3runn3rs.com>",
+        from:    "We Runners <noreply@w3runn3rs.com>",
         to:      email.trim().toLowerCase(),
         subject: `We received your club registration — ${clubName.trim()}`,
         text:    confirmBody,

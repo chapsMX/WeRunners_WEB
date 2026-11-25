@@ -15,7 +15,7 @@
   "whatis": {
     "headline": "A home for running clubs.",
     "body1": "Running clubs are more than just groups of people who run together. They have identity, culture and a sense of belonging that goes beyond the finish line.",
-    "body2": "w3runn3rs is the global hub where running clubs compete, connect and grow — with real data, real rivalries and real community. Every runner belongs to one club only, making every kilometer meaningful and every leaderboard worth fighting for.",
+    "body2": "We Runners is the global hub where running clubs compete, connect and grow — with real data, real rivalries and real community. Every runner belongs to one club only, making every kilometer meaningful and every leaderboard worth fighting for.",
     "body3": "Whether you're chasing a personal record, traveling the world to race or building the next great running club — this is where it all comes together.",
     "pillar1_title": "True Loyalty",
     "pillar1_desc": "One runner, one club. Your effort belongs to your club, not split across many.",
@@ -37,7 +37,7 @@
   },
   "clubs": {
     "headline": "Does your running club need a home?",
-    "body": "Registering your club on w3runn3rs is free and takes just a few minutes. Once you're in, your club joins the global leaderboard — competing weekly and monthly against running clubs from around the world.",
+    "body": "Registering your club on We Runners is free and takes just a few minutes. Once you're in, your club joins the global leaderboard — competing weekly and monthly against running clubs from around the world.",
     "cta": "Register Your Club — It's Free →",
     "step1_title": "Create your club",
     "step1_desc": "Fill in your club name, city, logo and a short description.",
@@ -52,7 +52,7 @@
     "headline": "Forget dating apps. Join a running club.",
     "body1": "Something is shifting. People are waking up early instead of staying out late. They're booking flights to run marathons in Tokyo, signing up for HYROX in London or crossing a finish line in New York.",
     "body2": "They're choosing running clubs over bars, race bibs over concert tickets. Running is no longer just a sport — it's an identity, a social circle and a reason to see the world.",
-    "body3": "w3runn3rs was built for this moment. A platform where running clubs are the center of it all — competing, connecting and showing up, both online and in the real world.",
+    "body3": "We Runners was built for this moment. A platform where running clubs are the center of it all — competing, connecting and showing up, both online and in the real world.",
     "phrase1_title": "Runners travel the world",
     "phrase1_body": "to race.",
     "phrase2_title": "Running clubs",
@@ -72,15 +72,15 @@
   },
   "community": {
     "headline": "We're already running.",
-    "subtitle": "Join thousands of runners and clubs already moving with w3runn3rs. Follow us, connect with the community and never run alone.",
+    "subtitle": "Join thousands of runners and clubs already moving with We Runners. Follow us, connect with the community and never run alone.",
     "cta": "Join the Waitlist →"
   },
   "faq": {
     "headline": "Frequently Asked Questions",
-    "q1": "What is w3runn3rs?",
-    "a1": "w3runn3rs is the global hub for running clubs. A platform where runners join one club, sync their wearables and compete on leaderboards against clubs from around the world.",
+    "q1": "What is We Runners?",
+    "a1": "We Runners is the global hub for running clubs. A platform where runners join one club, sync their wearables and compete on leaderboards against clubs from around the world.",
     "q2": "Why can I only belong to one club?",
-    "a2": "Because real loyalty matters. Unlike other platforms where your kilometers are spread across multiple clubs, w3runn3rs makes every run count exclusively for yours. One runner, one club — that's what makes the competition real.",
+    "a2": "Because real loyalty matters. Unlike other platforms where your kilometers are spread across multiple clubs, We Runners makes every run count exclusively for yours. One runner, one club — that's what makes the competition real.",
     "q3": "What wearables can I connect?",
     "a3": "You can connect Strava, Garmin, Suunto and other major platforms. Once connected, your activity syncs automatically.",
     "q4": "Is it free to join?",
@@ -126,7 +126,7 @@
   },
   "dashboard": {
     "greeting": "Hi, {name}",
-    "subtitle": "Your week on W3Runn3rs",
+    "subtitle": "Your week on We Runners",
     "heroClub": {
       "runningWith": "Running with:",
       "since": "Since:",
@@ -161,7 +161,7 @@
       "beFirst": "Be the first in your club to log kilometers this week.",
       "share": "You represent <b>{pct}%</b> of your club's total",
       "noClubTitle": "Join a club to start adding up",
-      "noClubBody": "On W3Runn3rs every kilometer counts for a single club. Pick yours and start climbing the global leaderboard.",
+      "noClubBody": "On We Runners every kilometer counts for a single club. Pick yours and start climbing the global leaderboard.",
       "noClubCta": "Explore clubs"
     },
     "rank": {
@@ -230,7 +230,7 @@
         "connected_no_activity": "Garmin is connected, but activity sharing is off. Connect again and allow “Activity Export” so your runs can count.",
         "denied": "You cancelled the Garmin connection.",
         "invalid_state": "The connection expired. Please try again.",
-        "in_use": "That Garmin account is already linked to another W3Runn3rs account.",
+        "in_use": "That Garmin account is already linked to another We Runners account.",
         "other_provider": "You already have another device connected. Disconnect it first.",
         "failed": "We couldn’t connect Garmin. Please try again."
       },
@@ -242,14 +242,14 @@
         "consent_required": "Polar needs you to accept its data-sharing consents first. Accept them at account.polar.com and connect again.",
         "denied": "You cancelled the Polar connection.",
         "invalid_state": "The connection expired. Please try again.",
-        "in_use": "That Polar account is already linked to another W3Runn3rs account.",
+        "in_use": "That Polar account is already linked to another We Runners account.",
         "other_provider": "You already have another device connected. Disconnect it first.",
         "failed": "We couldn’t connect Polar. Please try again."
       }
     },
     "noClub": {
       "title": "You're not in a club yet",
-      "body": "On W3Runn3rs every kilometer counts for a club. Find yours — or, if it's missing, ask us to add it and you'll be its owner.",
+      "body": "On We Runners every kilometer counts for a club. Find yours — or, if it's missing, ask us to add it and you'll be its owner.",
       "cta": "Register your club",
       "pendingTitle": "{club} is waiting for approval",
       "pendingBody": "We'll email you when it's approved. You'll join it as its owner automatically.",
@@ -279,7 +279,7 @@
     "instagramPlaceholder": "your_instagram_handle",
     "facebookPlaceholder": "your.profile",
     "stravaPlaceholder": "12345678",
-    "submit": "Enter W3Runn3rs",
+    "submit": "Enter We Runners",
     "submitting": "Saving…",
     "errors": {
       "invalid": "Use 3–20 lowercase letters, numbers or underscores.",
@@ -295,16 +295,16 @@
     "clubInvited": "You came through {club}'s invite, so it's already picked. Every kilometer you run counts for it.",
     "clubLock": "You can switch clubs once every 6 months. Kilometers you run with a club stay with that club — they never move to a new one.",
     "clubRunners": "{count} runners",
-    "clubOnApp": "{count} on W3Runn3rs",
+    "clubOnApp": "{count} on We Runners",
     "clubNone": "My club isn’t listed",
     "clubNoneHint": "Finish now — you can ask for your club to be added from your dashboard.",
-    "clubAssigned": "You're this club's owner — picked by the W3Runn3rs team. You can manage it from your dashboard.",
+    "clubAssigned": "You're this club's owner — picked by the We Runners team. You can manage it from your dashboard.",
     "clubApproval": "Requires approval"
   },
   "settings": {
     "back": "Back to dashboard",
     "title": "Edit profile",
-    "subtitle": "Update how you show up across W3Runn3rs.",
+    "subtitle": "Update how you show up across We Runners.",
     "photo": {
       "label": "Profile photo",
       "upload": "Upload photo",
@@ -355,7 +355,7 @@
       "since": "Since {date}",
       "lastSync": "last run received {when}",
       "noSyncYet": "no runs received yet",
-      "permissionsLabel": "What Garmin shares with W3Runn3rs",
+      "permissionsLabel": "What Garmin shares with We Runners",
       "activitySharingOn": "Activity sharing is on — your runs sync automatically.",
       "activitySharingOff": "Activity sharing is off, so your runs aren’t syncing. Turn on “Activity Export” in Garmin Connect, or connect again and allow it.",
       "activitySharingUnknown": "We’re still confirming activity sharing with Garmin. Refresh in a minute.",
@@ -363,13 +363,13 @@
       "manageInGarmin": "Manage in Garmin Connect",
       "reconnect": "Connect again",
       "disconnect": "Disconnect {provider}",
-      "disconnectConfirm": "Disconnect {provider}? Your past runs stay on W3Runn3rs; new runs stop syncing. You can connect again anytime.",
+      "disconnectConfirm": "Disconnect {provider}? Your past runs stay on We Runners; new runs stop syncing. You can connect again anytime.",
       "disconnectYes": "Yes, disconnect",
       "disconnecting": "Disconnecting…",
       "cancel": "Cancel",
       "disconnectError": "We couldn’t disconnect {provider}. Please try again.",
       "connected": "{provider} connected",
-      "polarSharingLabel": "What Polar shares with W3Runn3rs",
+      "polarSharingLabel": "What Polar shares with We Runners",
       "polarSharingHint": "Your runs (exercises) sync automatically. Polar consents are managed in your Polar account.",
       "manageInPolar": "Manage in your Polar account"
     }
@@ -418,7 +418,7 @@
     "members": "{count, plural, one {# member} other {# members}}",
     "declared": "{count} runners declared",
     "ownedBy": "Owner: @{username}",
-    "managedByW3": "Managed by W3Runn3rs",
+    "managedByW3": "Managed by We Runners",
     "inactive": "Inactive",
     "manage": "Manage",
     "pendingTitle": "Clubs waiting for approval ({count})",
@@ -453,7 +453,7 @@
       "transfer": "Make {name} the owner of this club? You'll stay on as a collaborator.",
       "makeOwner": "Make {name} the owner of this club? The current owner, if any, stays on as a collaborator.",
       "remove": "Remove {name} from the club? Their past kilometers stay with the club.",
-      "clearOwner": "Remove {name} as owner? They stay on as a collaborator and W3Runn3rs manages the club."
+      "clearOwner": "Remove {name} as owner? They stay on as a collaborator and We Runners manages the club."
     },
     "form": {
       "name": "Club name",
@@ -652,7 +652,7 @@
   },
   "clubDirectory": {
     "title": "Clubs",
-    "subtitle": "Every running club on W3Runn3rs. You run for one club only — pick yours and every kilometer counts for it.",
+    "subtitle": "Every running club on We Runners. You run for one club only — pick yours and every kilometer counts for it.",
     "search": "Search by club, city or country",
     "empty": "No clubs match.",
     "members": "{count, plural, one {# member} other {# members}}",
@@ -706,7 +706,7 @@
     "colKm": "Km"
   },
   "leaderboard": {
-    "metaTitle": "Running club leaderboard · W3Runn3rs",
+    "metaTitle": "Running club leaderboard · We Runners",
     "metaDescription": "Running clubs from around the world, ranked by the kilometers their runners log. Every kilometer counts for one club.",
     "title": "Club leaderboard",
     "subtitle": "Running clubs from around the world, ranked by the kilometers their runners log. One runner, one club: every kilometer counts for theirs.",
@@ -735,12 +735,12 @@
     "cta": "See the leaderboard"
   },
   "ambassadors": {
-    "metaTitle": "Ambassador Program — W3Runn3rs",
-    "metaDescription": "Run with us, lead the pack. Become a W3Runn3rs ambassador: bring your running club, inspire your community and help build the global hub for running clubs.",
+    "metaTitle": "Ambassador Program — We Runners",
+    "metaDescription": "Run with us, lead the pack. Become a We Runners ambassador: bring your running club, inspire your community and help build the global hub for running clubs.",
     "hero": {
       "titleA": "Run with us.",
       "titleB": "Lead the pack.",
-      "subtitle": "The W3Runn3rs Ambassador Program is for runners who inspire others, on the road and online. If you lead a running club, bring people together and want to help build the global hub for running clubs, we want to hear from you."
+      "subtitle": "The We Runners Ambassador Program is for runners who inspire others, on the road and online. If you lead a running club, bring people together and want to help build the global hub for running clubs, we want to hear from you."
     },
     "who": {
       "title": "Who we're looking for",
@@ -765,7 +765,7 @@
       },
       "merch": {
         "title": "Exclusive merch",
-        "description": "Official W3Runn3rs gear, before it's available to the public."
+        "description": "Official We Runners gear, before it's available to the public."
       },
       "perks": {
         "title": "More perks",
@@ -774,7 +774,7 @@
     },
     "apply": {
       "title": "How to apply",
-      "subtitle": "Ambassadors lead a running club on W3Runn3rs. It takes three steps:",
+      "subtitle": "Ambassadors lead a running club on We Runners. It takes three steps:",
       "steps": {
         "account": {
           "title": "Create your account",
@@ -796,7 +796,7 @@
   "ambassadorApply": {
     "eyebrow": "Ambassador program",
     "title": "Your ambassador application",
-    "subtitle": "Ambassadors lead a running club on W3Runn3rs. Tell us about you and your community.",
+    "subtitle": "Ambassadors lead a running club on We Runners. Tell us about you and your community.",
     "club": {
       "label": "Your club",
       "pending": "Request waiting for approval"
@@ -807,7 +807,7 @@
       "accountHint": "From your account. You can change them in your profile settings.",
       "optional": "(optional)",
       "socialHint": "Add the profiles where you share your running. Changing them here doesn't change your profile.",
-      "motivation": "Why do you want to be a W3Runn3rs ambassador?",
+      "motivation": "Why do you want to be a We Runners ambassador?",
       "motivationPlaceholder": "Tell us about yourself, your club and why you'd be a great ambassador…",
       "submit": "Send application",
       "sending": "Sending…",
@@ -838,7 +838,7 @@
     },
     "noClub": {
       "title": "First, register your club",
-      "body": "Ambassadors lead a running club on W3Runn3rs. Register yours and you'll come right back here to send your application.",
+      "body": "Ambassadors lead a running club on We Runners. Register yours and you'll come right back here to send your application.",
       "cta": "Register your club"
     },
     "member": {

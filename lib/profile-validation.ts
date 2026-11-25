@@ -6,7 +6,7 @@ export const USERNAME_RE = /^[a-z0-9_]{3,20}$/
 // Rutas/identificadores que no pueden usarse como username público.
 export const RESERVED = new Set([
   "admin", "api", "auth", "dashboard", "settings", "profile", "clubs",
-  "club", "leaderboard", "onboarding", "w3runn3rs", "runners", "support",
+  "club", "leaderboard", "onboarding", "w3runn3rs", "werunners", "we_runners", "runners", "support",
   "about", "help", "me", "new", "edit",
 ])
 

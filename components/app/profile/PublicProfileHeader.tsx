@@ -13,7 +13,7 @@ export function PublicProfileHeader() {
         <a href="https://www.w3runn3rs.com" className="group flex items-center gap-2.5">
           <Image
             src="/images/logoAzul.png"
-            alt="w3runn3rs"
+            alt="We Runners"
             width={980}
             height={656}
             className="h-9 w-auto opacity-90 transition-opacity group-hover:opacity-100"

@@ -10,7 +10,7 @@ export function joinRequestHtml(opts: { clubName: string; runnerName: string; us
     emoji: "👋",
     heading: `New request to join ${club}`,
     bodyHtml:
-      paragraph(`<strong>${who}</strong> wants to join <strong>${club}</strong> on W3Runn3rs.`) +
+      paragraph(`<strong>${who}</strong> wants to join <strong>${club}</strong> on We Runners.`) +
       paragraph("Approve or reject the request from your club's management page. Their kilometers count for the club from the moment you approve.", true),
     cta: { href: opts.manageUrl, label: "Review requests →" },
   });

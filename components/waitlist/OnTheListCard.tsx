@@ -67,7 +67,7 @@ export function OnTheListCard({
 
       <h2 className="text-3xl font-extrabold text-white mb-3">You&apos;re on the list!</h2>
       <p className="text-white/70 mb-6 leading-relaxed">
-        We&apos;ll notify you when w3runn3rs launches. Follow us for updates and spread the word —
+        We&apos;ll notify you when We Runners launches. Follow us for updates and spread the word —
         share to your socials.
       </p>
 

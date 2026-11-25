@@ -31,7 +31,7 @@ export function appSignupNotificationHtml(data: {
         <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;">
           <tr>
             <td style="background-color:#a3e635;border-radius:12px 12px 0 0;padding:20px 28px;">
-              <p style="margin:0;font-size:13px;font-weight:700;color:#0a0a0a;text-transform:uppercase;letter-spacing:0.08em;">w3runn3rs · New app account</p>
+              <p style="margin:0;font-size:13px;font-weight:700;color:#0a0a0a;text-transform:uppercase;letter-spacing:0.08em;">We Runners · New app account</p>
             </td>
           </tr>
           <tr>

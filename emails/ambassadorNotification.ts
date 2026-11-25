@@ -55,7 +55,7 @@ export function ambassadorNotificationHtml(data: AmbassadorData): string {
           <tr>
             <td style="background-color:#a3e635;border-radius:12px 12px 0 0;padding:20px 28px;">
               <p style="margin:0;font-size:13px;font-weight:700;color:#0a0a0a;text-transform:uppercase;letter-spacing:0.08em;">
-                w3runn3rs · Ambassador application
+                We Runners · Ambassador application
               </p>
             </td>
           </tr>
@@ -92,7 +92,7 @@ export function ambassadorNotificationHtml(data: AmbassadorData): string {
           <tr>
             <td style="padding-top:20px;text-align:center;">
               <p style="margin:0;font-size:12px;color:#9ca3af;">
-                w3runn3rs internal notification · status: pending
+                We Runners internal notification · status: pending
               </p>
             </td>
           </tr>

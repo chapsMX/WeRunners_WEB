@@ -92,7 +92,7 @@ export default function WaitlistPage() {
                 Join the Waitlist
               </h1>
               <p className="text-lg text-white/70 mb-10">
-                Be the first to know when w3runn3rs launches.
+                Be the first to know when We Runners launches.
                 Pick your running club, make it count.
               </p>
             </>

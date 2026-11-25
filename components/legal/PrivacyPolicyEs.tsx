@@ -8,14 +8,14 @@ export function PrivacyPolicyEs() {
       <p className="text-slate-400 text-sm">Última actualización: 19 de noviembre de 2026 | Ciudad de México, México</p>
 
       <p>
-        Este aviso de privacidad explica qué datos personales recaba W3Runn3rs, para qué los usamos, qué pueden ver otras
+        Este aviso de privacidad explica qué datos personales recaba We Runners, para qué los usamos, qué pueden ver otras
         personas y cómo puedes controlarlos. Aplica a nuestro sitio (<strong>www.w3runn3rs.com</strong>) y a nuestra app (
         <strong>app.w3runn3rs.com</strong>), a los que llamamos en conjunto el &ldquo;Servicio&rdquo;.
       </p>
 
       <h2>1. Quiénes somos</h2>
       <p>
-        W3Runn3rs (&ldquo;nosotros&rdquo;) es un hub global para clubes de corredores, con domicilio en la Ciudad de
+        We Runners (&ldquo;nosotros&rdquo;) es un hub global para clubes de corredores, con domicilio en la Ciudad de
         México, México. Somos responsables de los datos personales que se describen en este aviso. Para cualquier tema
         relacionado con tus datos, escríbenos a <a href={`mailto:${CONTACT}`}>{CONTACT}</a>.
       </p>
@@ -104,7 +104,7 @@ export function PrivacyPolicyEs() {
       </p>
 
       <h2>4. Qué pueden ver otras personas</h2>
-      <p>W3Runn3rs gira alrededor de los clubes, así que parte de la información es pública, incluso para personas sin cuenta:</p>
+      <p>We Runners gira alrededor de los clubes, así que parte de la información es pública, incluso para personas sin cuenta:</p>
       <ul>
         <li>
           <strong>Tu perfil</strong> (app.w3runn3rs.com/u/tu-usuario): nombre, usuario, foto, bio, redes, tu club, número
@@ -127,7 +127,7 @@ export function PrivacyPolicyEs() {
       <ul>
         <li>Conectas un proveedor entrando con tu cuenta y aceptando los permisos que te muestra. Puedes cambiar esos permisos en la app del proveedor.</li>
         <li>
-          Puedes desconectarte cuando quieras desde tu configuración en W3Runn3rs o desde la app del proveedor. Al
+          Puedes desconectarte cuando quieras desde tu configuración en We Runners o desde la app del proveedor. Al
           desconectarte, borramos tus credenciales de acceso y dejamos de recibir corridas. Las corridas que ya
           recibimos se quedan en tu cuenta y siguen contando para el club en el que contaron, a menos que nos pidas
           borrarlas (ver sección 8).

@@ -9,13 +9,13 @@ import { getInviteClubFromCookie } from "@/lib/club-invite"
 
 // The tab keeps "Sign In"; link previews (app.w3runn3rs.com is the link people
 // share from the waitlist) get the marketing title instead.
-const SHARE_TITLE = "W3Runn3rs — Pick your running club, make it count"
+const SHARE_TITLE = "We Runners — Pick your running club, make it count"
 const SHARE_DESCRIPTION =
   "The global hub for running clubs. One runner, one club — every kilometer you run counts for yours."
 
 export const metadata: Metadata = {
-  title: "Sign In — W3Runn3rs",
-  description: "Sign in to your W3Runn3rs account and track your club's progress.",
+  title: "Sign In — We Runners",
+  description: "Sign in to your We Runners account and track your club's progress.",
   openGraph: { ...appOpenGraph, title: SHARE_TITLE, description: SHARE_DESCRIPTION },
   twitter: { ...appTwitter, title: SHARE_TITLE, description: SHARE_DESCRIPTION },
 }
@@ -32,7 +32,7 @@ export default async function SignInPage() {
         {/* Background image */}
         <Image
           src="/images/fondoHero.webp"
-          alt="W3Runn3rs runners"
+          alt="We Runners runners"
           fill
           priority
           className="object-cover object-center"
@@ -46,7 +46,7 @@ export default async function SignInPage() {
           {/* Left: brand messaging — desktop only */}
           <div className="hidden lg:flex flex-1 flex-col justify-center">
             <h1 className="text-6xl xl:text-7xl font-extrabold text-white tracking-tight leading-none">
-              W3 Runn3rs
+              We Runners
             </h1>
             <p className="text-2xl font-semibold text-brand-green mt-4 leading-snug">
               Pick your running club,<br />make it count.

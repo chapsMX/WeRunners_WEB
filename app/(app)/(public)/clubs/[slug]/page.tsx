@@ -14,10 +14,10 @@ type Params = { slug: string }
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { slug } = await params
   const page = await getClubPage(slug)
-  if (!page) return { title: "W3Runn3rs" }
+  if (!page) return { title: "We Runners" }
   return {
-    title: `${page.club.name} · W3Runn3rs`,
-    description: page.club.description ?? `${page.club.name} on W3Runn3rs, the global hub for running clubs.`,
+    title: `${page.club.name} · We Runners`,
+    description: page.club.description ?? `${page.club.name} on We Runners, the global hub for running clubs.`,
   }
 }
 

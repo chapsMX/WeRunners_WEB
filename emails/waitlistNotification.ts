@@ -28,7 +28,7 @@ export function waitlistNotificationHtml({ email, name, clubId }: NotificationDa
           <tr>
             <td style="background-color:#a3e635;border-radius:12px 12px 0 0;padding:20px 28px;">
               <p style="margin:0;font-size:13px;font-weight:700;color:#0a0a0a;text-transform:uppercase;letter-spacing:0.08em;">
-                w3runn3rs · New signup
+                We Runners · New signup
               </p>
             </td>
           </tr>
@@ -68,7 +68,7 @@ export function waitlistNotificationHtml({ email, name, clubId }: NotificationDa
           <tr>
             <td style="padding-top:20px;text-align:center;">
               <p style="margin:0;font-size:12px;color:#9ca3af;">
-                w3runn3rs internal notification · <a href="https://www.w3runn3rs.com" style="color:#9ca3af;">w3runn3rs.com</a>
+                We Runners internal notification · <a href="https://www.w3runn3rs.com" style="color:#9ca3af;">w3runn3rs.com</a>
               </p>
             </td>
           </tr>

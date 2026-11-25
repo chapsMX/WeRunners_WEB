@@ -19,7 +19,7 @@ export default function AppFooter() {
             <div className="mb-3">
               <Image
                 src="/images/logoBlanco.png"
-                alt="w3runn3rs"
+                alt="We Runners"
                 width={980}
                 height={656}
                 className="h-12 w-auto"
@@ -49,7 +49,7 @@ export default function AppFooter() {
         </div>
 
         <div className="mt-10 pt-6 border-t border-line flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-muted/70 text-sm">© 2026 w3runn3rs. All rights reserved.</p>
+          <p className="text-muted/70 text-sm">© 2026 We Runners. All rights reserved.</p>
           <div className="flex items-center gap-4 text-sm">
             <a
               href="https://www.w3runn3rs.com/en/privacy-policy"

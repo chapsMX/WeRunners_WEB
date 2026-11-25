@@ -7,7 +7,7 @@ import { clubOwnerHtml, clubOwnerSubject } from "@/emails/clubOwner"
 import { joinDecisionHtml, joinDecisionSubject, joinRequestHtml, joinRequestSubject } from "@/emails/joinRequest"
 import { prisma } from "@/lib/prisma"
 
-const FROM = "w3runn3rs <noreply@w3runn3rs.com>"
+const FROM = "We Runners <noreply@w3runn3rs.com>"
 
 async function send(to: string, subject: string, html: string, tag: string): Promise<boolean> {
   try {
@@ -73,7 +73,7 @@ export async function sendClubRequestEmails(opts: {
     "Review it in https://app.w3runn3rs.com/admin/clubs",
   ].join("\n")
   const runner = [
-    `Hi! We received your request to add ${opts.clubName} to W3Runn3rs.`,
+    `Hi! We received your request to add ${opts.clubName} to We Runners.`,
     "",
     "We'll review it soon. Once it's approved you'll be the club's owner and your runners can join it.",
     "",

@@ -1,13 +1,13 @@
-# W3Runn3rs — We Runners
+# We Runners — We Runners
 
 > **Pick your running club, make it count!**
 > The global hub for running clubs.
 
-![W3 Runn3rs](public/images/readme.png)
+![We Runners](public/images/readme.png)
 
 ## About
 
-W3Runn3rs is a global hub for running clubs. Runners join **one club**, connect their watch, and every kilometer they run counts for that club on the leaderboards.
+We Runners is a global hub for running clubs. Runners join **one club**, connect their watch, and every kilometer they run counts for that club on the leaderboards.
 
 - **Website:** [www.w3runn3rs.com](https://www.w3runn3rs.com)
 - **App (public beta):** [app.w3runn3rs.com](https://app.w3runn3rs.com)
@@ -62,5 +62,5 @@ prisma/         schema and migrations
 
 <p align="center">
   <strong>Pick your running club, make it count!</strong><br/>
-  © 2026 w3runn3rs. All rights reserved.
+  © 2026 We Runners. All rights reserved.
 </p>

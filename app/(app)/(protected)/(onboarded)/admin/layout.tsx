@@ -7,7 +7,7 @@ import { isSuperadmin } from "@/lib/club-admin"
 import { getAppTranslator } from "@/lib/app-i18n"
 import { AdminTabs } from "@/components/app/admin/AdminTabs"
 
-export const metadata: Metadata = { title: "Admin · W3Runn3rs", robots: { index: false, follow: false } }
+export const metadata: Metadata = { title: "Admin · We Runners", robots: { index: false, follow: false } }
 
 // Superadmin only (User.role = ADMIN). Everyone else gets a 404.
 // Tabs: Clubs · Waitlist · Activity (one route each).

@@ -23,7 +23,7 @@ export default function TermsOfServicePage() {
 
           <h2>1. Acceptance of Terms</h2>
           <p>
-            By accessing or using w3runn3rs (&ldquo;the Service&rdquo;), you
+            By accessing or using We Runners (&ldquo;the Service&rdquo;), you
             agree to be bound by these Terms of Service. If you do not agree,
             please do not use the Service.
           </p>
@@ -37,7 +37,7 @@ export default function TermsOfServicePage() {
 
           <h2>3. One Runner, One Club</h2>
           <p>
-            A core rule of the w3runn3rs platform is that each runner may belong
+            A core rule of the We Runners platform is that each runner may belong
             to only one club at a time. This policy is fundamental to the
             platform&apos;s competitive integrity and cannot be circumvented.
             Club switching is permitted with restrictions; details will be
@@ -57,8 +57,8 @@ export default function TermsOfServicePage() {
 
           <h2>5. Intellectual Property</h2>
           <p>
-            All content, logos, and trademarks on w3runn3rs are the property of
-            w3runn3rs or its licensors. You may not use them without written
+            All content, logos, and trademarks on We Runners are the property of
+            We Runners or its licensors. You may not use them without written
             permission.
           </p>
 
@@ -71,7 +71,7 @@ export default function TermsOfServicePage() {
 
           <h2>7. Limitation of Liability</h2>
           <p>
-            To the fullest extent permitted by law, w3runn3rs shall not be
+            To the fullest extent permitted by law, We Runners shall not be
             liable for any indirect, incidental, or consequential damages
             arising from your use of the Service.
           </p>
