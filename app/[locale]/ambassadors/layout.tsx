@@ -13,8 +13,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return buildPageMetadata(locale, "/ambassadors", {
     title,
     description,
-    // Share card in the page's language (hero photo + headline).
-    ...shareMetadata({ title, description, image: `/api/og/ambassadors?lang=${locale === "es" ? "es" : "en"}` }),
+    // Static share card per language (same for everyone: no need to generate it).
+    ...shareMetadata({
+      title,
+      description,
+      image: `/images/share-ambassadors-${locale === "es" ? "es" : "en"}.jpg`,
+      width: 1000,
+      height: 522,
+    }),
   });
 }
 
