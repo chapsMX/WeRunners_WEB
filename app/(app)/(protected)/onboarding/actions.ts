@@ -10,6 +10,7 @@ import { cleanHandle, cleanUrl, validateUsername } from "@/lib/profile-validatio
 import { joinSelectedClub } from "@/lib/clubs"
 import { sendJoinRequestEmails } from "@/lib/admin-emails"
 import { CLUB_INVITE_COOKIE } from "@/lib/club-invite"
+import { AMBASSADOR_APPLY_PATH, AMBASSADOR_INTENT_COOKIE } from "@/lib/ambassador-intent"
 
 export type OnboardingState = {
   error?: {
@@ -146,5 +147,7 @@ export async function completeOnboarding(
     })
   }
 
-  redirect(`/dashboard?signup=${google ? "google" : "email"}`)
+  // Came to apply as an ambassador → straight back to the application.
+  const signup = google ? "google" : "email"
+  redirect(jar.has(AMBASSADOR_INTENT_COOKIE) ? `${AMBASSADOR_APPLY_PATH}?signup=${signup}` : `/dashboard?signup=${signup}`)
 }

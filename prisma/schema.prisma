@@ -199,15 +199,28 @@ model ClubRegistration {
 
   // Runner who asked for the club from inside the app. On approval they join
   // it as owner (also matched by verified email for landing-form registrations).
-  requestedById String?
-  requestedBy   User?   @relation("ClubRequests", fields: [requestedById], references: [id], onDelete: SetNull)
+  requestedById          String?
+  requestedBy            User?                   @relation("ClubRequests", fields: [requestedById], references: [id], onDelete: SetNull)
+  ambassadorApplications AmbassadorApplication[]
 }
 
 model AmbassadorApplication {
-  id         String   @id @default(cuid())
-  fullName   String
-  email      String   @unique
-  country    String
+  id String @id @default(cuid())
+
+  // Applications are made from the app by a runner who leads a club (owner of
+  // a Club, or requester of a ClubRegistration still pending). The fields below
+  // are a snapshot at application time; they're optional because the first
+  // applications came from the old landing form (no account, no club).
+  userId             String?           @unique
+  user               User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  clubId             String?
+  club               Club?             @relation(fields: [clubId], references: [id], onDelete: SetNull)
+  clubRegistrationId String?
+  clubRegistration   ClubRegistration? @relation(fields: [clubRegistrationId], references: [id], onDelete: SetNull)
+
+  fullName   String?
+  email      String?  @unique
+  country    String?
   instagram  String?
   twitter    String?
   tiktok     String?
@@ -264,18 +277,19 @@ model User {
   accounts Account[]
 
   // Relaciones W3Runn3rs
-  memberships      ClubMembership[]
-  activities       Activity[]
-  records          PersonalRecord[]
-  snapshots        WeeklySnapshot[]
-  garminConnection DeviceConnectionGarmin?
-  following        Follow[]                @relation("following") // a quién sigue
-  followers        Follow[]                @relation("followers") // quién lo sigue
-  ownedClub        Club?                   @relation("ClubOwner")
-  clubRequests     ClubRegistration[]      @relation("ClubRequests")
-  joinRequests     ClubJoinRequest[]       @relation("JoinRequests")
-  polarConnection  DeviceConnectionPolar?
-  stravaConnection DeviceConnectionStrava?
+  memberships           ClubMembership[]
+  activities            Activity[]
+  records               PersonalRecord[]
+  snapshots             WeeklySnapshot[]
+  garminConnection      DeviceConnectionGarmin?
+  following             Follow[]                @relation("following") // a quién sigue
+  followers             Follow[]                @relation("followers") // quién lo sigue
+  ownedClub             Club?                   @relation("ClubOwner")
+  clubRequests          ClubRegistration[]      @relation("ClubRequests")
+  joinRequests          ClubJoinRequest[]       @relation("JoinRequests")
+  polarConnection       DeviceConnectionPolar?
+  stravaConnection      DeviceConnectionStrava?
+  ambassadorApplication AmbassadorApplication?
 
   @@map("user")
 }
@@ -368,14 +382,15 @@ model Club {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  memberships    ClubMembership[]
-  ownerInvites   ClubOwnerInvite[]
-  joinRequests   ClubJoinRequest[]
-  invitedSignups WaitlistEntry[]
-  activities     Activity[]
-  stats          ClubStats[]
-  leaderboard    LeaderboardEntry[]
-  snapshots      WeeklySnapshot[]
+  memberships            ClubMembership[]
+  ownerInvites           ClubOwnerInvite[]
+  joinRequests           ClubJoinRequest[]
+  invitedSignups         WaitlistEntry[]
+  activities             Activity[]
+  stats                  ClubStats[]
+  leaderboard            LeaderboardEntry[]
+  snapshots              WeeklySnapshot[]
+  ambassadorApplications AmbassadorApplication[]
 
   @@map("clubs")
 }

@@ -542,7 +542,8 @@
     "tabs": {
       "clubs": "Clubes",
       "waitlist": "Waitlist",
-      "activity": "Actividad"
+      "activity": "Actividad",
+      "ambassadors": "Embajadores"
     },
     "waitlist": {
       "total": "En la waitlist",
@@ -605,6 +606,23 @@
         "retrying": "Reintentando…",
         "retryFailed": "No se pudo reintentar"
       }
+    },
+    "ambassadors": {
+      "total": "Aplicaciones",
+      "statusName": {
+        "pending": "Pendientes",
+        "shortlisted": "Preseleccionadas",
+        "rejected": "Rechazadas"
+      },
+      "empty": "Todavía no hay aplicaciones.",
+      "clubPending": "solicitud pendiente",
+      "noClub": "sin club",
+      "legacy": "formulario del landing (sin cuenta)",
+      "otherCountry": "Otro país",
+      "applied": "aplicó el {date}",
+      "shortlist": "Preseleccionar",
+      "reject": "Rechazar",
+      "reset": "Regresar a pendiente"
     }
   },
   "clubRequest": {
@@ -628,7 +646,9 @@
       "email_taken": "Ya hay un club registrado con ese correo. Usa otro o escríbenos.",
       "invalid_website": "Escribe un sitio web válido, p. ej. https://tuclub.com."
     },
-    "website": "Sitio web (opcional)"
+    "website": "Sitio web (opcional)",
+    "backToApplication": "Tu aplicación de embajador",
+    "continueApplication": "Continuar con tu aplicación de embajador"
   },
   "clubDirectory": {
     "title": "Clubes",
@@ -771,6 +791,59 @@
       },
       "cta": "Aplica ahora →",
       "note": "Revisamos las aplicaciones conforme llegan. Solo contactaremos a quienes queden preseleccionados."
+    }
+  },
+  "ambassadorApply": {
+    "eyebrow": "Programa de embajadores",
+    "title": "Tu aplicación de embajador",
+    "subtitle": "Los embajadores lideran un club de corredores en W3Runn3rs. Cuéntanos de ti y de tu comunidad.",
+    "club": {
+      "label": "Tu club",
+      "pending": "Solicitud en espera de aprobación"
+    },
+    "form": {
+      "name": "Nombre",
+      "email": "Correo",
+      "accountHint": "Vienen de tu cuenta. Puedes cambiarlos en la configuración de tu perfil.",
+      "optional": "(opcional)",
+      "socialHint": "Agrega los perfiles donde compartes tus corridas. Cambiarlos aquí no cambia tu perfil.",
+      "motivation": "¿Por qué quieres ser embajador de W3Runn3rs?",
+      "motivationPlaceholder": "Cuéntanos de ti, de tu club y por qué serías un gran embajador…",
+      "submit": "Enviar aplicación",
+      "sending": "Enviando…",
+      "note": "Revisamos las aplicaciones conforme llegan. Solo contactaremos a quienes queden preseleccionados.",
+      "errors": {
+        "motivation_short": "Cuéntanos un poco más (mínimo {min} caracteres).",
+        "motivation_long": "Escribe menos de {max} caracteres, por favor.",
+        "not_eligible": "Necesitas liderar un club para aplicar.",
+        "already_applied": "Ya enviaste una aplicación.",
+        "unknown": "Algo salió mal. Intenta de nuevo."
+      }
+    },
+    "status": {
+      "label": "Estatus de tu aplicación",
+      "sent": "Enviada el {date}",
+      "pending": {
+        "title": "En revisión",
+        "body": "¡Gracias por aplicar! Te mandamos una confirmación por correo. Si quedas preseleccionado, te escribiremos ahí."
+      },
+      "shortlisted": {
+        "title": "Preseleccionado",
+        "body": "Estás en nuestra preselección. Te escribiremos por correo con los siguientes pasos."
+      },
+      "rejected": {
+        "title": "Esta vez no",
+        "body": "Gracias por aplicar. Por ahora no podemos avanzar con tu aplicación, pero sigue corriendo con tu club. Abriremos nuevos lugares más adelante."
+      }
+    },
+    "noClub": {
+      "title": "Primero registra tu club",
+      "body": "Los embajadores lideran un club de corredores en W3Runn3rs. Registra el tuyo y regresarás aquí para enviar tu aplicación.",
+      "cta": "Registra tu club"
+    },
+    "member": {
+      "title": "Los embajadores lideran su propio club",
+      "body": "Corres con {club}, y los embajadores son quienes lideran un club. Si lideras un club o quieres ayudar a que el tuyo crezca, escríbenos."
     }
   }
 }

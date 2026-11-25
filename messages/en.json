@@ -542,7 +542,8 @@
     "tabs": {
       "clubs": "Clubs",
       "waitlist": "Waitlist",
-      "activity": "Activity"
+      "activity": "Activity",
+      "ambassadors": "Ambassadors"
     },
     "waitlist": {
       "total": "On the waitlist",
@@ -605,6 +606,23 @@
         "retrying": "Retrying…",
         "retryFailed": "Retry failed"
       }
+    },
+    "ambassadors": {
+      "total": "Applications",
+      "statusName": {
+        "pending": "Pending",
+        "shortlisted": "Shortlisted",
+        "rejected": "Rejected"
+      },
+      "empty": "No applications yet.",
+      "clubPending": "request pending",
+      "noClub": "no club",
+      "legacy": "landing form (no account)",
+      "otherCountry": "Other country",
+      "applied": "applied {date}",
+      "shortlist": "Shortlist",
+      "reject": "Reject",
+      "reset": "Back to pending"
     }
   },
   "clubRequest": {
@@ -628,7 +646,9 @@
       "email_taken": "A club is already registered with that email. Use a different one or contact us.",
       "invalid_website": "Enter a valid website, e.g. https://yourclub.com."
     },
-    "website": "Website (optional)"
+    "website": "Website (optional)",
+    "backToApplication": "Your ambassador application",
+    "continueApplication": "Continue to your ambassador application"
   },
   "clubDirectory": {
     "title": "Clubs",
@@ -771,6 +791,59 @@
       },
       "cta": "Apply now →",
       "note": "Applications are reviewed on a rolling basis. Only shortlisted candidates will be contacted."
+    }
+  },
+  "ambassadorApply": {
+    "eyebrow": "Ambassador program",
+    "title": "Your ambassador application",
+    "subtitle": "Ambassadors lead a running club on W3Runn3rs. Tell us about you and your community.",
+    "club": {
+      "label": "Your club",
+      "pending": "Request waiting for approval"
+    },
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "accountHint": "From your account. You can change them in your profile settings.",
+      "optional": "(optional)",
+      "socialHint": "Add the profiles where you share your running. Changing them here doesn't change your profile.",
+      "motivation": "Why do you want to be a W3Runn3rs ambassador?",
+      "motivationPlaceholder": "Tell us about yourself, your club and why you'd be a great ambassador…",
+      "submit": "Send application",
+      "sending": "Sending…",
+      "note": "Applications are reviewed on a rolling basis. Only shortlisted candidates will be contacted.",
+      "errors": {
+        "motivation_short": "Tell us a bit more (at least {min} characters).",
+        "motivation_long": "Please keep it under {max} characters.",
+        "not_eligible": "You need to lead a club to apply.",
+        "already_applied": "You already sent an application.",
+        "unknown": "Something went wrong. Please try again."
+      }
+    },
+    "status": {
+      "label": "Application status",
+      "sent": "Sent on {date}",
+      "pending": {
+        "title": "Under review",
+        "body": "Thanks for applying! We sent you a confirmation by email. If you're shortlisted, we'll reach out there."
+      },
+      "shortlisted": {
+        "title": "Shortlisted",
+        "body": "You're on our shortlist. We'll be in touch by email with the next steps."
+      },
+      "rejected": {
+        "title": "Not this time",
+        "body": "Thanks for applying. We can't move forward with your application right now, but keep running with your club. We'll open new spots in the future."
+      }
+    },
+    "noClub": {
+      "title": "First, register your club",
+      "body": "Ambassadors lead a running club on W3Runn3rs. Register yours and you'll come right back here to send your application.",
+      "cta": "Register your club"
+    },
+    "member": {
+      "title": "Ambassadors lead their own club",
+      "body": "You run with {club}, and ambassadors are the people who lead a club. If you lead a club or want to help yours grow, write to us."
     }
   }
 }

@@ -8,9 +8,10 @@ const TABS = [
   { key: "clubs", href: "/admin/clubs" },
   { key: "waitlist", href: "/admin/waitlist" },
   { key: "activity", href: "/admin/activity" },
+  { key: "ambassadors", href: "/admin/ambassadors" },
 ] as const
 
-/** Superadmin panel tabs: Clubs | Waitlist | Activity. */
+/** Superadmin panel tabs: Clubs | Waitlist | Activity | Ambassadors. */
 export function AdminTabs() {
   const t = useTranslations("clubAdmin.tabs")
   const pathname = usePathname()

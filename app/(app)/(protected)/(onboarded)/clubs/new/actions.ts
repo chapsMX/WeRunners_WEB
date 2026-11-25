@@ -7,6 +7,7 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { createClubRequest } from "@/lib/clubs"
 import { sendClubRequestEmails } from "@/lib/admin-emails"
+import { AMBASSADOR_APPLY_PATH } from "@/lib/ambassador-intent"
 
 export type ClubRequestState = { error?: string }
 
@@ -39,5 +40,6 @@ export async function createClubRequestAction(_prev: ClubRequestState, form: For
   })
   revalidatePath("/dashboard")
   revalidatePath("/admin/clubs")
-  redirect("/dashboard")
+  // Came from the ambassador application (club required) → back to it.
+  redirect(str("next") === AMBASSADOR_APPLY_PATH ? AMBASSADOR_APPLY_PATH : "/dashboard")
 }
