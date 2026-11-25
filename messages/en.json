@@ -713,5 +713,64 @@
     "ranked": "#{rank} of {clubs} clubs worldwide this month",
     "unranked": "No kilometers yet this month",
     "cta": "See the leaderboard"
+  },
+  "ambassadors": {
+    "metaTitle": "Ambassador Program — W3Runn3rs",
+    "metaDescription": "Run with us, lead the pack. Become a W3Runn3rs ambassador: bring your running club, inspire your community and help build the global hub for running clubs.",
+    "hero": {
+      "titleA": "Run with us.",
+      "titleB": "Lead the pack.",
+      "subtitle": "The W3Runn3rs Ambassador Program is for runners who inspire others, on the road and online. If you lead a running club, bring people together and want to help build the global hub for running clubs, we want to hear from you."
+    },
+    "who": {
+      "title": "Who we're looking for",
+      "runners": {
+        "title": "Passionate runners",
+        "description": "You run, you race, you live the culture."
+      },
+      "social": {
+        "title": "Active on social media",
+        "description": "You share your running and have an engaged community that follows along."
+      },
+      "community": {
+        "title": "Community builders",
+        "description": "You bring people together and inspire them to move."
+      }
+    },
+    "offer": {
+      "title": "What we offer",
+      "early": {
+        "title": "Early access",
+        "description": "Try new features before anyone else and help shape them."
+      },
+      "merch": {
+        "title": "Exclusive merch",
+        "description": "Official W3Runn3rs gear, before it's available to the public."
+      },
+      "perks": {
+        "title": "More perks",
+        "description": "More perks to be announced soon."
+      }
+    },
+    "apply": {
+      "title": "How to apply",
+      "subtitle": "Ambassadors lead a running club on W3Runn3rs. It takes three steps:",
+      "steps": {
+        "account": {
+          "title": "Create your account",
+          "description": "Sign up on the app with Google or your email."
+        },
+        "club": {
+          "title": "Register your club",
+          "description": "Add your running club, or join it if it's already there."
+        },
+        "send": {
+          "title": "Send your application",
+          "description": "Tell us about you and your community. Your profile and club fill in the rest."
+        }
+      },
+      "cta": "Apply now →",
+      "note": "Applications are reviewed on a rolling basis. Only shortlisted candidates will be contacted."
+    }
   }
 }

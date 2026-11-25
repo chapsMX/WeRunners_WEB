@@ -1,276 +1,114 @@
-"use client";
-
-import { useState } from "react";
+import type { ComponentType } from "react";
+import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { trackEvent } from "@/lib/analytics";
-import { AMBASSADOR_COUNTRIES, AMBASSADOR_LIMITS } from "@/lib/ambassadors";
+import {
+  ActivityIcon,
+  ClubIcon,
+  GiftIcon,
+  MegaphoneIcon,
+  RocketIcon,
+  ShirtIcon,
+} from "@/components/app/icons";
 
-type Status = "idle" | "loading" | "success" | "error";
+// Applications live in the app now (club required): sign in, then /ambassadors/apply.
+const APPLY_URL = "https://app.w3runn3rs.com/auth/sign-in?callbackUrl=%2Fambassadors%2Fapply";
 
-export default function AmbassadorsPage() {
-  const [status, setStatus] = useState<Status>("idle");
-  const [error, setError] = useState<string | null>(null);
+type Props = { params: Promise<{ locale: string }> };
+type Icon = ComponentType<{ size?: number; className?: string }>;
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setStatus("loading");
-    setError(null);
+function Feature({ icon: Icon, title, description }: { icon: Icon; title: string; description: string }) {
+  return (
+    <div className="flex gap-4">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center border border-brand-green/40 bg-brand-green/10 text-brand-green">
+        <Icon size={22} />
+      </span>
+      <div>
+        <h3 className="font-bold text-foreground">{title}</h3>
+        <p className="text-sm text-muted">{description}</p>
+      </div>
+    </div>
+  );
+}
 
-    const body = Object.fromEntries(new FormData(e.currentTarget).entries());
-    try {
-      const res = await fetch("/api/ambassadors", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      if (res.status === 201) {
-        trackEvent.ambassadorApply(); // only once the application is saved
-        setStatus("success");
-        return;
-      }
-      const data = (await res.json().catch(() => ({}))) as { error?: string };
-      setError(data.error ?? "Something went wrong. Please try again.");
-      setStatus("error");
-    } catch {
-      setError("Network error. Please check your connection and try again.");
-      setStatus("error");
-    }
-  }
+export default async function AmbassadorsPage({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "ambassadors" });
+
+  const who: { icon: Icon; key: "runners" | "social" | "community" }[] = [
+    { icon: ActivityIcon, key: "runners" },
+    { icon: MegaphoneIcon, key: "social" },
+    { icon: ClubIcon, key: "community" },
+  ];
+  const offer: { icon: Icon; key: "early" | "merch" | "perks" }[] = [
+    { icon: RocketIcon, key: "early" },
+    { icon: ShirtIcon, key: "merch" },
+    { icon: GiftIcon, key: "perks" },
+  ];
+  const steps = ["account", "club", "send"] as const;
+
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-background pt-24 pb-16 px-4">
-        <div className="max-w-4xl mx-auto">
-          {/* Hero */}
-          <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-6xl font-extrabold text-foreground mb-4">
-              Run with us.{" "}
-              <span className="text-brand-lime">Lead the pack.</span>
+      <main className="bg-background">
+        {/* Hero — same pattern as /waitlist */}
+        <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden px-4 pt-24 pb-16">
+          <Image src="/images/fondoClubes.webp" alt="" fill priority className="object-cover object-center" />
+          <div className="absolute inset-0 bg-brand-navy/70" />
+          <div className="relative z-10 mx-auto max-w-3xl text-center">
+            <h1 className="mb-6 text-4xl font-extrabold text-white md:text-6xl">
+              {t("hero.titleA")} <span className="text-brand-lime">{t("hero.titleB")}</span>
             </h1>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-              We&apos;re looking for passionate runners with a voice. People who
-              live and breathe running culture and want to be part of building
-              something global from the ground up.
-            </p>
+            <p className="mx-auto max-w-2xl text-lg text-white/75 md:text-xl">{t("hero.subtitle")}</p>
           </div>
+        </section>
 
-          {/* Body */}
-          <div className="prose prose-invert prose-lime max-w-none mb-16">
-            <blockquote className="border-l-4 border-brand-lime pl-6 text-slate-300 not-italic">
-              The w3runn3rs Ambassador Program is built for runners who inspire
-              others — on the road and online. If you have an engaged community,
-              a passion for running and the drive to help grow the world&apos;s
-              most committed running hub, we want to hear from you.
-            </blockquote>
-          </div>
-
-          {/* Who / What grid */}
-          <div className="grid md:grid-cols-2 gap-8 mb-16">
-            {/* Who we're looking for */}
-            <div>
-              <h2 className="text-2xl font-bold text-foreground mb-6">
-                Who we&apos;re looking for
-              </h2>
-              <div className="space-y-4">
-                {[
-                  {
-                    icon: "🏃",
-                    title: "Passionate runners",
-                    description: "You run, you race, you live the culture.",
-                  },
-                  {
-                    icon: "📱",
-                    title: "Active on social media",
-                    description:
-                      "Strong presence on Instagram and/or Twitter with an engaged running audience.",
-                  },
-                  {
-                    icon: "🌍",
-                    title: "Community builders",
-                    description:
-                      "You bring people together and inspire them to move.",
-                  },
-                ].map(({ icon, title, description }) => (
-                  <div key={title} className="flex gap-4">
-                    <span className="text-2xl">{icon}</span>
-                    <div>
-                      <h3 className="font-bold text-foreground">{title}</h3>
-                      <p className="text-slate-400 text-sm">{description}</p>
-                    </div>
-                  </div>
+        <div className="mx-auto max-w-4xl space-y-20 px-4 py-16">
+          {/* Who / What */}
+          <div className="grid gap-12 md:grid-cols-2">
+            <section>
+              <h2 className="mb-6 text-2xl font-bold text-foreground">{t("who.title")}</h2>
+              <div className="space-y-5">
+                {who.map(({ icon, key }) => (
+                  <Feature key={key} icon={icon} title={t(`who.${key}.title`)} description={t(`who.${key}.description`)} />
                 ))}
               </div>
-            </div>
-
-            {/* What we offer */}
-            <div>
-              <h2 className="text-2xl font-bold text-foreground mb-6">
-                What we offer
-              </h2>
-              <div className="space-y-4">
-                {[
-                  {
-                    icon: "🚀",
-                    title: "Early Access",
-                    description:
-                      "Be the first to access the platform before anyone else.",
-                  },
-                  {
-                    icon: "👕",
-                    title: "Exclusive Merch",
-                    description:
-                      "Official w3runn3rs gear — before it's available to the public.",
-                  },
-                  {
-                    icon: "🎁",
-                    title: "More Perks",
-                    description:
-                      "Economic compensation and more. Details shared with selected ambassadors.",
-                  },
-                ].map(({ icon, title, description }) => (
-                  <div key={title} className="flex gap-4">
-                    <span className="text-2xl">{icon}</span>
-                    <div>
-                      <h3 className="font-bold text-foreground">{title}</h3>
-                      <p className="text-slate-400 text-sm">{description}</p>
-                    </div>
-                  </div>
+            </section>
+            <section>
+              <h2 className="mb-6 text-2xl font-bold text-foreground">{t("offer.title")}</h2>
+              <div className="space-y-5">
+                {offer.map(({ icon, key }) => (
+                  <Feature key={key} icon={icon} title={t(`offer.${key}.title`)} description={t(`offer.${key}.description`)} />
                 ))}
               </div>
-            </div>
+            </section>
           </div>
 
-          {/* Application Form */}
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
-              Apply to become an Ambassador
-            </h2>
-            {status === "success" ? (
-              <div role="status" className="rounded-lg border border-brand-lime/40 bg-brand-lime/10 p-8 text-center">
-                <p className="text-4xl mb-3">🏃</p>
-                <h3 className="text-2xl font-bold text-foreground mb-2">Application received</h3>
-                <p className="text-slate-400">
-                  Thanks for applying! We&apos;ve sent a confirmation to your email. If
-                  you&apos;re shortlisted, we&apos;ll reach out to you there.
-                </p>
-              </div>
-            ) : (
-            <form className="space-y-4" onSubmit={handleSubmit}>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="amb-name" className="block text-sm font-medium text-slate-300 mb-2">
-                    Full name *
-                  </label>
-                  <Input
-                    id="amb-name"
-                    name="fullName"
-                    type="text"
-                    placeholder="Jane Runner"
-                    autoComplete="name"
-                    maxLength={AMBASSADOR_LIMITS.nameMax}
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="amb-email" className="block text-sm font-medium text-slate-300 mb-2">
-                    Email *
-                  </label>
-                  <Input
-                    id="amb-email"
-                    name="email"
-                    type="email"
-                    placeholder="jane@runnerclub.com"
-                    autoComplete="email"
-                    required
-                  />
-                </div>
-              </div>
+          {/* How to apply */}
+          <section className="text-center">
+            <h2 className="mb-3 text-3xl font-bold text-foreground">{t("apply.title")}</h2>
+            <p className="mx-auto mb-10 max-w-xl text-muted">{t("apply.subtitle")}</p>
+            <ol className="grid gap-px border border-line bg-line text-left sm:grid-cols-3">
+              {steps.map((step, i) => (
+                <li key={step} className="bg-surface-alt p-6">
+                  <span className="mb-3 flex h-9 w-9 items-center justify-center bg-brand-green text-base font-extrabold text-brand-navy">
+                    {i + 1}
+                  </span>
+                  <h3 className="mb-1 font-bold text-foreground">{t(`apply.steps.${step}.title`)}</h3>
+                  <p className="text-sm text-muted">{t(`apply.steps.${step}.description`)}</p>
+                </li>
+              ))}
+            </ol>
 
-              <div>
-                <label htmlFor="amb-country" className="block text-sm font-medium text-slate-300 mb-2">
-                  Country *
-                </label>
-                <select
-                  id="amb-country"
-                  name="country"
-                  defaultValue=""
-                  className="w-full rounded-lg bg-slate-900 border border-slate-700 text-foreground px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-lime"
-                  required
-                >
-                  <option value="" disabled>Select your country</option>
-                  {AMBASSADOR_COUNTRIES.map((c) => (
-                    <option key={c.code} value={c.code}>{c.label}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="grid sm:grid-cols-3 gap-4">
-                <div>
-                  <label htmlFor="amb-ig" className="block text-sm font-medium text-slate-300 mb-2">
-                    Instagram
-                  </label>
-                  <Input id="amb-ig" name="instagram" type="text" placeholder="@handle" />
-                </div>
-                <div>
-                  <label htmlFor="amb-x" className="block text-sm font-medium text-slate-300 mb-2">
-                    Twitter/X
-                  </label>
-                  <Input id="amb-x" name="twitter" type="text" placeholder="@handle" />
-                </div>
-                <div>
-                  <label htmlFor="amb-tiktok" className="block text-sm font-medium text-slate-300 mb-2">
-                    TikTok
-                  </label>
-                  <Input id="amb-tiktok" name="tiktok" type="text" placeholder="@handle" />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="amb-why" className="block text-sm font-medium text-slate-300 mb-2">
-                  Why do you want to be a w3runn3rs ambassador? *
-                </label>
-                <textarea
-                  id="amb-why"
-                  name="motivation"
-                  className="w-full rounded-lg bg-slate-900 border border-slate-700 text-foreground px-4 py-3 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-brand-lime"
-                  placeholder="Tell us about yourself and why you'd be a great ambassador..."
-                  minLength={AMBASSADOR_LIMITS.motivationMin}
-                  maxLength={AMBASSADOR_LIMITS.motivationMax}
-                  required
-                />
-              </div>
-
-              <p className="text-slate-500 text-sm italic">
-                You don&apos;t need to be active on all platforms — just the
-                ones where you genuinely connect with your running community.
-              </p>
-
-              {error && (
-                <p role="alert" className="text-sm text-red-400">
-                  {error}
-                </p>
-              )}
-
-              <Button
-                type="submit"
-                variant="primary"
-                size="lg"
-                className="w-full"
-                disabled={status === "loading"}
-              >
-                {status === "loading" ? "Sending…" : "Apply to become an Ambassador →"}
-              </Button>
-
-              <p className="text-slate-500 text-sm text-center">
-                Applications are reviewed on a rolling basis. Only shortlisted
-                candidates will be contacted.
-              </p>
-            </form>
-            )}
-          </div>
+            <a
+              href={APPLY_URL}
+              className="mt-10 inline-flex items-center justify-center bg-brand-green px-8 py-4 text-lg font-bold text-black transition-colors hover:bg-brand-green/80"
+            >
+              {t("apply.cta")}
+            </a>
+            <p className="mx-auto mt-4 max-w-md text-sm text-muted">{t("apply.note")}</p>
+          </section>
         </div>
       </main>
       <Footer />

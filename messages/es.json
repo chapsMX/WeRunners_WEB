@@ -713,5 +713,64 @@
     "ranked": "#{rank} de {clubs} clubes en el mundo este mes",
     "unranked": "Sin kilómetros este mes todavía",
     "cta": "Ver el leaderboard"
+  },
+  "ambassadors": {
+    "metaTitle": "Programa de embajadores — W3Runn3rs",
+    "metaDescription": "Corre con nosotros y lidera el grupo. Sé embajador de W3Runn3rs: trae a tu club de corredores, inspira a tu comunidad y ayúdanos a construir el hub global de clubes de corredores.",
+    "hero": {
+      "titleA": "Corre con nosotros.",
+      "titleB": "Lidera el grupo.",
+      "subtitle": "El Programa de Embajadores de W3Runn3rs es para corredores que inspiran a otros, en la calle y en línea. Si lideras un club de corredores, juntas a la gente y quieres ayudarnos a construir el hub global de clubes de corredores, queremos conocerte."
+    },
+    "who": {
+      "title": "A quién buscamos",
+      "runners": {
+        "title": "Corredores apasionados",
+        "description": "Corres, compites y vives la cultura del running."
+      },
+      "social": {
+        "title": "Activo en redes sociales",
+        "description": "Compartes tus corridas y tienes una comunidad que te sigue de cerca."
+      },
+      "community": {
+        "title": "Constructores de comunidad",
+        "description": "Juntas a la gente y la inspiras a moverse."
+      }
+    },
+    "offer": {
+      "title": "Qué ofrecemos",
+      "early": {
+        "title": "Acceso anticipado",
+        "description": "Prueba las nuevas funciones antes que nadie y ayúdanos a darles forma."
+      },
+      "merch": {
+        "title": "Merch exclusivo",
+        "description": "Ropa oficial de W3Runn3rs, antes de que salga al público."
+      },
+      "perks": {
+        "title": "Más beneficios",
+        "description": "Más beneficios que anunciaremos pronto."
+      }
+    },
+    "apply": {
+      "title": "Cómo aplicar",
+      "subtitle": "Los embajadores lideran un club de corredores en W3Runn3rs. Son tres pasos:",
+      "steps": {
+        "account": {
+          "title": "Crea tu cuenta",
+          "description": "Regístrate en la app con Google o con tu correo."
+        },
+        "club": {
+          "title": "Registra tu club",
+          "description": "Da de alta tu club de corredores, o únete si ya está."
+        },
+        "send": {
+          "title": "Envía tu aplicación",
+          "description": "Cuéntanos de ti y de tu comunidad. Tu perfil y tu club completan el resto."
+        }
+      },
+      "cta": "Aplica ahora →",
+      "note": "Revisamos las aplicaciones conforme llegan. Solo contactaremos a quienes queden preseleccionados."
+    }
   }
 }
