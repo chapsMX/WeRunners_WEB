@@ -2,20 +2,24 @@ import type { Metadata } from "next"
 import { headers } from "next/headers"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { getAppTranslator } from "@/lib/app-i18n"
-import { appOpenGraph, appTwitter } from "@/lib/app-share-metadata"
+import { getAppLocale } from "@/lib/app-i18n"
+import { shareMetadata } from "@/lib/app-share-metadata"
+import en from "@/messages/en.json"
+import es from "@/messages/es.json"
 import { getClubLeaderboard, parseLeaderboardPeriod } from "@/lib/leaderboard"
 import { ClubLeaderboardView } from "@/components/app/leaderboard/ClubLeaderboardView"
 
-export async function generateMetadata(): Promise<Metadata> {
-  const { t } = await getAppTranslator("leaderboard")
-  const title = t("metaTitle")
-  const description = t("metaDescription")
+type SearchParams = Promise<{ period?: string | string[]; lang?: string | string[] }>
+
+// Link previews have no cookie: shared links carry ?lang=es for the Spanish card.
+export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
+  const { lang } = await searchParams
+  const locale = lang === "es" || lang === "en" ? lang : await getAppLocale()
+  const t = (locale === "es" ? es : en).leaderboard
   return {
-    title,
-    description,
-    openGraph: { ...appOpenGraph, title, description },
-    twitter: { ...appTwitter, title, description },
+    title: t.metaTitle,
+    description: t.metaDescription,
+    ...shareMetadata({ title: t.metaTitle, description: t.metaDescription, image: `/api/og/leaderboard?lang=${locale}` }),
   }
 }
 
@@ -23,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function LeaderboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ period?: string | string[] }>
+  searchParams: SearchParams
 }) {
   const period = parseLeaderboardPeriod((await searchParams).period)
   const session = await auth.api.getSession({ headers: await headers() })

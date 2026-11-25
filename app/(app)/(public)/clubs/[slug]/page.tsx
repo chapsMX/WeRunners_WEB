@@ -8,6 +8,7 @@ import { ClubMonthActivities } from "@/components/app/clubs/page/ClubMonthActivi
 import { ClubLeaderboard } from "@/components/app/clubs/page/ClubLeaderboard"
 import { ClubMonthStats } from "@/components/app/clubs/page/ClubMonthStats"
 import { getClubWorldRank } from "@/lib/leaderboard"
+import { shareMetadata } from "@/lib/app-share-metadata"
 
 type Params = { slug: string }
 
@@ -15,9 +16,13 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { slug } = await params
   const page = await getClubPage(slug)
   if (!page) return { title: "We Runners" }
+  const title = `${page.club.name} · We Runners`
+  const description = page.club.description ?? `${page.club.name} on We Runners, the global hub for running clubs.`
   return {
-    title: `${page.club.name} · We Runners`,
-    description: page.club.description ?? `${page.club.name} on We Runners, the global hub for running clubs.`,
+    title,
+    description,
+    // Share card: the club banner, logo, name and members.
+    ...shareMetadata({ title, description, image: `/api/og/club/${page.club.slug}` }),
   }
 }
 

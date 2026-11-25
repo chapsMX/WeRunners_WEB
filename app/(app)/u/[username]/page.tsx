@@ -11,6 +11,7 @@ import { ProfileStats } from "@/components/app/ProfileStats"
 import { ProfileClub, ProfileClubStats, ProfileRecords } from "@/components/app/profile/PublicProfileClub"
 import { FacebookIcon, InstagramIcon, StravaIcon, XIcon } from "@/components/ui/SocialIcons"
 import { buildSocialLinks, type SocialNetwork } from "@/lib/social-links"
+import { shareMetadata } from "@/lib/app-share-metadata"
 
 type Params = { username: string }
 
@@ -46,9 +47,13 @@ export async function generateMetadata({
   const { username } = await params
   const user = await getUser(username)
   if (!user) return { title: "We Runners" }
+  const title = `${user.name} (@${user.username}) · We Runners`
+  const description = user.bio ?? `${user.name} runs on We Runners, the global hub for running clubs.`
   return {
-    title: `${user.name} (@${user.username}) · We Runners`,
-    description: user.bio ?? undefined,
+    title,
+    description,
+    // Share card: the runner's photo, name, club and km this month.
+    ...shareMetadata({ title, description, image: `/api/og/profile/${user.username}` }),
   }
 }
 

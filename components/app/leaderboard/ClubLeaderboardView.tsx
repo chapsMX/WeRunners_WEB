@@ -50,7 +50,7 @@ export function ClubLeaderboardView({ board, myClubId }: { board: ClubLeaderboar
         <div className="flex items-center gap-2">
           <span className="text-xs font-medium text-muted">{t("share")}</span>
           <ShareButtons
-            links={shareLinks(t("shareText"), `${APP_URL}/leaderboard`)}
+            links={shareLinks(t("shareText"), `${APP_URL}/leaderboard${locale === "es" ? "?lang=es" : ""}`)}
             labels={{ x: t("shareX"), farcaster: t("shareFarcaster") }}
           />
         </div>
