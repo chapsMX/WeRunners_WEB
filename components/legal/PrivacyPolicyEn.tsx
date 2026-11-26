@@ -5,7 +5,7 @@ export function PrivacyPolicyEn() {
   return (
     <>
       <h1>Privacy Policy</h1>
-      <p className="text-slate-400 text-sm">Last updated: November 19, 2026 | Mexico City, Mexico</p>
+      <p className="text-slate-400 text-sm">Last updated: November 26, 2026 | Mexico City, Mexico</p>
 
       <p>
         This policy explains what personal data We Runners collects, what we use it for, what other people can see, and
@@ -117,6 +117,9 @@ export function PrivacyPolicyEn() {
           <strong>Leaderboards</strong>: each club&apos;s total kilometers, runs and number of runners.
         </li>
       </ul>
+      <p>
+        Because these pages are public, search engines like Google can find them and show them in their results.
+      </p>
       <p>
         Heart rate, cadence, calories, start location and GPS points are <strong>only for you</strong>: they are never
         shown to other people. When you use a share button, you choose what to post and where.

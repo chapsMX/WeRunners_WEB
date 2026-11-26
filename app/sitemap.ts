@@ -1,5 +1,7 @@
 import { MetadataRoute } from "next";
+import { headers } from "next/headers";
 import { getAllPosts, getPostAlternates } from "@/lib/blog";
+import { appSitemap, isAppHost } from "@/lib/app-seo";
 
 const BASE_URL = "https://www.w3runn3rs.com";
 const locales = ["en", "es"] as const;
@@ -33,6 +35,9 @@ function buildAlternates(path: string) {
 
 // ─── Sitemap principal ────────────────────────────────────────────────────────
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  // app.w3runn3rs.com: clubs, profiles, leaderboard (lib/app-seo).
+  if (isAppHost((await headers()).get("host"))) return appSitemap();
+
   const entries: MetadataRoute.Sitemap = [];
   const now = new Date();
 

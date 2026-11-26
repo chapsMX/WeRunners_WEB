@@ -14,6 +14,7 @@ const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").repl
 /** Minimal page with OG / X card tags (and a refresh for any human that lands here). */
 export function linkPreviewHtml(p: { title: string; description: string; url: string; image: string; redirectTo: string }): string {
   return `<!doctype html><html><head><meta charset="utf-8">
+<meta name="robots" content="noindex">
 <title>${esc(p.title)}</title>
 <meta name="description" content="${esc(p.description)}">
 <meta property="og:type" content="website"><meta property="og:site_name" content="We Runners">

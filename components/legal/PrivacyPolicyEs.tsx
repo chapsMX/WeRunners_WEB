@@ -5,7 +5,7 @@ export function PrivacyPolicyEs() {
   return (
     <>
       <h1>Política de privacidad</h1>
-      <p className="text-slate-400 text-sm">Última actualización: 19 de noviembre de 2026 | Ciudad de México, México</p>
+      <p className="text-slate-400 text-sm">Última actualización: 26 de noviembre de 2026 | Ciudad de México, México</p>
 
       <p>
         Este aviso de privacidad explica qué datos personales recaba We Runners, para qué los usamos, qué pueden ver otras
@@ -118,6 +118,9 @@ export function PrivacyPolicyEs() {
           <strong>Los leaderboards</strong>: kilómetros totales, corridas y número de corredores de cada club.
         </li>
       </ul>
+      <p>
+        Como estas páginas son públicas, buscadores como Google pueden encontrarlas y mostrarlas en sus resultados.
+      </p>
       <p>
         Frecuencia cardiaca, cadencia, calorías, punto de inicio y puntos GPS son <strong>solo para ti</strong>: nunca se
         muestran a otras personas. Cuando usas un botón para compartir, tú eliges qué publicar y dónde.
