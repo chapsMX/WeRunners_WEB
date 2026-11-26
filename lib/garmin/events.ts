@@ -3,7 +3,8 @@
 // runs after the response (next/server `after`) and, for anything that failed,
 // again from the retry cron. Ingest is idempotent (upserts), so a retry is safe.
 import { prisma } from "@/lib/prisma"
-import { ingestGarminPayload, type PayloadSummary } from "./ingest"
+import type { Prisma } from "@prisma/client"
+import { ingestGarminPayload, stripActivityDetailSamples, type PayloadSummary } from "./ingest"
 
 export const MAX_EVENT_ATTEMPTS = 5
 
@@ -28,9 +29,15 @@ export async function processGarminEvent(
       maxWait: 15_000, // Neon may need to wake the compute (default is 2 s)
       timeout: 30_000,
     })
+    // Activity Details carry the full GPS track: once the shape is saved, drop it.
+    const stripped = stripActivityDetailSamples(event.payload)
     await prisma.garminWebhookEvent.update({
       where: { id: eventId },
-      data: { processedAt: new Date(), error: null },
+      data: {
+        processedAt: new Date(),
+        error: null,
+        ...(stripped !== event.payload ? { payload: stripped as Prisma.InputJsonValue } : {}),
+      },
     })
     console.log("[garmin/events] processed", event.summaryType, JSON.stringify(summary))
     return { ok: true, summary }

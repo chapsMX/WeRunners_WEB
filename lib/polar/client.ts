@@ -124,6 +124,20 @@ export async function getExercise(accessToken: string, url: string): Promise<unk
   return res.json()
 }
 
+/**
+ * GET /v3/exercises/{id}/gpx — the route of an exercise with has_route (same
+ * token and "Exercise data" permission). null = no route / gone.
+ */
+export async function getExerciseGpx(accessToken: string, exerciseId: string): Promise<string | null> {
+  const res = await fetch(`${POLAR_API}/exercises/${encodeURIComponent(exerciseId)}/gpx`, {
+    headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/gpx+xml" },
+    cache: "no-store",
+  })
+  if (res.status === 204 || res.status === 404) return null
+  if (!res.ok) throw new PolarApiError("GET exercise GPX failed", res.status)
+  return res.text()
+}
+
 /** Polar-Webhook-Signature = hex HMAC-SHA256(raw body, signature_secret_key). */
 export function isValidPolarSignature(rawBody: string, signature: string | null, secret: string): boolean {
   if (!signature) return false

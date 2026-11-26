@@ -4,6 +4,7 @@
 // tests can run inside a rolled-back transaction).
 import type { ActivityType, ExclusionReason, Prisma } from "@prisma/client"
 import { decideFairness } from "@/lib/activity-fairness"
+import { buildRouteShape, saveActivityRoute } from "@/lib/routes"
 
 export { IMPLAUSIBLE_PACE_SEC_PER_KM } from "@/lib/activity-fairness"
 
@@ -197,13 +198,73 @@ export async function ingestGarminPermissions(
   return result.count > 0
 }
 
+// ── Activity details (route shape) ──────────────────────────
+
+/** Activity Details push item (Activity API v2.1). Only what we read. */
+export type GarminActivityDetails = {
+  userId: string
+  summaryId: string // "<activity summaryId>-detail"
+  summary?: Omit<GarminActivitySummary, "userId" | "summaryId">
+  samples?: { latitudeInDegree?: number; longitudeInDegree?: number }[]
+}
+
+export type RouteOutcome = "route_saved" | "route_none" | "route_unknown_user" | `route_skipped_${string}`
+
+/**
+ * Activity Details → the run's route shape (ActivityRoute). Only the shape is
+ * kept (lib/routes); the GPS samples are dropped from the stored event after
+ * processing (lib/garmin/events). Details can arrive before the activity
+ * summary: then the run is ingested from the summary they carry (same
+ * fairness rules; the later summary push upserts the same activity).
+ */
+export async function ingestGarminActivityDetails(tx: Tx, d: GarminActivityDetails): Promise<RouteOutcome> {
+  if (!d?.summaryId || !d.userId) return "route_skipped_invalid"
+  const externalId = String(d.summaryId).replace(/-detail$/, "")
+  const conn = await tx.deviceConnectionGarmin.findFirst({
+    where: { garminUserId: d.userId, isActive: true },
+    select: { userId: true },
+  })
+  if (!conn) return "route_unknown_user"
+
+  const where = { userId_source_externalId: { userId: conn.userId, source: "GARMIN" as const, externalId } }
+  let activity = await tx.activity.findUnique({ where, select: { id: true } })
+  if (!activity) {
+    if (!d.summary) return "route_skipped_no_activity"
+    const outcome = await ingestGarminActivity(tx, { ...d.summary, userId: d.userId, summaryId: externalId } as GarminActivitySummary)
+    if (outcome.status !== "stored") return `route_skipped_${outcome.why}`
+    activity = await tx.activity.findUnique({ where, select: { id: true } })
+    if (!activity) return "route_skipped_no_activity"
+  }
+
+  const shape = buildRouteShape(
+    (d.samples ?? []).map((s) => ({ lat: Number(s.latitudeInDegree), lon: Number(s.longitudeInDegree) }))
+  )
+  if (!shape) return "route_none" // treadmill / no GPS
+  await saveActivityRoute(tx, activity.id, "GARMIN", shape)
+  return "route_saved"
+}
+
+/** The stored event without GPS samples (privacy): only the shape is kept. */
+export function stripActivityDetailSamples(payload: unknown): unknown {
+  if (!payload || typeof payload !== "object") return payload
+  const p = payload as Record<string, unknown>
+  if (!Array.isArray(p.activityDetails)) return payload
+  return {
+    ...p,
+    activityDetails: p.activityDetails.map((d) =>
+      d && typeof d === "object" ? { ...(d as Record<string, unknown>), samples: [], samplesStripped: true } : d
+    ),
+  }
+}
+
 // ── Whole payload ───────────────────────────────────────────
 
 export type PayloadSummary = Record<string, number>
 
 /**
- * Apply one push payload. Known keys: activities, deregistrations,
- * userPermissionsChange. Other summary types are counted and ignored.
+ * Apply one push payload. Known keys: activities, activityDetails (route
+ * shape), deregistrations, userPermissionsChange. Other summary types are
+ * counted and ignored.
  */
 export async function ingestGarminPayload(tx: Tx, payload: unknown): Promise<PayloadSummary> {
   const out: PayloadSummary = {}
@@ -216,6 +277,8 @@ export async function ingestGarminPayload(tx: Tx, payload: unknown): Promise<Pay
       if (key === "activities") {
         const r = await ingestGarminActivity(tx, item as GarminActivitySummary)
         bump(r.status === "stored" ? (r.counts ? "counted" : `excluded_${r.reason}`) : `skipped_${r.why}`)
+      } else if (key === "activityDetails") {
+        bump(await ingestGarminActivityDetails(tx, item as GarminActivityDetails))
       } else if (key === "deregistrations") {
         bump((await ingestGarminDeregistration(tx, (item as { userId: string }).userId)) ? "deregistered" : "deregistration_unknown")
       } else if (key === "userPermissionsChange") {
