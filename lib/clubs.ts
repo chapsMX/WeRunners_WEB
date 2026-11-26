@@ -159,12 +159,14 @@ export async function createMembership(tx: Tx, userId: string, clubId: string, n
     where: { pendingUserId: userId },
     data: { status: "CANCELLED", pendingUserId: null, decidedAt: now },
   })
+  // Free-switch clubs (Solo Running Club) don't lock their members in.
+  const club = await tx.club.findUnique({ where: { id: clubId }, select: { freeSwitch: true } })
   await tx.clubMembership.create({
     data: {
       userId,
       clubId,
       joinedAt: now,
-      lockExpiresAt: addMonths(now, CLUB_LOCK_MONTHS),
+      lockExpiresAt: club?.freeSwitch ? now : addMonths(now, CLUB_LOCK_MONTHS),
       isActive: true,
       activeUserId: userId,
     },
@@ -293,18 +295,40 @@ export async function createClubRequest(
 // ── Joining from the app: open clubs vs. approval clubs ─────
 
 export type JoinOutcome =
-  | { ok: true; status: "joined" | "requested"; clubName: string }
+  | { ok: true; status: "joined" | "requested"; clubName: string; /** Left this free-switch club to join. */ leftClubName?: string }
   | { ok: false; error: "not_found" | "has_club" | "has_pending"; clubName?: string }
+
+/**
+ * The runner's active membership, and whether they may leave it right now
+ * for another club: only free-switch clubs (Solo Running Club), and never
+ * the club's owner (a club always keeps its owner as a member).
+ */
+export async function getSwitchableMembership(tx: Tx | typeof prisma, userId: string) {
+  const m = await tx.clubMembership.findUnique({
+    where: { activeUserId: userId },
+    select: { id: true, clubId: true, club: { select: { name: true, freeSwitch: true, ownerId: true } } },
+  })
+  if (!m) return null
+  return { id: m.id, clubId: m.clubId, clubName: m.club.name, canSwitch: m.club.freeSwitch && m.club.ownerId !== userId }
+}
+
+/** Leave a free-switch club (the runs already logged stay with it). */
+export async function leaveMembership(tx: Tx, membership: { id: string; clubId: string }, now = new Date()) {
+  await tx.clubMembership.update({ where: { id: membership.id }, data: { isActive: false, activeUserId: null, leftAt: now } })
+  await tx.club.update({ where: { id: membership.clubId }, data: { memberCount: { decrement: 1 } } })
+}
 
 /**
  * A runner without a club joins it (OPEN) or asks to join (APPROVAL).
  * Only one pending request at a time — cancel it to pick another club.
+ * A runner in a free-switch club (Solo) can move on: an OPEN club switches
+ * them now; an APPROVAL club keeps them in Solo until they're approved.
  */
 export async function joinOrRequestClub(tx: Tx, userId: string, clubId: string, now = new Date()): Promise<JoinOutcome> {
   const club = await tx.club.findFirst({ where: { id: clubId, active: true }, select: { id: true, name: true, joinPolicy: true } })
   if (!club) return { ok: false, error: "not_found" }
-  const active = await tx.clubMembership.findUnique({ where: { activeUserId: userId }, select: { club: { select: { name: true } } } })
-  if (active) return { ok: false, error: "has_club", clubName: active.club.name }
+  const active = await getSwitchableMembership(tx, userId)
+  if (active && (active.clubId === club.id || !active.canSwitch)) return { ok: false, error: "has_club", clubName: active.clubName }
   const pending = await tx.clubJoinRequest.findUnique({ where: { pendingUserId: userId }, select: { clubId: true, club: { select: { name: true } } } })
   if (pending) {
     return pending.clubId === club.id
@@ -315,9 +339,10 @@ export async function joinOrRequestClub(tx: Tx, userId: string, clubId: string, 
     await tx.clubJoinRequest.create({ data: { userId, clubId: club.id, pendingUserId: userId } })
     return { ok: true, status: "requested", clubName: club.name }
   }
+  if (active) await leaveMembership(tx, active, now)
   await createMembership(tx, userId, club.id, now)
   await claimRegistrantOwnership(tx, userId, club.id)
-  return { ok: true, status: "joined", clubName: club.name }
+  return { ok: true, status: "joined", clubName: club.name, ...(active ? { leftClubName: active.clubName } : {}) }
 }
 
 /** The runner's pending join request, if any. */
@@ -376,11 +401,14 @@ export async function decideJoinRequest(
     await close("REJECTED")
     return { ok: true, status: "REJECTED", user: req.user, clubName: access.club.name, clubSlug: access.club.slug }
   }
-  if (await tx.clubMembership.findUnique({ where: { activeUserId: req.userId }, select: { id: true } })) {
+  // Approved while in a free-switch club (Solo) → the switch happens now.
+  const current = await getSwitchableMembership(tx, req.userId)
+  if (current && !current.canSwitch) {
     await close("CANCELLED")
     return { ok: false, error: "has_club" }
   }
   await close("APPROVED")
+  if (current) await leaveMembership(tx, current, now)
   await createMembership(tx, req.userId, req.clubId, now)
   return { ok: true, status: "APPROVED", user: req.user, clubName: access.club.name, clubSlug: access.club.slug }
 }
@@ -393,11 +421,13 @@ export async function getClubDirectory(db: Tx | typeof prisma, userId: string) {
       orderBy: { name: "asc" },
       select: { id: true, name: true, slug: true, city: true, country: true, logoUrl: true, memberCount: true, joinPolicy: true },
     }),
-    db.clubMembership.findUnique({ where: { activeUserId: userId }, select: { clubId: true } }),
+    getSwitchableMembership(db, userId),
     db.clubJoinRequest.findUnique({ where: { pendingUserId: userId }, select: { clubId: true } }),
   ])
   return {
     myClubId: active?.clubId ?? null,
+    /** The runner is in a free-switch club (Solo) and may join another one. */
+    canSwitch: active?.canSwitch ?? false,
     pendingClubId: pending?.clubId ?? null,
     clubs: clubs.map((c) => ({ ...c, requiresApproval: c.joinPolicy === "APPROVAL" })),
   }

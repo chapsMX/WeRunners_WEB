@@ -26,7 +26,7 @@ export default async function ClubsPage() {
         <h1 className="text-2xl font-bold text-foreground sm:text-3xl">{t("title")}</h1>
         <p className="mt-2 text-sm text-muted">{t("subtitle")}</p>
       </header>
-      <ClubDirectory clubs={dir.clubs} myClubId={dir.myClubId} pendingClubId={dir.pendingClubId} />
+      <ClubDirectory clubs={dir.clubs} myClubId={dir.myClubId} pendingClubId={dir.pendingClubId} canSwitch={dir.canSwitch} />
     </div>
   )
 }
