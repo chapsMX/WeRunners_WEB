@@ -9,6 +9,12 @@ const nextConfig = {
   // <body> for non-"limited" bots (Googlebot included), and Google ignores
   // rel=canonical inside <body>.
   htmlLimitedBots: /.*/,
+  // The sitemap is dynamic (it reads the host: www vs app), so it runs as a
+  // function and only sees files that are traced into it. lib/blog reads the
+  // MDX files with fs at runtime; without this the blog posts silently vanish.
+  outputFileTracingIncludes: {
+    "/sitemap.xml": ["./content/blog/**/*"],
+  },
   images: {
     remotePatterns: [
       // Fotos de perfil de Google OAuth
