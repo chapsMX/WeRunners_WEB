@@ -19,6 +19,7 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
   return {
     title: t.metaTitle,
     description: t.metaDescription,
+    alternates: { canonical: "/clubs" }, // drops ?lang; app host even when served on www
     ...shareMetadata({ title: t.metaTitle, description: t.metaDescription, image: `/api/og/clubs?lang=${locale}` }),
   }
 }

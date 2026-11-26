@@ -52,6 +52,8 @@ export async function generateMetadata({
   return {
     title,
     description,
+    // Relative → app.w3runn3rs.com (metadataBase); www serves these pages too.
+    alternates: { canonical: `/u/${user.username}` },
     // Share card: the runner's photo, name, club and km this month.
     ...shareMetadata({ title, description, image: `/api/og/profile/${user.username}` }),
   }

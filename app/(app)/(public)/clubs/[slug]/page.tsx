@@ -21,6 +21,8 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   return {
     title,
     description,
+    // Relative → app.w3runn3rs.com (metadataBase); www serves these pages too.
+    alternates: { canonical: `/clubs/${page.club.slug}` },
     // Share card: the club banner, logo, name and members.
     ...shareMetadata({ title, description, image: `/api/og/club/${page.club.slug}` }),
   }
