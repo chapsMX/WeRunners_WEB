@@ -5,6 +5,7 @@
 import type { ActivityType, ExclusionReason, Prisma } from "@prisma/client"
 import { decideFairness } from "@/lib/activity-fairness"
 import { buildRouteShape, saveActivityRoute } from "@/lib/routes"
+import { newShortId } from "@/lib/short-id"
 
 export { IMPLAUSIBLE_PACE_SEC_PER_KM } from "@/lib/activity-fairness"
 
@@ -151,7 +152,7 @@ export async function ingestGarminActivity(
   // Garmin can resend an updated summary for the same summaryId → upsert.
   const activity = await tx.activity.upsert({
     where: { userId_source_externalId: { userId, source: "GARMIN", externalId } },
-    create: { userId, source: "GARMIN", externalId, ...data },
+    create: { userId, source: "GARMIN", externalId, shortId: newShortId(), ...data },
     update: data,
     select: { id: true },
   })

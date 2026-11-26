@@ -15,6 +15,8 @@ import { getClubWorldRank, type ClubWorldRank } from "@/lib/leaderboard"
 
 export type ActivityRow = {
   id: string
+  /** Short code of the run's share page (/r/<shortId>). */
+  shortId: string | null
   title: string
   type: string // RUN, TRAIL, TREADMILL, ...
   distanceMeters: number
@@ -137,6 +139,7 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
       take: RECENT_LIMIT,
       select: {
         id: true,
+        shortId: true,
         title: true,
         activityType: true,
         distanceMeters: true,
@@ -194,6 +197,7 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
     records: realRecords(prRecords),
     recent: recentActivities.map((a) => ({
       id: a.id,
+      shortId: a.shortId,
       title: a.title ?? "Run",
       type: a.activityType,
       distanceMeters: a.distanceMeters,

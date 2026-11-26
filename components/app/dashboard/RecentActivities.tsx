@@ -12,6 +12,8 @@ import type { ActivityRow } from "@/lib/dashboard-data"
 import { ActivityIcon } from "../icons"
 import Link from "next/link"
 import { APP_URL, shareLinks } from "@/lib/share"
+
+const runPath = (a: { id: string; shortId: string | null }) => (a.shortId ? `/r/${a.shortId}` : `/runs/${a.id}`)
 import { ShareButtons } from "../ShareButtons"
 
 // Plataformas de origen — marcas que no se traducen (MANUAL sí, vía i18n).
@@ -68,7 +70,7 @@ export function RecentActivities({
               </div>
 
               <div className="min-w-0 flex-1">
-                <Link href={`/runs/${a.id}`} className="block truncate text-sm font-semibold text-foreground hover:text-brand-green">
+                <Link href={runPath(a)} className="block truncate text-sm font-semibold text-foreground hover:text-brand-green">
                   {a.title || t("defaultTitle")}
                 </Link>
                 <p className="text-xs text-muted">
@@ -103,7 +105,7 @@ export function RecentActivities({
                   const dist = formatDistance(a.distanceMeters)
                   return shareLinks(
                     club ? t("shareText", { dist, club }) : t("shareTextNoClub", { dist }),
-                    `${APP_URL}/runs/${a.id}`
+                    `${APP_URL}${runPath(a)}`
                   )
                 })()}
                 labels={{ x: t("shareX"), farcaster: t("shareFarcaster") }}

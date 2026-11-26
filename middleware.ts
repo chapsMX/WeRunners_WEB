@@ -10,8 +10,8 @@ const intlMiddleware = createMiddleware(routing)
 // Rutas del app que no requieren sesión activa
 // "/u/" = perfiles públicos de corredores (compartibles sin login)
 // "/leaderboard" = leaderboard global de clubes (compartible sin login)
-// "/runs/" = tarjeta de una corrida (compartible sin login)
-const APP_PUBLIC_PATHS = ["/auth/sign-in", "/auth/sign-up", "/auth/waiting", "/u/", "/leaderboard", "/runs/"]
+// "/runs/", "/r/" = tarjeta de una corrida (id interno / código corto; compartibles sin login)
+const APP_PUBLIC_PATHS = ["/auth/sign-in", "/auth/sign-up", "/auth/waiting", "/u/", "/leaderboard", "/runs/", "/r/"]
 
 // Public club pages: /clubs/<slug> exactly (not /clubs, /clubs/new or /manage),
 // and their invite link /clubs/<slug>/join (handles guests itself).
@@ -42,6 +42,7 @@ const APP_PATH_PREFIXES = [
   "/settings",
   "/admin",
   "/runs/",
+  "/r/",
   "/ambassadors/", // /ambassadors/apply (the app); /ambassadors itself is the landing (www, i18n)
 ]
 

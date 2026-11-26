@@ -39,6 +39,8 @@ export function pickPhoto(activityId: string, format: "landscape" | "story"): Ph
 
 export type RunCardData = {
   id: string
+  /** Short code for share links (/r/<shortId>); null for runs not backfilled yet. */
+  shortId: string | null
   title: string | null
   distanceMeters: number
   durationSeconds: number
@@ -50,11 +52,12 @@ export type RunCardData = {
   route: { path: string; width: number; height: number } | null
 }
 
-export async function getRunCardData(id: string): Promise<RunCardData | null> {
+export async function getRunCardData(where: { id: string } | { shortId: string }): Promise<RunCardData | null> {
   const a = await prisma.activity.findUnique({
-    where: { id },
+    where,
     select: {
       id: true,
+      shortId: true,
       title: true,
       distanceMeters: true,
       durationSeconds: true,
@@ -69,6 +72,7 @@ export async function getRunCardData(id: string): Promise<RunCardData | null> {
   if (!a) return null
   return {
     id: a.id,
+    shortId: a.shortId,
     title: a.title,
     distanceMeters: a.distanceMeters,
     durationSeconds: a.durationSeconds,
@@ -79,6 +83,11 @@ export async function getRunCardData(id: string): Promise<RunCardData | null> {
     club: a.club,
     route: a.route,
   }
+}
+
+/** Public page of a run: the short link when it has a code. */
+export function runPath(run: { id: string; shortId: string | null }): string {
+  return run.shortId ? `/r/${run.shortId}` : `/runs/${run.id}`
 }
 
 // ── Stats ───────────────────────────────────────────────────
