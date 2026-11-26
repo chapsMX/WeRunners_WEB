@@ -65,10 +65,10 @@ async function toDataUri(buffer: Buffer, contentType: string, resize?: { width: 
 }
 
 /** A file from /public (e.g. "/images/fondoClubes.jpg"), resized to the card. */
-export async function localImage(publicPath: string): Promise<string | null> {
+export async function localImage(publicPath: string, size: { width: number; height: number } = OG_SIZE): Promise<string | null> {
   try {
     const buffer = await readFile(path.join(process.cwd(), "public", publicPath))
-    return await toDataUri(buffer, "image/jpeg", OG_SIZE)
+    return await toDataUri(buffer, "image/jpeg", size)
   } catch (e) {
     console.error("[og] local image failed:", publicPath, e)
     return null
@@ -195,12 +195,15 @@ export function ClubCard(props: { bg: string | null; logo: string | null; name: 
 }
 
 /** Render a card. Cached at the edge for an hour (crawlers fetch it once per share anyway). */
-export async function ogResponse(card: React.ReactElement): Promise<ImageResponse> {
+export async function ogResponse(
+  card: React.ReactElement,
+  opts: { size?: { width: number; height: number }; headers?: Record<string, string> } = {}
+): Promise<ImageResponse> {
   const fonts = await loadFonts()
   return new ImageResponse(card, {
-    ...OG_SIZE,
+    ...(opts.size ?? OG_SIZE),
     fonts: fonts.length ? fonts : undefined,
-    headers: { "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400" },
+    headers: { "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400", ...opts.headers },
   })
 }
 

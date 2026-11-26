@@ -10,7 +10,8 @@ import {
 } from "@/lib/format"
 import type { ActivityRow } from "@/lib/dashboard-data"
 import { ActivityIcon } from "../icons"
-import { clubPageUrl, shareLinks } from "@/lib/share"
+import Link from "next/link"
+import { APP_URL, shareLinks } from "@/lib/share"
 import { ShareButtons } from "../ShareButtons"
 
 // Plataformas de origen — marcas que no se traducen (MANUAL sí, vía i18n).
@@ -27,12 +28,10 @@ const SOURCE_LABEL: Record<string, string> = {
 export function RecentActivities({
   activities,
   clubName,
-  clubSlug,
 }: {
   activities: ActivityRow[]
   /** Runner's current club — used in the share when the run itself didn't count for one. */
   clubName: string | null
-  clubSlug: string | null
 }) {
   const t = useTranslations("dashboard.recent")
   const locale = useLocale()
@@ -69,9 +68,9 @@ export function RecentActivities({
               </div>
 
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-foreground">
+                <Link href={`/runs/${a.id}`} className="block truncate text-sm font-semibold text-foreground hover:text-brand-green">
                   {a.title || t("defaultTitle")}
-                </p>
+                </Link>
                 <p className="text-xs text-muted">
                   {dateLabel(a.date)} · {SOURCE_LABEL[a.source] ?? t("manual")}
                 </p>
@@ -99,12 +98,12 @@ export function RecentActivities({
 
               <ShareButtons
                 links={(() => {
+                  // The link is the run's card page: its preview shows the route + stats.
                   const club = a.clubName ?? clubName
-                  const slug = a.clubSlug ?? clubSlug
                   const dist = formatDistance(a.distanceMeters)
                   return shareLinks(
                     club ? t("shareText", { dist, club }) : t("shareTextNoClub", { dist }),
-                    slug ? clubPageUrl(slug) : null
+                    `${APP_URL}/runs/${a.id}`
                   )
                 })()}
                 labels={{ x: t("shareX"), farcaster: t("shareFarcaster") }}
