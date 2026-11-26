@@ -414,15 +414,16 @@ export async function decideJoinRequest(
 }
 
 /** Club directory: every active club with what the viewer can do. */
-export async function getClubDirectory(db: Tx | typeof prisma, userId: string) {
+/** userId null = a guest (public /clubs): no membership or request to show. */
+export async function getClubDirectory(db: Tx | typeof prisma, userId: string | null) {
   const [clubs, active, pending] = await Promise.all([
     db.club.findMany({
       where: { active: true },
       orderBy: { name: "asc" },
       select: { id: true, name: true, slug: true, city: true, country: true, logoUrl: true, memberCount: true, joinPolicy: true },
     }),
-    getSwitchableMembership(db, userId),
-    db.clubJoinRequest.findUnique({ where: { pendingUserId: userId }, select: { clubId: true } }),
+    userId ? getSwitchableMembership(db, userId) : Promise.resolve(null),
+    userId ? db.clubJoinRequest.findUnique({ where: { pendingUserId: userId }, select: { clubId: true } }) : Promise.resolve(null),
   ])
   return {
     myClubId: active?.clubId ?? null,

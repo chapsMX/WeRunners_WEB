@@ -679,7 +679,14 @@
     },
     "inClubFree": "Corres con {club}. Puedes cambiarte a otro club cuando quieras: tus kilómetros hasta hoy se quedan con {club}.",
     "switchConfirm": "Vas a dejar {from} y unirte a {to}. Tus kilómetros hasta hoy se quedan con {from}; desde hoy cuentan para {to}.",
-    "switchConfirmApproval": "Vas a pedir unirte a {to}. Te quedas en {from} hasta que te aprueben; después tus kilómetros cuentan para {to}."
+    "switchConfirmApproval": "Vas a pedir unirte a {to}. Te quedas en {from} hasta que te aprueben; después tus kilómetros cuentan para {to}.",
+    "metaTitle": "Clubes de corredores en We Runners",
+    "metaDescription": "Encuentra tu club de corredores: todos los clubes de We Runners, de todo el mundo. Únete al tuyo y cada kilómetro que corras cuenta para él.",
+    "og": {
+      "eyebrow": "Clubes de corredores del mundo",
+      "title": "Encuentra tu club",
+      "stat": "{clubs} clubes · {runners} corredores"
+    }
   },
   "clubPage": {
     "manage": "Administrar club",

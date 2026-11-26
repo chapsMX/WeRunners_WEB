@@ -23,12 +23,15 @@ export function ClubDirectory({
   myClubId,
   pendingClubId,
   canSwitch = false,
+  guest = false,
 }: {
   clubs: DirectoryClub[]
   myClubId: string | null
   pendingClubId: string | null
   /** In a free-switch club (Solo): may join another club. */
   canSwitch?: boolean
+  /** Public view (guest / not onboarded): "Join" goes to the club's invite link. */
+  guest?: boolean
 }) {
   const t = useTranslations("clubDirectory")
   const locale = useLocale()
@@ -134,6 +137,11 @@ export function ClubDirectory({
                   <span className="text-sm font-semibold text-brand-green">{t("yourClub")}</span>
                 ) : c.id === pendingClubId ? (
                   <span className="text-sm text-muted">{t("pending")}</span>
+                ) : guest ? (
+                  // Invite link: sign-up / onboarding with this club picked.
+                  <a href={`/clubs/${encodeURIComponent(c.slug)}/join`} className={primary}>
+                    {c.requiresApproval ? t("request") : t("join")}
+                  </a>
                 ) : (!myClubId || canSwitch) && !pendingClubId ? (
                   <button type="button" disabled={pending} onClick={() => join(c)} className={primary}>
                     {busy === c.id ? t("joining") : c.requiresApproval ? t("request") : t("join")}
