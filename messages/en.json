@@ -623,6 +623,10 @@
       "shortlist": "Shortlist",
       "reject": "Reject",
       "reset": "Back to pending"
+    },
+    "invite": {
+      "title": "Invite link",
+      "hint": "Share it in your club's group chat. Whoever opens it signs up with your club already picked, and the link preview shows your club."
     }
   },
   "clubRequest": {
@@ -868,5 +872,14 @@
     "shareX": "Share on X",
     "shareFarcaster": "Share on Farcaster",
     "noRoute": "This run has no GPS route (treadmill or no signal), so the card shows the distance instead."
+  },
+  "clubInvite": {
+    "copy": "Copy link",
+    "copyInvite": "Copy invite link",
+    "copied": "Copied!",
+    "copyPrompt": "Copy the invite link:",
+    "shareText": "Run with {club} on @w3runn3rs, the global hub for running clubs. Join the club here:",
+    "shareX": "Share the invite on X",
+    "shareFarcaster": "Share the invite on Farcaster"
   }
 }

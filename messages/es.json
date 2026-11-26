@@ -623,6 +623,10 @@
       "shortlist": "Preseleccionar",
       "reject": "Rechazar",
       "reset": "Regresar a pendiente"
+    },
+    "invite": {
+      "title": "Link de invitación",
+      "hint": "Compártelo en el grupo de WhatsApp de tu club. Quien lo abra se registra con tu club ya elegido, y la preview del link muestra tu club."
     }
   },
   "clubRequest": {
@@ -868,5 +872,14 @@
     "shareX": "Compartir en X",
     "shareFarcaster": "Compartir en Farcaster",
     "noRoute": "Esta corrida no tiene ruta GPS (caminadora o sin señal), así que la tarjeta muestra la distancia."
+  },
+  "clubInvite": {
+    "copy": "Copiar link",
+    "copyInvite": "Copiar link de invitación",
+    "copied": "¡Copiado!",
+    "copyPrompt": "Copia el link de invitación:",
+    "shareText": "Corre con {club} en @w3runn3rs, el hub global de clubes de corredores. Únete al club aquí:",
+    "shareX": "Compartir la invitación en X",
+    "shareFarcaster": "Compartir la invitación en Farcaster"
   }
 }
