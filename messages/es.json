@@ -672,7 +672,10 @@
       "not_found": "Ese club no está disponible.",
       "has_club": "Ya estás en {club}.",
       "has_pending": "Ya pediste unirte a {club}. Primero cancela esa solicitud."
-    }
+    },
+    "inClubFree": "Corres con {club}. Puedes cambiarte a otro club cuando quieras: tus kilómetros hasta hoy se quedan con {club}.",
+    "switchConfirm": "Vas a dejar {from} y unirte a {to}. Tus kilómetros hasta hoy se quedan con {from}; desde hoy cuentan para {to}.",
+    "switchConfirmApproval": "Vas a pedir unirte a {to}. Te quedas en {from} hasta que te aprueben; después tus kilómetros cuentan para {to}."
   },
   "clubPage": {
     "manage": "Administrar club",
@@ -703,7 +706,9 @@
     "leaderboardEmpty": "Nadie ha registrado carreras este mes.",
     "colRunner": "Corredor",
     "colRuns": "Carreras",
-    "colKm": "Km"
+    "colKm": "Km",
+    "switchConfirm": "Vas a dejar {from} y unirte a {to}. Tus kilómetros hasta hoy se quedan con {from}; desde hoy cuentan para {to}.",
+    "switchConfirmApproval": "Vas a pedir unirte a {to}. Te quedas en {from} hasta que te aprueben; después tus kilómetros cuentan para {to}."
   },
   "leaderboard": {
     "metaTitle": "Leaderboard de clubes de corredores · We Runners",

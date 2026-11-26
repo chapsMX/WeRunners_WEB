@@ -159,7 +159,7 @@ export async function getClubPage(slug: string, db: Db = prisma): Promise<ClubPa
 export async function getClubViewerState(userId: string | null, clubId: string, db: Db = prisma) {
   if (!userId) return { signedIn: false as const }
   const [active, pending, user] = await Promise.all([
-    db.clubMembership.findUnique({ where: { activeUserId: userId }, select: { clubId: true, role: true, club: { select: { ownerId: true } } } }),
+    db.clubMembership.findUnique({ where: { activeUserId: userId }, select: { clubId: true, role: true, club: { select: { ownerId: true, freeSwitch: true, name: true } } } }),
     db.clubJoinRequest.findUnique({ where: { pendingUserId: userId }, select: { clubId: true } }),
     db.user.findUnique({ where: { id: userId }, select: { role: true, onboardingCompletedAt: true } }),
   ])
@@ -169,6 +169,9 @@ export async function getClubViewerState(userId: string | null, clubId: string, 
     onboarded: Boolean(user?.onboardingCompletedAt),
     isMember,
     inOtherClub: Boolean(active) && !isMember,
+    /** In a free-switch club (Solo) they don't own → may join this one instead. */
+    canSwitch: Boolean(active) && !isMember && Boolean(active?.club.freeSwitch) && active?.club.ownerId !== userId,
+    currentClubName: active?.club.name ?? null,
     pendingHere: pending?.clubId === clubId,
     pendingElsewhere: Boolean(pending) && pending?.clubId !== clubId,
     canManage: user?.role === "ADMIN" || (isMember && (active?.role === "ADMIN" || active?.club.ownerId === userId)),

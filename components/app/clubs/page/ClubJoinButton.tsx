@@ -19,11 +19,13 @@ const primary =
 export function ClubJoinButton({
   clubId,
   clubSlug,
+  clubName,
   requiresApproval,
   viewer,
 }: {
   clubId: string
   clubSlug: string
+  clubName: string
   requiresApproval: boolean
   viewer: Viewer
 }) {
@@ -41,7 +43,8 @@ export function ClubJoinButton({
     )
   }
   if (viewer.isMember) return <span className="text-sm font-semibold text-brand-green">✓ {t("yourClub")}</span>
-  if (viewer.inOtherClub || viewer.pendingElsewhere) return null
+  // In a free-switch club (Solo): they can move here. Any other club: no switching.
+  if ((viewer.inOtherClub && !viewer.canSwitch) || viewer.pendingElsewhere) return null
 
   if (viewer.pendingHere) {
     return (
@@ -65,13 +68,17 @@ export function ClubJoinButton({
         type="button"
         disabled={pending}
         className={primary}
-        onClick={() =>
+        onClick={() => {
+          if (viewer.canSwitch && viewer.currentClubName) {
+            const key = requiresApproval ? "switchConfirmApproval" : "switchConfirm"
+            if (!window.confirm(t(key, { from: viewer.currentClubName, to: clubName }))) return
+          }
           start(async () => {
             const r = await joinClubAction(clubId)
             if (!r.ok) setError(t(`errors.${r.error}`, { club: r.clubName ?? "" }))
             router.refresh()
           })
-        }
+        }}
       >
         {pending ? t("joining") : requiresApproval ? t("request") : t("join")}
       </button>

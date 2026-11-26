@@ -672,7 +672,10 @@
       "not_found": "That club isn't available.",
       "has_club": "You're already in {club}.",
       "has_pending": "You already asked to join {club}. Cancel that request first."
-    }
+    },
+    "inClubFree": "You run for {club}. You can switch to another club anytime: your kilometers so far stay with {club}.",
+    "switchConfirm": "You'll leave {from} and join {to}. Your kilometers so far stay with {from}; from today they count for {to}.",
+    "switchConfirmApproval": "You'll ask to join {to}. You stay in {from} until they approve you; then your kilometers count for {to}."
   },
   "clubPage": {
     "manage": "Manage club",
@@ -703,7 +706,9 @@
     "leaderboardEmpty": "Nobody has logged a run this month yet.",
     "colRunner": "Runner",
     "colRuns": "Runs",
-    "colKm": "Km"
+    "colKm": "Km",
+    "switchConfirm": "You'll leave {from} and join {to}. Your kilometers so far stay with {from}; from today they count for {to}.",
+    "switchConfirmApproval": "You'll ask to join {to}. You stay in {from} until they approve you; then your kilometers count for {to}."
   },
   "leaderboard": {
     "metaTitle": "Running club leaderboard · We Runners",

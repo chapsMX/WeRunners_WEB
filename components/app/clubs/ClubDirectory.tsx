@@ -22,10 +22,13 @@ export function ClubDirectory({
   clubs,
   myClubId,
   pendingClubId,
+  canSwitch = false,
 }: {
   clubs: DirectoryClub[]
   myClubId: string | null
   pendingClubId: string | null
+  /** In a free-switch club (Solo): may join another club. */
+  canSwitch?: boolean
 }) {
   const t = useTranslations("clubDirectory")
   const locale = useLocale()
@@ -46,6 +49,10 @@ export function ClubDirectory({
   const pendingClub = clubs.find((c) => c.id === pendingClubId)
 
   function join(club: DirectoryClub) {
+    if (myClub && canSwitch) {
+      const key = club.requiresApproval ? "switchConfirmApproval" : "switchConfirm"
+      if (!window.confirm(t(key, { from: myClub.name, to: club.name }))) return
+    }
     setError(null)
     setBusy(club.id)
     start(async () => {
@@ -68,7 +75,11 @@ export function ClubDirectory({
 
   return (
     <div className="space-y-4">
-      {myClub && <p className="border border-line bg-surface-alt/40 p-4 text-sm text-muted">{t("inClub", { club: myClub.name })}</p>}
+      {myClub && (
+        <p className="border border-line bg-surface-alt/40 p-4 text-sm text-muted">
+          {canSwitch ? t("inClubFree", { club: myClub.name }) : t("inClub", { club: myClub.name })}
+        </p>
+      )}
       {pendingClub && (
         <div className="flex flex-wrap items-center gap-3 border border-brand-green/40 bg-brand-green/10 p-4 text-sm">
           <span className="flex-1 text-foreground">{t("pendingNote", { club: pendingClub.name })}</span>
@@ -123,7 +134,7 @@ export function ClubDirectory({
                   <span className="text-sm font-semibold text-brand-green">{t("yourClub")}</span>
                 ) : c.id === pendingClubId ? (
                   <span className="text-sm text-muted">{t("pending")}</span>
-                ) : !myClubId && !pendingClubId ? (
+                ) : (!myClubId || canSwitch) && !pendingClubId ? (
                   <button type="button" disabled={pending} onClick={() => join(c)} className={primary}>
                     {busy === c.id ? t("joining") : c.requiresApproval ? t("request") : t("join")}
                   </button>

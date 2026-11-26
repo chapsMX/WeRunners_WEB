@@ -88,7 +88,7 @@ export function ClubHero({
                 {t("manage")}
               </Link>
             )}
-            <ClubJoinButton clubId={club.id} clubSlug={club.slug} requiresApproval={club.requiresApproval} viewer={viewer} />
+            <ClubJoinButton clubId={club.id} clubSlug={club.slug} clubName={club.name} requiresApproval={club.requiresApproval} viewer={viewer} />
           </div>
         </div>
 

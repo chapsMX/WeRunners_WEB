@@ -355,6 +355,9 @@ model Club {
   country     String         @default("MX")
   clubType    ClubType       @default(RECREATIONAL)
   joinPolicy  ClubJoinPolicy @default(OPEN)
+  // Cambio libre: sus miembros entran sin candado de 6 meses y pueden irse a otro
+  // club cuando quieran (Solo Running Club, para quien aún no tiene club).
+  freeSwitch  Boolean        @default(false)
 
   instagram    String?
   twitter      String?
