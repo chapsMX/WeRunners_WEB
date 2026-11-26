@@ -826,21 +826,20 @@ model DeviceConnectionStrava {
 }
 
 // Forma de la ruta de una corrida para las tarjetas de share. Sin coordenadas
-// reales: la traza se recorta al inicio y al final (zona de privacidad), se
-// proyecta, se simplifica y se normaliza a un path SVG en una caja cuyo lado
-// mayor mide 1000 (lib/routes.ts). Garmin: Activity Details; Polar: GPX.
+// reales: la traza completa se proyecta, se simplifica y se normaliza a un path
+// SVG en una caja cuyo lado mayor mide 1000 (lib/routes.ts). Se dibuja sobre
+// una foto, sin mapa. Garmin: Activity Details; Polar: GPX.
 model ActivityRoute {
-  id            String         @id @default(cuid())
-  activityId    String         @unique
-  activity      Activity       @relation(fields: [activityId], references: [id], onDelete: Cascade)
-  source        ActivitySource
-  path          String         @db.Text // "M12 340L18 322…" (coordenadas de la caja)
-  width         Int // ancho de la caja (el lado mayor es 1000)
-  height        Int
-  pointCount    Int
-  trimmedMeters Int            @default(0) // metros recortados en cada extremo
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id         String         @id @default(cuid())
+  activityId String         @unique
+  activity   Activity       @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  source     ActivitySource
+  path       String         @db.Text // "M12 340L18 322…" (coordenadas de la caja)
+  width      Int // ancho de la caja (el lado mayor es 1000)
+  height     Int
+  pointCount Int
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
 
   @@map("activity_routes")
 }

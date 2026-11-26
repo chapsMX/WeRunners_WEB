@@ -1,28 +1,20 @@
 // Route shapes for share cards (ActivityRoute). We never keep real
-// coordinates: GPS points are trimmed at both ends (privacy zone, like
-// Strava's), projected, simplified and normalized into an SVG path inside a box
-// whose longest side is ROUTE_BOX. The shape can't be placed back on a map.
+// coordinates: GPS points are projected, simplified and normalized into an SVG
+// path inside a box whose longest side is ROUTE_BOX. The shape is drawn over a
+// photo, with no map, street or area, so the full track is kept (no trimming).
 import type { ActivitySource, Prisma } from "@prisma/client"
 
 type Tx = Prisma.TransactionClient
 
 export const ROUTE_BOX = 1000
-export const PRIVACY_TRIM_METERS = 200
 const MAX_POINTS = 200
 const MIN_EXTENT_METERS = 50
 
 export type LatLon = { lat: number; lon: number }
-export type RouteShape = { path: string; width: number; height: number; pointCount: number; trimmedMeters: number }
+export type RouteShape = { path: string; width: number; height: number; pointCount: number }
 
 const EARTH_M = 6_371_000
 const rad = (d: number) => (d * Math.PI) / 180
-
-export function haversine(a: LatLon, b: LatLon): number {
-  const dLat = rad(b.lat - a.lat)
-  const dLon = rad(b.lon - a.lon)
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLon / 2) ** 2
-  return 2 * EARTH_M * Math.asin(Math.sqrt(h))
-}
 
 function valid(p: LatLon): boolean {
   return (
@@ -30,23 +22,6 @@ function valid(p: LatLon): boolean {
     Math.abs(p.lat) <= 90 && Math.abs(p.lon) <= 180 &&
     !(p.lat === 0 && p.lon === 0) // "no fix" samples
   )
-}
-
-/**
- * Drop the first and last `meters` of the track. Short runs trim less (at most
- * 10% of the distance at each end) so there's still a shape left.
- */
-export function trimEnds(points: LatLon[], meters = PRIVACY_TRIM_METERS): { points: LatLon[]; trimmed: number } {
-  if (points.length < 3) return { points, trimmed: 0 }
-  const cum = [0]
-  for (let i = 1; i < points.length; i++) cum.push(cum[i - 1] + haversine(points[i - 1], points[i]))
-  const total = cum[cum.length - 1]
-  const trim = Math.min(meters, total * 0.1)
-  const start = cum.findIndex((d) => d >= trim)
-  let end = cum.length - 1
-  while (end > 0 && total - cum[end] < trim) end--
-  if (start < 0 || end <= start) return { points, trimmed: 0 }
-  return { points: points.slice(start, end + 1), trimmed: Math.round(trim) }
 }
 
 type XY = [number, number]
@@ -84,10 +59,8 @@ export function simplify(points: XY[], tolerance: number): XY[] {
  * GPS track → normalized shape, or null if there's no usable route (treadmill,
  * no GPS, or everything within a few meters).
  */
-export function buildRouteShape(raw: LatLon[], opts: { trimMeters?: number; maxPoints?: number } = {}): RouteShape | null {
-  const pts = raw.filter(valid)
-  if (pts.length < 2) return null
-  const { points, trimmed } = trimEnds(pts, opts.trimMeters ?? PRIVACY_TRIM_METERS)
+export function buildRouteShape(raw: LatLon[], opts: { maxPoints?: number } = {}): RouteShape | null {
+  const points = raw.filter(valid)
   if (points.length < 2) return null
 
   // Local equirectangular projection in meters (fine at running scale).
@@ -117,7 +90,7 @@ export function buildRouteShape(raw: LatLon[], opts: { trimMeters?: number; maxP
   const deduped = coords.filter((c, i) => i === 0 || c[0] !== coords[i - 1][0] || c[1] !== coords[i - 1][1])
   if (deduped.length < 2) return null
   const path = deduped.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x} ${y}`).join("")
-  return { path, width, height, pointCount: deduped.length, trimmedMeters: trimmed }
+  return { path, width, height, pointCount: deduped.length }
 }
 
 /** GPX (Polar exports) → points. Only trkpt lat/lon are read. */
@@ -134,6 +107,6 @@ export function parseGpxPoints(gpx: string): LatLon[] {
 }
 
 export async function saveActivityRoute(tx: Tx, activityId: string, source: ActivitySource, shape: RouteShape): Promise<void> {
-  const data = { source, path: shape.path, width: shape.width, height: shape.height, pointCount: shape.pointCount, trimmedMeters: shape.trimmedMeters }
+  const data = { source, path: shape.path, width: shape.width, height: shape.height, pointCount: shape.pointCount }
   await tx.activityRoute.upsert({ where: { activityId }, create: { activityId, ...data }, update: data })
 }
