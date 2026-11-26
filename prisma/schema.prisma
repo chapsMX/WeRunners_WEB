@@ -482,6 +482,7 @@ model Activity {
   activityType ActivityType   @default(RUN)
   source       ActivitySource
   externalId   String? // id del proveedor (Garmin: summaryId)
+  shortId      String?        @unique // código corto para el link de share: /r/<shortId> (lib/short-id.ts)
 
   // Datos crudos del proveedor (auditoría / dedupe / bucketing)
   providerActivityType   String? // p. ej. "TREADMILL_RUNNING"

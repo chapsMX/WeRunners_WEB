@@ -7,7 +7,7 @@ type Params = { params: Promise<{ id: string }> }
 // Run share card, story 1080×1920 (Instagram). ?download=1 → attachment.
 export async function GET(request: NextRequest, { params }: Params) {
   const { id } = await params
-  const run = await getRunCardData(id)
+  const run = await getRunCardData({ id })
   if (!run) return new Response("Not found", { status: 404 })
   const photo = pickPhoto(run.id, "story")
   const bg = await localImage(photo.path, STORY_SIZE)

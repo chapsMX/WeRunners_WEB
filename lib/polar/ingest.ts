@@ -2,6 +2,7 @@
 // shared fairness rules (lib/activity-fairness). Takes a transaction client.
 import type { ActivityType, ExclusionReason, Prisma } from "@prisma/client"
 import { decideFairness } from "@/lib/activity-fairness"
+import { newShortId } from "@/lib/short-id"
 
 type Tx = Prisma.TransactionClient
 
@@ -124,7 +125,7 @@ export async function ingestPolarExercise(tx: Tx, polarUserId: string, ex: Polar
   // Polar can notify again for the same exercise → upsert.
   const activity = await tx.activity.upsert({
     where: { userId_source_externalId: { userId, source: "POLAR", externalId } },
-    create: { userId, source: "POLAR", externalId, ...data },
+    create: { userId, source: "POLAR", externalId, shortId: newShortId(), ...data },
     update: data,
     select: { id: true },
   })
