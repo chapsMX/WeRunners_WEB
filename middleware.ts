@@ -17,12 +17,14 @@ const APP_PUBLIC_PATHS = ["/auth/sign-in", "/auth/sign-up", "/auth/waiting", "/u
 // and their invite link /clubs/<slug>/join (handles guests itself).
 const PUBLIC_CLUB_PAGE = /^\/clubs\/(?!new\/?$)[^/]+\/?$/
 const CLUB_INVITE_LINK = /^\/clubs\/[^/]+\/join\/?$/
+const CLUB_DIRECTORY = /^\/clubs\/?$/ // the public club directory
 
 function isPublicAppPath(pathname: string): boolean {
   return (
     APP_PUBLIC_PATHS.some((p) => pathname.startsWith(p)) ||
     PUBLIC_CLUB_PAGE.test(pathname) ||
-    CLUB_INVITE_LINK.test(pathname)
+    CLUB_INVITE_LINK.test(pathname) ||
+    CLUB_DIRECTORY.test(pathname)
   )
 }
 

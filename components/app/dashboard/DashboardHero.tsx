@@ -9,7 +9,7 @@ import { useLocale, useTranslations } from "next-intl"
 import type { DashboardMembership } from "@/lib/dashboard-data"
 import { updateBanner } from "@/app/(app)/(protected)/(onboarded)/dashboard/actions"
 import { ClubIcon, ImageIcon, ResetIcon } from "../icons"
-import { clubPageUrl, shareLinks } from "@/lib/share"
+import { clubInviteUrl, shareLinks } from "@/lib/share"
 import { ShareButtons } from "../ShareButtons"
 import { WorldRankBadge } from "../leaderboard/WorldRankBadge"
 import type { ClubWorldRank } from "@/lib/leaderboard"
@@ -172,7 +172,7 @@ export function DashboardHero({
             <span className="text-xs font-medium text-white/80">{t("clubShare.label")}</span>
             <ShareButtons
               tone="light"
-              links={shareLinks(t("clubShare.text", { club: membership.clubName }), clubPageUrl(membership.clubSlug))}
+              links={shareLinks(t("clubShare.text", { club: membership.clubName }), clubInviteUrl(membership.clubSlug))}
               labels={{ x: t("recent.shareX"), farcaster: t("recent.shareFarcaster") }}
             />
           </div>

@@ -13,6 +13,7 @@ import { OwnerPicker } from "@/components/app/clubs/OwnerPicker"
 import { getPendingOwnerInvite } from "@/lib/club-owners"
 import { listPendingJoinRequests } from "@/lib/clubs"
 import { JoinRequests } from "@/components/app/clubs/JoinRequests"
+import { InviteLink } from "@/components/app/clubs/InviteLink"
 import { updateClubProfileAction } from "./actions"
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -120,6 +121,12 @@ export default async function ManageClubPage({ params }: { params: Promise<{ slu
           </p>
         </div>
       </header>
+
+      <section className="border border-line bg-surface-alt/40 p-6">
+        <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-muted">{t("invite.title")}</h2>
+        <p className="mb-4 text-sm text-muted">{t("invite.hint")}</p>
+        <InviteLink slug={access.club.slug} clubName={club.name} />
+      </section>
 
       {access.superadmin && (
         <section className="border border-line bg-surface-alt/40 p-6">

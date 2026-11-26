@@ -9,6 +9,7 @@ import { countryName } from "@/lib/countries"
 import { clubSocialHref, type ClubSocialNetwork } from "@/lib/club-socials"
 import { FacebookIcon, InstagramIcon, TikTokIcon, XIcon } from "@/components/ui/SocialIcons"
 import { ClubJoinButton } from "./ClubJoinButton"
+import { InviteLink } from "../InviteLink"
 import { WorldRankBadge } from "../../leaderboard/WorldRankBadge"
 import type { ClubWorldRank } from "@/lib/leaderboard"
 
@@ -105,6 +106,11 @@ export function ClubHero({
         {worldRank && (
           <div className="mt-3">
             <WorldRankBadge worldRank={worldRank} />
+          </div>
+        )}
+        {viewer.signedIn && viewer.isMember && (
+          <div className="mt-4">
+            <InviteLink slug={club.slug} clubName={club.name} compact />
           </div>
         )}
 

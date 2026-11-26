@@ -5,6 +5,11 @@ export function clubPageUrl(slug: string): string {
   return `${APP_URL}/clubs/${slug}`
 }
 
+/** Club invite link: preview = the club card; people land in sign-up with the club picked. */
+export function clubInviteUrl(slug: string): string {
+  return `${APP_URL}/clubs/${slug}/join`
+}
+
 export function shareLinks(text: string, url: string | null): { x: string; farcaster: string } {
   const q = (pairs: [string, string][]) =>
     pairs.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join("&")

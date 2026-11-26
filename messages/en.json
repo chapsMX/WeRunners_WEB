@@ -623,6 +623,10 @@
       "shortlist": "Shortlist",
       "reject": "Reject",
       "reset": "Back to pending"
+    },
+    "invite": {
+      "title": "Invite link",
+      "hint": "Share it in your club's group chat. Whoever opens it signs up with your club already picked, and the link preview shows your club."
     }
   },
   "clubRequest": {
@@ -675,7 +679,14 @@
     },
     "inClubFree": "You run for {club}. You can switch to another club anytime: your kilometers so far stay with {club}.",
     "switchConfirm": "You'll leave {from} and join {to}. Your kilometers so far stay with {from}; from today they count for {to}.",
-    "switchConfirmApproval": "You'll ask to join {to}. You stay in {from} until they approve you; then your kilometers count for {to}."
+    "switchConfirmApproval": "You'll ask to join {to}. You stay in {from} until they approve you; then your kilometers count for {to}.",
+    "metaTitle": "Running clubs on We Runners",
+    "metaDescription": "Find your running club: every club on We Runners, from around the world. Join yours and every kilometer you run counts for it.",
+    "og": {
+      "eyebrow": "Running clubs worldwide",
+      "title": "Find your running club",
+      "stat": "{clubs} clubs · {runners} runners"
+    }
   },
   "clubPage": {
     "manage": "Manage club",
@@ -868,5 +879,14 @@
     "shareX": "Share on X",
     "shareFarcaster": "Share on Farcaster",
     "noRoute": "This run has no GPS route (treadmill or no signal), so the card shows the distance instead."
+  },
+  "clubInvite": {
+    "copy": "Copy link",
+    "copyInvite": "Copy invite link",
+    "copied": "Copied!",
+    "copyPrompt": "Copy the invite link:",
+    "shareText": "Run with {club} on @w3runn3rs, the global hub for running clubs. Join the club here:",
+    "shareX": "Share the invite on X",
+    "shareFarcaster": "Share the invite on Farcaster"
   }
 }
