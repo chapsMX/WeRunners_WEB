@@ -59,7 +59,6 @@ export function DashboardView({
           <RecentActivities
             activities={data.recent}
             clubName={data.membership?.clubName ?? null}
-            clubSlug={data.membership?.clubSlug ?? null}
           />
           <RankGrid monthly={data.monthly} clubName={data.membership?.clubName ?? null} />
         </div>

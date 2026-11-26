@@ -851,5 +851,17 @@
       "title": "Los embajadores lideran su propio club",
       "body": "Corres con {club}, y los embajadores son quienes lideran un club. Si lideras un club o quieres ayudar a que el tuyo crezca, escríbenos."
     }
+  },
+  "runPage": {
+    "defaultTitle": "Corrida",
+    "cardAlt": "Tarjeta para compartir: una corrida de {dist}",
+    "download": "Descargar imagen",
+    "downloadStory": "Descargar para historias de Instagram",
+    "share": "Compartir",
+    "shareText": "Acabo de correr {dist} para {club} en @w3runn3rs, el hub global de clubes de corredores.",
+    "shareTextNoClub": "Acabo de correr {dist} en @w3runn3rs, el hub global de clubes de corredores.",
+    "shareX": "Compartir en X",
+    "shareFarcaster": "Compartir en Farcaster",
+    "noRoute": "Esta corrida no tiene ruta GPS (caminadora o sin señal), así que la tarjeta muestra la distancia."
   }
 }
